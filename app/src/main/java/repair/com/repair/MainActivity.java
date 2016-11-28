@@ -3,8 +3,6 @@ package repair.com.repair;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,8 +24,6 @@ import fragment.MainFragment;
 import fragment.StatisticsFragment;
 import repari.com.adapter.FragmentAdapter;
 
-import static android.os.Build.VERSION_CODES.M;
-
 public class MainActivity extends AppCompatActivity {
 
 
@@ -48,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
     private StatisticsFragment statisticsFragment;
+
+    private List<String> list_string=new ArrayList<>();
 
     private static int Screen1_3;//��Ļ��ȵ�1/3
 
@@ -145,6 +143,45 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int arg0) {
             }
         });
+
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+
+        this.mainFragment.setList(list_string);
+
+        Log.d("MainFragment","Activity_onCreate");
+
 
     }
 

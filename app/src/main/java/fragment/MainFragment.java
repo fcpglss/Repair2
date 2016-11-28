@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
@@ -23,6 +25,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+import medusa.theone.waterdroplistview.view.WaterDropListView;
 import repair.com.repair.R;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
@@ -42,12 +45,18 @@ public class MainFragment extends Fragment {
 
     private View view;
 
+    private ListView mlistView;
+
+    private List<String> list_string;
+    private WaterDropListView waterDropListView;
+
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("MainFragment", "onAttach");
+
+
     }
 
     @Override
@@ -63,7 +72,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d("MainFragment", "onActivityCreated  mlist_int=" + mlist_int.size());
+
 
         if(mlist_int.size()<3)
         {
@@ -106,9 +115,25 @@ public class MainFragment extends Fragment {
                         }
                     }, mlist_int);
         }
+      //  mlistView= (ListView) getActivity().findViewById(R.id.lv_listView);
 
 
-        }
+
+
+      //  mlistView.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_string));
+        waterDropListView= (WaterDropListView)getActivity().findViewById(R.id.waterdrop_w);
+
+        waterDropListView.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_string));
+
+        Log.d("MainFragment", "onActivityCreated  mlist_string=" + list_string.size());
+
+
+    }
+    public void setList(List<String> list)
+    {
+        list_string=list;
+
+    }
     public class LocalImageHolderView implements Holder<Integer> {
         private ImageButton imageButton;
 
