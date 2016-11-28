@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:orientation="vertical" 
+    android:background="#d3d3d3">
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:paddingTop="2dp"
+        >
+        
+         <LinearLayout 
+             android:id="@+id/ll_chat"
+         android:gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="32dp"
+                 android:src="@drawable/home"/>
+        
+        <TextView
+            android:id="@+id/tv_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="聊天"
+            android:textColor="#008000"
+            android:textSize="12dp" />
+        
+    </LinearLayout>
+    
+     <LinearLayout  
+          android:id="@+id/ll_contact"
+         android:gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
+       
+             <ImageView android:layout_width="wrap_content"
+                 android:layout_height="32dp"
+                 android:src="@drawable/home"/>
+        
+        <TextView 
+            android:id="@+id/tv_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:text="通讯录"/>
+        
+    </LinearLayout>
+    
+      <LinearLayout 
+           android:id="@+id/ll_friend"
+          android:gravity="center"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_height="52dp"
+        android:layout_weight="1">
+        
+          
+             <ImageView android:layout_width="wrap_content"
+                 android:layout_height="32dp"
+                 android:src="@drawable/home"/>
+        
+        <TextView 
+              android:id="@+id/tv_friend"
+              android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+           android:gravity="center_vertical"
+             android:textColor="#000000"
+            android:text="发现"/>
+        
+    </LinearLayout>
+    
+      
+    </LinearLayout>
+   
+    <ImageView 
+        android:id="@+id/iv_tableline"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@drawable/tabline"/>
+        
+
+</LinearLayout>
