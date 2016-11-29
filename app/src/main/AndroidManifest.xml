@@ -18,6 +18,9 @@
         <activity android:name=".SeachActivity" android:windowSoftInputMode="stateVisible">
 
         </activity>
+        <activity android:name=".AnnocementActivity">
+
+        </activity>
     </application>
 
 </manifest>

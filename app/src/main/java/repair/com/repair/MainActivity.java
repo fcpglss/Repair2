@@ -94,17 +94,14 @@ public class MainActivity extends AppCompatActivity {
         mLinearLayout = (LinearLayout) findViewById(R.id.ll_chat);
         mFriendLayout = (LinearLayout) findViewById(R.id.ll_friend);
         mContactLayout = (LinearLayout) findViewById(R.id.ll_contact);
-
         mTop2Layout = (LinearLayout) findViewById(R.id.ll_top2);
         mSeachText = (EditText) findViewById(R.id.et_seach);
-
     }
 
     /**
      * ��ʼ������
      */
     private void initData() {
-
 
         LayoutParams params = (LayoutParams) miImageView.getLayoutParams();
         params.width = Screen1_3;
@@ -143,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int arg0) {
             }
         });
-
         list_string.add("西区三栋-224");
         list_string.add("西区三栋-224");
         list_string.add("西区三栋-224");  list_string.add("西区三栋-224");

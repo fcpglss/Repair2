@@ -282,6 +282,7 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 			if (getFirstVisiblePosition() == 0 && (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)) {
 				// the first item is showing, header has shown or pull down.
 				updateHeaderHeight(deltaY / OFFSET_RADIO);
+				Log.d("WaterHeader","onTouch deltaY/Offser_radio = "+(deltaY / OFFSET_RADIO));
 				invokeOnScrolling();
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1 && (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
 				// last item, already pulled up or want to pull up.

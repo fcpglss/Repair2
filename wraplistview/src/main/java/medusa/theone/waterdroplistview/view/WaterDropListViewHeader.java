@@ -173,8 +173,16 @@ public class WaterDropListViewHeader extends FrameLayout {
         //通知水滴进行更新
         if(mState == STATE.stretch){
             float pullOffset = (float) Utils.mapValueFromRangeToRange(height, stretchHeight, readyHeight, 0, 1);
-            if(pullOffset < 0 || pullOffset >1){
-                throw new IllegalArgumentException("pullOffset should between 0 and 1!"+mState+" "+height);
+            //if(pullOffset < 0 || pullOffset >1){
+           //     throw new IllegalArgumentException("pullOffset should between 0 and 1!"+mState+" "+height+" pullOffset"+pullOffset);
+           // }
+            if(pullOffset<0)
+            {
+                pullOffset=0;
+            }
+            if(pullOffset>1)
+            {
+                pullOffset=1;
             }
             Log.e("pullOffset", "pullOffset:" + pullOffset);
             mWaterDropView.updateComleteState(pullOffset);
