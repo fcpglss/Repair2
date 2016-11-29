@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> list_string=new ArrayList<>();
 
-    private static int Screen1_3;//��Ļ��ȵ�1/3
+    private static int Screen1_3;//��Ļ��ȵ�1/3//
 
 
     @Override
