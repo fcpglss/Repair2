@@ -33,9 +33,8 @@ public class RepairOpenHelp extends SQLiteOpenHelper {
 	
 	
 	private static final String CATEGORY="create table category("
-			+ "c_id  integer primary key atuoincrement,"
+			+ "c_id  integer primary key autoincrement,"
 			+ "c_name text  ,"
-			+ "c_imageurl   BLOB,"
 			+ "c_priority text )";
 	
 	//c_imageurl ????

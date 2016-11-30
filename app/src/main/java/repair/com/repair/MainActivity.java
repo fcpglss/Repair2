@@ -2,10 +2,13 @@ package repair.com.repair;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -16,16 +19,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import db.RepairDB;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.StatisticsFragment;
+import model.Applyss;
+import model.Category;
 import repari.com.adapter.FragmentAdapter;
+import util.HttpCallbackListener;
+import util.HttpUtil;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static final boolean REQUEST=false;
+
+    private static final String HTTP_URL="http://192.168.31.210:81/get_data2.json";
 
     private ViewPager mviewPager;
     private FragmentAdapter mpagerAdapter;
@@ -40,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView mchat;
     private TextView mfriend;
     private TextView mcontact;
+
+    private RepairDB repairDB; // 操作数据类
+
+    private List<Applyss> mlist_applys;  //申请表数据集合
+
+    private List<Category> mlist_categorys; //申报类型的数据集合
 
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
@@ -56,9 +77,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
 
         init();
-
         initData();
-
+        repairDB=RepairDB.getInstance(this);
         TabListener();
     }
 
@@ -140,40 +160,43 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int arg0) {
             }
         });
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
-        list_string.add("西区三栋-224");
 
+        queryFromServer(null,null);
+
+       /** list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");  list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+        list_string.add("西区三栋-224");
+*/
         this.mainFragment.setList(list_string);
 
         Log.d("MainFragment","Activity_onCreate");
@@ -203,6 +226,48 @@ public class MainActivity extends AppCompatActivity {
         mcontact.setTextColor(Color.BLACK);
 
     }
+    private void queryFromServer(final String code,final String type)
+    {
+        String url;
+      /**  if(!TextUtils.isEmpty(code))
+        {
+            url=HTTP_URL+code+
+        }
+       */
+        HttpUtil.sendHttpRequest(HTTP_URL, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                 final String result =response.toString();
+
+                Log.d("MainActivity"," onFinish()调用: result="+response.toString());
+                new AsyncTask<Void, Void, List<Applyss>>() {
+                    @Override
+                    protected List<Applyss> doInBackground(Void... params) {
+                        Gson gson =new Gson();
+                        mlist_applys =gson.fromJson(result,new TypeToken<List<Applyss>>(){}.getType());
+                        return mlist_applys;
+                    }
+                    @Override
+                    protected void onPostExecute(List<Applyss> result) {
+                        super.onPostExecute(result);
+                        for(Applyss applys :mlist_applys)
+                        {
+                           list_string.add(applys.getA_name());
+                        }
+                    }
+                }.execute();
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+                Log.d("MainActivity"," onEnrror调用: 请求网络失败\n"+e.getMessage().toString());
+            }
+        });
+    }
+
+
 
     private class LinearLayoutListener implements View.OnClickListener {
         @Override

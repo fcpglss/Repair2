@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class RepairDB {
 	
-	public static final String DB_NAME="";
+	public static final String DB_NAME="cz_db";
 	
 	private static final String APPLYSS="applys";
 	
@@ -134,7 +134,6 @@ public class RepairDB {
 		{
 			ContentValues values = new ContentValues();
 			values.put("c_name", category.getC_name());
-			values.put("c_imageurl", category.getC_imageurl());
 			values.put("c_priority", category.getC_priority());
 			
 			sqLiteDatabase.insert(CATEGORY, null, values);	
@@ -156,7 +155,6 @@ public class RepairDB {
 				Category category =new Category();
 				category.setC_id(cursor.getInt(cursor.getColumnIndex("c_id")));
 				category.setC_name(cursor.getString(cursor.getColumnIndex("c_name")));
-				category.setC_imageurl(cursor.getString(cursor.getColumnIndex("c_imageurl")));
 				category.setC_priority(cursor.getString(cursor.getColumnIndex("c_priority")));
 				
 				list.add(category);

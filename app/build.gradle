@@ -31,6 +31,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.0'
     //图片轮播
     compile 'com.bigkoo:convenientbanner:2.0.5'
+    //Gson
+    compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'junit:junit:4.12'
     compile project(':wraplistview')
 }

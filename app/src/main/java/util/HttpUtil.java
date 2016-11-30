@@ -1,5 +1,7 @@
 package util;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,18 +19,21 @@ public class HttpUtil {
 			
 				HttpURLConnection connection=null;
 				try {
-					
-					connection=(HttpURLConnection) new URL(address).openConnection();		
-					connection.setRequestMethod("GET");				
-					connection.setReadTimeout(8000);
-					connection.setConnectTimeout(8000);
-					InputStream in =connection.getInputStream();
+					connection=(HttpURLConnection) new URL(address).openConnection();
+					Log.d("MainActivity"," UttpUtil建立连接: response="+address.toString());
+					connection.setRequestMethod("GET");
+
+
+					Log.d("MainActivity"," UttpUtil调用: Connection.setReadTimeout=");
+					InputStream in =connection.getInputStream();//容易异常
+					Log.d("MainActivity"," UttpUtil调用: Connection.getInputStream="+in.toString());
 					BufferedReader reader =new BufferedReader(new InputStreamReader(in));
 					StringBuilder response =new StringBuilder();
 					String line;
 					while((line=reader.readLine())!=null)
 					{
 						response.append(line);
+						Log.d("MainActivity"," UttpUtil调用: response="+response.toString());
 					}
 					if(listener!=null)
 					{

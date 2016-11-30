@@ -21,16 +21,6 @@ public class Category {
 		this.c_name = c_name;
 	}
 
-	public String getC_imageurl() {
-		return c_imageurl;
-	}
-
-	public void setC_imageurl(String c_imageurl) {
-		this.c_imageurl = c_imageurl;
-	}
-
-
-
 	private String c_name;
 	
 	public String getC_priority() {
@@ -41,9 +31,5 @@ public class Category {
 		this.c_priority = c_priority;
 	}
 
-
-
-	private String c_imageurl;
-	
 	private String c_priority;
 }
