@@ -2,6 +2,7 @@ package repair.com.repair;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         mContactLayout = (LinearLayout) findViewById(R.id.ll_contact);
         mTop2Layout = (LinearLayout) findViewById(R.id.ll_top2);
         mSeachText = (EditText) findViewById(R.id.et_seach);
+
     }
 
     /**

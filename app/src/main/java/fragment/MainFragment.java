@@ -59,6 +59,7 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
     private  static List<Test2> mlist_Test2=new ArrayList<>();
 
     private List<String> list_string;
+
     private WaterDropListView waterDropListView;
 
     private MainActivity mainActivity;

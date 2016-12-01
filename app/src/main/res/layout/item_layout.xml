@@ -2,28 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:paddingTop="4dp"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
     
     <ImageView 
         android:id="@+id/iv_icon"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:src="@drawable/actionbar_icon"/>
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/actionbar_icon"
+        android:layout_marginBottom="6dp"/>
     
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp"
+        android:layout_marginLeft="8dp"
         android:gravity="center"
         android:orientation="vertical">
-        <TextView 
+        <TextView
             android:id="@+id/tv_title"
             android:maxLines="3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:textColor="#383838"
             android:text="TiTle"/>
         <TextView 
             android:id="@+id/tv_content"
@@ -31,6 +35,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="10sp"
+            android:textColor="#838383"
             android:text="Content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="11sp"
+                android:text="2016-12-1"
+                android:textColor="#B3B3B3"
+                />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/dot_black"/>
+        </LinearLayout>
     </LinearLayout>
+
+
 </LinearLayout>
+

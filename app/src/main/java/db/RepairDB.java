@@ -31,19 +31,14 @@ public class RepairDB {
 	private static RepairDB repairDB;
 	
 	private SQLiteDatabase sqLiteDatabase;
-	
-	/**
-	 * 单例模式
-	 */
+
 	private RepairDB(Context context)
 	{
 		RepairOpenHelp repairOpenHelp =new RepairOpenHelp(context, DB_NAME, null, VERSION);
 		sqLiteDatabase=repairOpenHelp.getWritableDatabase();
 	}
 	
-	/**
-	 * 获取RepairDB对象的方法
-	 */
+
 	public synchronized static RepairDB getInstance(Context context)
 	{
 		if(repairDB==null)
@@ -54,10 +49,6 @@ public class RepairDB {
 		return repairDB;
 	}
 
-	/**
-	 * 将Applyss对象存进数据库中
-	 * @param applyss
-	 */
 	
 	public void saveApplyss(Applyss applyss)
 	{
@@ -80,10 +71,7 @@ public class RepairDB {
 		}
 		
 	}
-	
-	/**
-	 * 从数据库中读取所有的 Applyss的信息
-	 */
+
 	public List<Applyss> loadApplysses()
 	{
 		List<Applyss> list = new ArrayList<Applyss>();
@@ -124,10 +112,7 @@ public class RepairDB {
 		}
 		return list;
 	}
-	
-	/**
-	 * 将Category对象存入数据库
-	 */
+
 	public void saveCategory(Category category)
 	{
 		if(category !=null)
@@ -139,10 +124,7 @@ public class RepairDB {
 			sqLiteDatabase.insert(CATEGORY, null, values);	
 		}
 	}
-	
-	/**
-	 * 从数据库读取Category的信息
-	 */
+
 	public List<Category> loadCategories()
 	{
 		List<Category> list =new ArrayList<Category>();

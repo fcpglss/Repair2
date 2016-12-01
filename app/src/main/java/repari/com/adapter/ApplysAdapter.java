@@ -48,22 +48,35 @@ public class ApplysAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewHolder viewHolder=null;
-        if(convertView==null)
-        {
+        ViewHolder viewHolder = null;
+        if (convertView == null) {
             viewHolder = new ViewHolder();
 
-            convertView=mInflater.inflate(R.layout.item_layout,null);
-            viewHolder.ivIcon= (ImageView) convertView.findViewById(R.id.iv_icon);
+            convertView = mInflater.inflate(R.layout.item_layout, null);
+            viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
             viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_content);
             convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        else
-        {
-            viewHolder= (ViewHolder) convertView.getTag();
+
+        switch (mlist_test2.get(position).getA_category()){
+            case 1:
+                viewHolder.ivIcon.setImageResource(R.drawable.water);
+                break;
+            case 2:
+                viewHolder.ivIcon.setImageResource(R.drawable.dian);
+                break;
+            case 3:
+                viewHolder.ivIcon.setImageResource(R.drawable.door);
+                break;
+            case 4:
+                viewHolder.ivIcon.setImageResource(R.drawable.computer);
+                break;
         }
-        viewHolder.ivIcon.setImageResource(R.drawable.actionbar_icon);
+
+        //viewHolder.ivIcon.setImageResource(R.drawable.actionbar_icon);
         viewHolder.tvTitle.setText(mlist_test2.get(position).getA_name());
         viewHolder.tvContent.setText(mlist_test2.get(position).getA_describe());
         return convertView;

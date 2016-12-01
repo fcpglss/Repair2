@@ -210,7 +210,7 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 	 * 重置headerheight的高度
 	 * 逻辑：1、如果状态处于非refreshing，则回滚到height=0状态2；2、如果状态处于refreshing，则回滚到stretchheight高度
 	 */
-	private void resetHeaderHeight() {
+	private synchronized void resetHeaderHeight() {
 		int height = mHeaderView.getVisiableHeight();
 		if (height == 0) {
 		// not visible.
