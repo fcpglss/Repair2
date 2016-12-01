@@ -17,10 +17,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".SeachActivity" android:windowSoftInputMode="stateVisible">
 
         </activity>
+
         <activity android:name=".AnnocementActivity">
+
+        </activity>
+
+        <activity android:name=".DetailsActivity">
 
         </activity>
     </application>

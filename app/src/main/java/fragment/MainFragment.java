@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Test2;
 import repair.com.repair.AnnocementActivity;
+import repair.com.repair.DetailsActivity;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
@@ -129,6 +131,15 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
         //监听下拉刷新事件
         waterDropListView.setWaterDropListViewListener(this);
         waterDropListView.setPullLoadEnable(true);
+        waterDropListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Test2 applys= mlist_Test2.get(position-1);
+                Intent intent  = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra("applys",applys);
+                startActivity(intent);
+            }
+        });
         queryFromServer(null,null);
     }
 

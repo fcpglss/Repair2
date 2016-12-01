@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  */
 
-public class Test2 {
+public  class Test2 implements Serializable {
 
     /**
      * a_id : 3
