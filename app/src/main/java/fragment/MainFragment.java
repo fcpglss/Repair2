@@ -15,17 +15,28 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
+import model.Test2;
 import repair.com.repair.AnnocementActivity;
+import repair.com.repair.MainActivity;
 import repair.com.repair.R;
+import repari.com.adapter.ApplysAdapter;
+import util.HttpCallbackListener;
+import util.HttpUtil;
 
 /**
  * Created by hsp on 2016/11/27.
@@ -33,6 +44,8 @@ import repair.com.repair.R;
 
 
 public class MainFragment extends Fragment implements  WaterDropListView.IWaterDropListViewListener{
+
+    private static final String HTTP_URL="http://192.168.31.201:81/get_data2.json";
 
     private List<ImageButton> mlist;
     private ConvenientBanner convenientBanner;
@@ -43,16 +56,21 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
 
     private ListView mlistView;
 
+    private  static List<Test2> mlist_Test2=new ArrayList<>();
+
     private List<String> list_string;
     private WaterDropListView waterDropListView;
 
+    private MainActivity mainActivity;
 
     private ArrayAdapter<String>  adapter;
+
+    private ApplysAdapter applysAdapter;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
+        mainActivity=(MainActivity)context;
     }
 
     @Override
@@ -75,7 +93,6 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
             mlist_int.add(R.drawable.winter);
             mlist_int.add(R.drawable.home);
 
-
             convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
 
             convenientBanner.startTurning(2000);
@@ -94,13 +111,9 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
         }else
         {
             convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-
             convenientBanner.startTurning(2000);
-
              convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-
               convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-
             convenientBanner.setPages(
                     new CBViewHolderCreator<LocalImageHolderView>() {
                         @Override
@@ -109,21 +122,62 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
                         }
                     }, mlist_int);
         }
-      //  mlistView= (ListView) getActivity().findViewById(R.id.lv_listView);
-      //  mlistView.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_string));
         waterDropListView= (WaterDropListView)getActivity().findViewById(R.id.waterdrop_w);
-        adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_string);
-        waterDropListView.setAdapter(adapter);
+        Log.d("MainFragment","Main_Fragment的OnActivityCreated list_Test2是否被更新，mlist_test2"+mlist_Test2.toString());
+
+        //监听下拉刷新事件
         waterDropListView.setWaterDropListViewListener(this);
         waterDropListView.setPullLoadEnable(true);
-        Log.d("MainFragment", "onActivityCreated  mlist_string=" + list_string.size());
-
+        queryFromServer(null,null);
     }
-    public void setList(List<String> list)
+
+    /**
+     * 请求服务器数据
+     *
+     * @param url ,目前填Null
+     * @param null
+     */
+    public void queryFromServer(final String code,final String type)
     {
-        list_string=list;
-    }
+        String url;
+        HttpUtil.sendHttpRequest(HTTP_URL, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                final String result_json =response.toString();
 
+                Log.d("Main_Fragment"," onFinish()调用: result="+response.toString());
+                new AsyncTask<Void, Void, List<Test2>>() {
+                    @Override
+                    protected List<Test2> doInBackground(Void... params) {
+                        Gson gson = new GsonBuilder().create();
+                        Log.d("MainActivity"," gson对象="+gson.toString());
+                        Type listtype2 = new TypeToken<List<Test2>>() {}.getType();
+                        mlist_Test2 =gson.fromJson(result_json,listtype2);
+                        Log.d("MainActivity"," mlist_applys="+mlist_Test2.toString());
+                        return mlist_Test2;
+                    }
+                    @Override
+                    protected void onPostExecute(List<Test2> result) {
+                        super.onPostExecute(result);
+                        Log.d("MainActivity"," onPostExecute mlist_test.get(0).getA_name="+mlist_Test2.get(0).getA_name());
+                        if(applysAdapter==null)
+                        {
+                            applysAdapter=new ApplysAdapter(mlist_Test2,getActivity());
+                            waterDropListView.setAdapter(applysAdapter);
+                        }else
+                        {
+                            applysAdapter.notifyDataSetChanged();
+                            waterDropListView.setAdapter(applysAdapter);
+                        }
+                    }
+                }.execute();
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("MainActivity"," onEnrror调用: 请求网络失败\n"+e.getMessage().toString());
+            }
+        });
+    }
     public void onRefresh() {
         // 刷新时执行异步任务
         new AsyncTask<Void, Void, Void>() {
@@ -131,15 +185,14 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
             protected Void doInBackground(Void... params) {
                 SystemClock.sleep(1000);
                 // 构造新的信息!
-
-                list_string.add("Test");
+                queryFromServer(null,null);
                 return null;
             }
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
                 // 刷新列表
-                adapter.notifyDataSetChanged();
+                applysAdapter.notifyDataSetChanged();
                 waterDropListView.stopRefresh();
             }
         }.execute();
@@ -185,7 +238,6 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
         }
 
         }
-
     }
 
     @Override

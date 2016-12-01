@@ -1,56 +1,37 @@
 package model;
 
-public class Applyss {
+/**
+ */
+
+public class Test2 {
+
+    /**
+     * a_id : 3
+     * a_no : 2016112301
+     * a_name : Cz
+     * a_tel : 18807772672
+     * a_category : 1
+     * a_place : 2
+     * a_detalis : 218
+     * a_describe : 热水坏了
+     * a_status : 待处理
+     * a_emplopyeeId :
+     * a_image :
+     * a_pingjia :
+     */
 
     private int a_id;
-
-    private String a_pingjia;
-
-
-    public String getA_pingjia() {
-        return a_pingjia;
-    }
-
-    public void setA_pingjia(String a_pingjia) {
-        this.a_pingjia = a_pingjia;
-    }
-
-    private String a_image;
-
-
-    public String getA_image() {
-        return a_image;
-    }
-
-    public void setA_image(String a_image) {
-        this.a_image = a_image;
-    }
-
     private String a_no;
-
-    public String getA_no() {
-        return a_no;
-    }
-
-    public void setA_no(String a_no) {
-        this.a_no = a_no;
-    }
-
     private String a_name;
-
     private String a_tel;
-
     private int a_category;
-
     private int a_place;
-
     private String a_detalis;
-
     private String a_describe;
-
     private String a_status;
-
-    private int a_emplopyeeId;
+    private String a_emplopyeeId;
+    private String a_image;
+    private String a_pingjia;
 
     public int getA_id() {
         return a_id;
@@ -58,6 +39,14 @@ public class Applyss {
 
     public void setA_id(int a_id) {
         this.a_id = a_id;
+    }
+
+    public String getA_no() {
+        return a_no;
+    }
+
+    public void setA_no(String a_no) {
+        this.a_no = a_no;
     }
 
     public String getA_name() {
@@ -116,13 +105,27 @@ public class Applyss {
         this.a_status = a_status;
     }
 
-    public int getA_emplopyeeId() {
+    public String getA_emplopyeeId() {
         return a_emplopyeeId;
     }
 
-    public void setA_emplopyeeId(int a_emplopyeeId) {
+    public void setA_emplopyeeId(String a_emplopyeeId) {
         this.a_emplopyeeId = a_emplopyeeId;
     }
 
+    public String getA_image() {
+        return a_image;
+    }
 
+    public void setA_image(String a_image) {
+        this.a_image = a_image;
+    }
+
+    public String getA_pingjia() {
+        return a_pingjia;
+    }
+
+    public void setA_pingjia(String a_pingjia) {
+        this.a_pingjia = a_pingjia;
+    }
 }

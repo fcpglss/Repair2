@@ -205,10 +205,8 @@ public class RepairDB {
 			values.put("fireData", employee.getFireData());
 			values.put("e_tel", employee.getE_tel());
 			values.put("e_can", employee.getE_can());
-			
 			sqLiteDatabase.insert(EMPLOY, null, values);
 		}
-		
 	}
 	public List<Employee> loadEmployess()
 	{
@@ -219,12 +217,10 @@ public class RepairDB {
 		{
 			do {
 				Employee employee  =new Employee();
-				
 				employee.setE_id(cursor.getInt(cursor.getColumnIndex("e_id")));
 				employee.setEmployeeName(cursor.getString(cursor.getColumnIndex("employeeName")));
 				employee.setE_tel(cursor.getString(cursor.getColumnIndex("e_tel")));
 				employee.setE_can(cursor.getInt(cursor.getColumnIndex("e_can")));
-				
 				list.add(employee);
 				
 			} while (cursor.moveToNext());
