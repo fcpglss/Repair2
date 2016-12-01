@@ -134,8 +134,7 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
     /**
      * 请求服务器数据
      *
-     * @param url ,目前填Null
-     * @param null
+     *
      */
     public void queryFromServer(final String code,final String type)
     {
@@ -166,6 +165,7 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
                             waterDropListView.setAdapter(applysAdapter);
                         }else
                         {
+                            applysAdapter.setList_Applys(mlist_Test2);
                             applysAdapter.notifyDataSetChanged();
                             waterDropListView.setAdapter(applysAdapter);
                         }
@@ -192,6 +192,7 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
                 // 刷新列表
+                waterDropListView.setAdapter(applysAdapter);
                 applysAdapter.notifyDataSetChanged();
                 waterDropListView.stopRefresh();
             }

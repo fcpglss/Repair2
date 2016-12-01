@@ -68,6 +68,11 @@ public class ApplysAdapter extends BaseAdapter {
         viewHolder.tvContent.setText(mlist_test2.get(position).getA_describe());
         return convertView;
     }
+    public void setList_Applys(List<Test2> test2)
+    {
+     mlist_test2=test2;
+    }
+
     class ViewHolder{
         TextView tvTitle,tvContent;
         ImageView ivIcon;
