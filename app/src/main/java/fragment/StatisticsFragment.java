@@ -17,8 +17,6 @@ import repair.com.repair.R;
 public class StatisticsFragment extends Fragment {
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

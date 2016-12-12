@@ -50,8 +50,8 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 	private ScrollBack mScrollBack;
 	private boolean isTouchingScreen = false;//手指是否触摸屏幕
 
-//	private int mStretchHeight; // view开始变形的高度
-//	private int mReadyHeight; // view由stretch变成ready的高度
+//	private int mStretchHeight; // view??始变形的高度
+//	private int mReadyHeight; // view由stretch变成ready的高??
 	private final static int SCROLL_DURATION = 400; // scroll back duration
 	private final static int PULL_LOAD_MORE_DELTA = 50; // when pull up >= 50px
 														// at bottom, trigger
@@ -181,23 +181,23 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 	private void updateHeaderHeight(int height){
 		if (mEnablePullRefresh) {
 			if (mHeaderView.getCurrentState() == WaterDropListViewHeader.STATE.normal && height >= mHeaderView.getStretchHeight()) {
-				//由normal变成stretch的逻辑：1、当前状态是normal；2、下拉头达到了stretchheight的高度
+				//由normal变成stretch的???辑??1、当前状态是normal??2、下拉头达到了stretchheight的高??
 				mHeaderView.updateState(WaterDropListViewHeader.STATE.stretch);
 			} else if(mHeaderView.getCurrentState() == WaterDropListViewHeader.STATE.stretch && height >= mHeaderView.getReadyHeight()){
-				//由stretch变成ready的逻辑：1、当前状态是stretch；2、下拉头达到了readyheight的高度
+				//由stretch变成ready的???辑??1、当前状态是stretch??2、下拉头达到了readyheight的高??
 				mHeaderView.updateState(WaterDropListViewHeader.STATE.ready);
 			}else if (mHeaderView.getCurrentState() == WaterDropListViewHeader.STATE.stretch && height < mHeaderView.getStretchHeight()){
-				// 由stretch变成normal的逻辑：1、当前状态是stretch；2、下拉头高度小于stretchheight的高度
+				// 由stretch变成normal的???辑??1、当前状态是stretch??2、下拉头高度小于stretchheight的高??
 				mHeaderView.updateState(WaterDropListViewHeader.STATE.normal);
 			}else if(mHeaderView.getCurrentState() == WaterDropListViewHeader.STATE.end && height < 2){
-				//由end变成normal的逻辑：1、当前状态是end；2、下拉头高度小于一个极小值
+				//由end变成normal的???辑??1、当前状态是end??2、下拉头高度小于??个极小???
 				mHeaderView.updateState(WaterDropListViewHeader.STATE.normal);
 			}
 			/*else{
 				throw new IllegalStateException("WaterDropListView's state is illegal!");
 			}*/
 		}
-		mHeaderView.setVisiableHeight(height);//动态设置HeaderView的高度
+		mHeaderView.setVisiableHeight(height);//动???设置HeaderView的高??
 	}
 
 	private void updateHeaderHeight(float delta) {
@@ -207,8 +207,8 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 
 	/**
 	 * reset header view's height.
-	 * 重置headerheight的高度
-	 * 逻辑：1、如果状态处于非refreshing，则回滚到height=0状态2；2、如果状态处于refreshing，则回滚到stretchheight高度
+	 * 重置headerheight的高??
+	 * 逻辑??1、如果状态处于非refreshing，则回滚到height=0状???2??2、如果状态处于refreshing，则回滚到stretchheight高度
 	 */
 	private synchronized void resetHeaderHeight() {
 		int height = mHeaderView.getVisiableHeight();
@@ -292,7 +292,7 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 		default:
 			mLastY = -1; // reset
 			isTouchingScreen = false;
-			//TODO 存在bug：当两个if的条件都满足的时候，只能滚动一个，所以在reSetHeader的时候就不起作用了，一般就只会reSetFooter
+			//TODO 存在bug：当两个if的条件都满足的时候，只能滚动??个，??以在reSetHeader的时候就不起作用了，??般就只会reSetFooter
 			if (getFirstVisiblePosition() == 0) {
 				resetHeaderHeight();
 			}
@@ -314,8 +314,8 @@ public class WaterDropListView extends ListView implements OnScrollListener,Wate
 			if (mScrollBack == ScrollBack.header) {
 				updateHeaderHeight(mScroller.getCurrY());
 				if(mScroller.getCurrY() < 2 && mHeaderView.getCurrentState() == WaterDropListViewHeader.STATE.end){
-					//停止滚动了
-					//逻辑：如果header范围进入了一个极小值内，且当前的状态是end，就把状态置成normal
+					//停止滚动??
+					//逻辑：如果header范围进入了一个极小???内，且当前的状态是end，就把状态置成normal
 					mHeaderView.updateState(WaterDropListViewHeader.STATE.normal);
 				}
 			} else {

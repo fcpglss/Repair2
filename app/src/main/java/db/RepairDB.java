@@ -120,8 +120,7 @@ public class RepairDB {
 			ContentValues values = new ContentValues();
 			values.put("c_name", category.getC_name());
 			values.put("c_priority", category.getC_priority());
-			
-			sqLiteDatabase.insert(CATEGORY, null, values);	
+			sqLiteDatabase.insert(CATEGORY, null, values);
 		}
 	}
 

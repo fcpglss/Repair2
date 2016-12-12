@@ -1,5 +1,7 @@
 package repair.com.repair;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -43,48 +45,59 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mLinearLayout;
     private LinearLayout mContactLayout;
     private LinearLayout mFriendLayout;
-    private LinearLayout mTop2Layout;
     private EditText mSeachText; //
     private TextView mchat;
     private TextView mfriend;
     private TextView mcontact;
 
-    private RepairDB repairDB; // 操作数据类
 
-    private List<Applyss> mlist_applys=null;  //申请表数据集合
 
+    private List<Applyss> mlist_applys=null;
     private List<Test2>   mlist_Test2 =new ArrayList<>();
 
-    private List<Category> mlist_categorys; //申报类型的数据集合
 
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
     private StatisticsFragment statisticsFragment;
-
+    private LinearLayout mTop2Layout;
     private List<String> list_string=new ArrayList<>();
 
-    private static int Screen1_3;//��Ļ��ȵ�1/3//
+    private static int Screen1_3;
 
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this,RuquestServer.class));
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         init();
+        Connection();
         initData();
-
-        repairDB=RepairDB.getInstance(this);
+       // queryFromServer(); Fragment��Ĺ㲥û���յ�
         TabListener();
 
     }
+    public void queryFromServer()
+    {
+        SessionManager.getmInstance().writeToServer("query_tb_apply");
+    }
+
+    public void Connection()
+    {
+        Intent intent = new Intent(this,RuquestServer.class);
+        startService(intent);
+    }
 
     /**
-     * ��ʼ��ʵ��
+     * ????????
      */
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
 
-        //��ȡ��Ļ�Ŀ��
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
@@ -116,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * ��ʼ������
+     * ?????????
      */
     private void initData() {
 
@@ -143,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            //�ı�ָʾ��
+            //???????
             @Override
             public void onPageScrolled(int position, float offset, int arg2) {
                 // TODO Auto-generated method stub
@@ -168,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         mSeachText.setOnClickListener(linearLayoutListener);
     }
     /**
-     * ��ʼ��Tab��TextView��ɫ
+     * ?????Tab??TextView???
      */
     protected void resetView() {
         // TODO Auto-generated method stub
@@ -197,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
 }
 

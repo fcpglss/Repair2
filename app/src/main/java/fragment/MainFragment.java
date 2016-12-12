@@ -1,12 +1,17 @@
 package fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
@@ -28,27 +32,32 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
+import repair.com.repair.ConnectionManager;
+import repair.com.repair.MinaTestActivity;
+import repair.com.repair.SessionManager;
 import model.Test2;
 import repair.com.repair.AnnocementActivity;
 import repair.com.repair.DetailsActivity;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
-import util.HttpCallbackListener;
-import util.HttpUtil;
+import util.JsonToObject;
 
 /**
  * Created by hsp on 2016/11/27.
  */
 
 
-public class MainFragment extends Fragment implements  WaterDropListView.IWaterDropListViewListener{
+public class MainFragment extends Fragment implements WaterDropListView.IWaterDropListViewListener {
 
-    private static final String HTTP_URL="http://192.168.31.201:81/get_data2.json";
+    private static final String HTTP_URL = "http://192.168.31.201:81/get_data2.json";
 
+    private static boolean isFirst=true;
+    private static String JSON = "";
     private List<ImageButton> mlist;
     private ConvenientBanner convenientBanner;
 
@@ -56,33 +65,49 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
 
     private View view;
 
-    private ListView mlistView;
-
-    private  static List<Test2> mlist_Test2=new ArrayList<>();
-
-    private List<String> list_string;
+    private static List<Test2> mlist_Test2 = new ArrayList<>();
 
     private WaterDropListView waterDropListView;
 
     private MainActivity mainActivity;
 
-    private ArrayAdapter<String>  adapter;
+    private ArrayAdapter<String> adapter;
 
-    private ApplysAdapter applysAdapter;
+    private ApplysAdapter applysAdapter = null;
 
+    /**
+     * ½«MessageBroadcast½ÓÊÕµ½Json×ªÈëHandler
+     * ÔÚÖ÷½çÃæ¸üĞÂUI,Ö´ĞĞÏÔÊ¾£¬¸üĞÂ²Ù×÷
+     */
+    private Handler mhandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    ShowListView();
+                    break;
+            }
+        }
+    };
+    private MessageBroadcast receiver =
+            new MessageBroadcast();
+
+    /**
+     * ×î¿ªÊ¼Ö±½Ó×¢²á¹ã²¥
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mainActivity=(MainActivity)context;
+        registerBroadcast();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-
-        Log.d("MainFragment", "Main_onCreateVIew  mlist_int=" + mlist_int.size());
-
+        Log.d("MainFragment", "MainFragment_onCreateVIew  mlist_int=" + mlist_int.size());
         return inflater.inflate(R.layout.fragment1, null);
     }
 
@@ -90,20 +115,25 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(mlist_int.size()<3)
+        if(isFirst)
         {
+            queryFromServer();
+        }
+        else
+        {
+            //´ÓSD¿¨ÀïÈ¡ÄÚÈİ
+        }
+
+        Log.d("MainFragment", "MainFragment_onActivityCreated ");
+
+        if (mlist_int.size() < 3) {
             mlist_int.add(R.drawable.fo);
             mlist_int.add(R.drawable.winter);
             mlist_int.add(R.drawable.home);
-
             convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-
             convenientBanner.startTurning(2000);
-
-             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-
-              convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-
+            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
             convenientBanner.setPages(
                     new CBViewHolderCreator<LocalImageHolderView>() {
                         @Override
@@ -111,12 +141,11 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
                             return new LocalImageHolderView();
                         }
                     }, mlist_int);
-        }else
-        {
+        } else {
             convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
             convenientBanner.startTurning(2000);
-             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-              convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
             convenientBanner.setPages(
                     new CBViewHolderCreator<LocalImageHolderView>() {
                         @Override
@@ -125,90 +154,49 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
                         }
                     }, mlist_int);
         }
-        waterDropListView= (WaterDropListView)getActivity().findViewById(R.id.waterdrop_w);
-        Log.d("MainFragment","Main_Fragmentçš„OnActivityCreated list_Test2æ˜¯å¦è¢«æ›´æ–°ï¼Œmlist_test2"+mlist_Test2.toString());
-
-        //ç›‘å¬ä¸‹æ‹‰åˆ·æ–°äº‹ä»¶
+        waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);
+        Log.d("MainFragment", "Main_FragmentµÄOnActivityCreated list_Test2ÊÇ·ñ±»¸üĞÂ£¬mlist_test2" + mlist_Test2.toString());
+        //¼àÌıÏÂÀ­Ë¢ĞÂÊÂ¼ş
         waterDropListView.setWaterDropListViewListener(this);
         waterDropListView.setPullLoadEnable(true);
         waterDropListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Test2 applys= mlist_Test2.get(position-1);
-                Intent intent  = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("applys",applys);
-                startActivity(intent);
+                if (mlist_Test2 != null) {
+                    Test2 applys = mlist_Test2.get(position - 1);
+                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                    intent.putExtra("applys", applys);
+                    startActivity(intent);
+                }
+
             }
         });
-        queryFromServer(null,null);
     }
 
     /**
-     * è¯·æ±‚æœåŠ¡å™¨æ•°æ®
-     *
-     *
+     * ÇëÇó·şÎñÆ÷Êı¾İ
      */
-    public void queryFromServer(final String code,final String type)
-    {
-        String url;
-        HttpUtil.sendHttpRequest(HTTP_URL, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String response) {
-                final String result_json =response.toString();
+    public void queryFromServer() {
+        if (SessionManager.getmInstance().writeToServer("query_tb_apply"))
+        {
+            Toast.makeText(MyApplication.getContext(),"ÕâÊÇ×îĞÂµÄÊı¾İ",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            //¼ÓÔØSD¿¨ÀïµÄÄÚÈİ£º
 
-                Log.d("Main_Fragment"," onFinish()è°ƒç”¨: result="+response.toString());
-                new AsyncTask<Void, Void, List<Test2>>() {
-                    @Override
-                    protected List<Test2> doInBackground(Void... params) {
-                        Gson gson = new GsonBuilder().create();
-                        Log.d("MainActivity"," gsonå¯¹è±¡="+gson.toString());
-                        Type listtype2 = new TypeToken<List<Test2>>() {}.getType();
-                        mlist_Test2 =gson.fromJson(result_json,listtype2);
-                        Log.d("MainActivity"," mlist_applys="+mlist_Test2.toString());
-                        return mlist_Test2;
-                    }
-                    @Override
-                    protected void onPostExecute(List<Test2> result) {
-                        super.onPostExecute(result);
-                        Log.d("MainActivity"," onPostExecute mlist_test.get(0).getA_name="+mlist_Test2.get(0).getA_name());
-                        if(applysAdapter==null)
-                        {
-                            applysAdapter=new ApplysAdapter(mlist_Test2,getActivity());
-                            waterDropListView.setAdapter(applysAdapter);
-                        }else
-                        {
-                            applysAdapter.setList_Applys(mlist_Test2);
-                            applysAdapter.notifyDataSetChanged();
-                            waterDropListView.setAdapter(applysAdapter);
-                        }
-                    }
-                }.execute();
-            }
-            @Override
-            public void onError(Exception e) {
-                Log.d("MainActivity"," onEnrrorè°ƒç”¨: è¯·æ±‚ç½‘ç»œå¤±è´¥\n"+e.getMessage().toString());
-            }
-        });
+
+
+            Toast.makeText(MyApplication.getContext(),"ÕâÊÇSD¿¨µÄÊı¾İ,Çë¼ì²éÍøÂç",Toast.LENGTH_SHORT).show();
+
+        }
+        Log.d("MainFragment", "queryFromServerÏò·şÎñÆ÷·¢³öApply±íµÄÇëÇó");
     }
+
+
     public void onRefresh() {
-        // åˆ·æ–°æ—¶æ‰§è¡Œå¼‚æ­¥ä»»åŠ¡
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                SystemClock.sleep(1000);
-                // æ„é€ æ–°çš„ä¿¡æ¯!
-                queryFromServer(null,null);
-                return null;
-            }
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                // åˆ·æ–°åˆ—è¡¨
-                waterDropListView.setAdapter(applysAdapter);
-                applysAdapter.notifyDataSetChanged();
-                waterDropListView.stopRefresh();
-            }
-        }.execute();
+        SystemClock.sleep(1000);
+        queryFromServer();
     }
 
 
@@ -230,27 +218,67 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
 
         @Override
         public void UpdateUI(Context context, int position, Integer data) {
-        try {
-            final int recource=data;
-            imageButton.setBackgroundResource(data);
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent =new Intent(getActivity(), AnnocementActivity.class);
-                    Bundle bundle =new Bundle();
-                //    bundle.putInt("img_id",recource);
-                //    this.setArguments(bundle);
-                    intent.putExtra("img_id",recource);
-                    startActivity(intent);
-                }
-            });
-        }
-        catch (Exception ee)
-        {
-            ee.printStackTrace();
-        }
+            try {
+                final int recource = data;
+                imageButton.setBackgroundResource(data);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), AnnocementActivity.class);
+                        Bundle bundle = new Bundle();
+                        intent.putExtra("img_id", recource);
+                        startActivity(intent);
+                    }
+                });
+            } catch (Exception ee) {
+                ee.printStackTrace();
+                Log.d("MainFragment", "Òì³££º" + ee.getMessage().toString());
+            }
 
         }
+    }
+
+    /**
+     * Òì²½½âÎöJSON£¬½«Json½âÎöÎªList_apply¶ÔÏó
+     */
+
+    private void ShowListView() {
+        new AsyncTask<Void, Void, List<Test2>>() {
+            @Override
+            protected List<Test2> doInBackground(Void... params) {
+                Gson gson = new GsonBuilder().create();
+                Type listtype2 = new TypeToken<List<Test2>>() {
+                }.getType();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                }).start();
+                mlist_Test2 = gson.fromJson(JSON, listtype2);
+                Log.d("MainActivity", " ½«JSON½âÎöÎªmlist_Test2¶ÔÏó=" + mlist_Test2.toString());
+                return mlist_Test2;
+            }
+
+            @Override
+            protected void onPostExecute(List<Test2> result) {
+                super.onPostExecute(result);
+                Log.d("MainActivity", " onPostExecute mlist_test.get(0).getA_name=" + mlist_Test2.get(0).getA_name());
+                if (applysAdapter == null) {
+                    applysAdapter = new ApplysAdapter(mlist_Test2, getActivity());
+                    waterDropListView.setAdapter(applysAdapter);
+                } else {
+                    applysAdapter.setList_Applys(mlist_Test2);
+                    applysAdapter.notifyDataSetChanged();
+                    waterDropListView.setAdapter(applysAdapter);
+                }
+            }
+        }.execute();
+        /**
+         * ×ö»º´æ
+         */
+
+
     }
 
     @Override
@@ -274,13 +302,42 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
     @Override
     public void onStop() {
         super.onStop();
+        isFirst=false;
         Log.d("MainFragment", "Main_onStop");
     }
 
     @Override
     public void onDestroy() {
+        unregisterBroadcast();
+        isFirst=true;
+        SessionManager.getmInstance().removeSession();
         super.onDestroy();
         Log.d("MainFragment", "Main_onDestroy");
+    }
+
+    private void registerBroadcast() {
+        IntentFilter filter = new IntentFilter("minatest.mina");
+        LocalBroadcastManager.getInstance(getActivity())
+                .registerReceiver(receiver, filter);
+        Log.d("MainFragment", "³É¹¦×¢²á¹ã²¥");
+    }
+
+    private void unregisterBroadcast() {
+        LocalBroadcastManager.getInstance(getActivity())
+                .unregisterReceiver(receiver);
+    }
+
+    private class MessageBroadcast extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            JSON = intent.getStringExtra("message");
+            Log.d("MainFragment", "MainFragmentµÄ¹ã²¥½ÓÊÕµ½ÁËJSON=" + JSON);
+            Message message = mhandler.obtainMessage();
+            message.obj = JSON;
+            message.what = 1;
+            mhandler.sendMessage(message);
+        }
     }
 
 }

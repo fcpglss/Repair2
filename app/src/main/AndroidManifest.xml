@@ -3,6 +3,8 @@
     package="repair.com.repair">
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <application
         android:name="application.MyApplication"
         android:allowBackup="true"
@@ -18,17 +20,19 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SeachActivity" android:windowSoftInputMode="stateVisible">
+
+      <activity android:name="repair.com.repair.SeachActivity" android:windowSoftInputMode="stateVisible">
 
         </activity>
 
-        <activity android:name=".AnnocementActivity">
+        <activity android:name="repair.com.repair.AnnocementActivity">
 
         </activity>
 
-        <activity android:name=".DetailsActivity">
-
+        <activity android:name="repair.com.repair.DetailsActivity">
         </activity>
+        <service android:name=".RuquestServer"></service>
+
     </application>
 
 </manifest>

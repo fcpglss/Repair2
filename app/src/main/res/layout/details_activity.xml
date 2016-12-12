@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#cfcaca"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -34,27 +36,35 @@
             android:src="@drawable/more"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"/>
-
     </RelativeLayout>
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
+                android:paddingLeft="4dp"
+                android:background="@drawable/yuanjiao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+               >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
                 android:padding="8dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="标题"
+                    android:text="报修号"
                     android:textColor="#000000"
-                    android:textSize="20sp"
+                    android:textSize="17sp"
                     android:layout_marginTop="6dp" />
 
                 <TextView
@@ -63,92 +73,291 @@
                     android:layout_height="wrap_content"
                     android:text="详细"
                     android:textColor="#383838"
-                    android:textSize="15sp"/>
+                    android:textSize="15sp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
 
+            </RelativeLayout>
+            <View  android:layout_height="1px"
+                android:layout_width="match_parent"
+                android:background="#ccdae1"
+
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="申报人"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:paddingTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详细"
+                    android:textColor="#383838"
+                    android:textSize="15sp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+            <View  android:layout_height="1px"
+                android:layout_width="match_parent"
+                android:background="#ccdae1" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="联系电话"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:paddingTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详细"
+                    android:textColor="#383838"
+                    android:textSize="15sp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+            <View  android:layout_height="1px"
+                android:layout_width="match_parent"
+                android:background="#ccdae1" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="报修类型"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:paddingTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详细"
+                    android:textColor="#383838"
+                    android:textSize="15sp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+            <View  android:layout_height="1px"
+                android:layout_width="match_parent"
+                android:background="#ccdae1" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="维修地点"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:paddingTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详细"
+                    android:textColor="#383838"
+                    android:textSize="15sp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+            <View  android:layout_height="1px"
+                android:layout_width="match_parent"
+                android:background="#ccdae1" />
+
+                </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:paddingLeft="4dp"
+                android:background="@drawable/yuanjiao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:padding="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="申报日期"
+                        android:textColor="#000000"
+                        android:textSize="17sp"
+                        android:layout_marginTop="6dp" />
+
+                    <TextView
+                        android:paddingTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="详细"
+                        android:textColor="#383838"
+                        android:textSize="15sp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:paddingTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="详细"
+                        android:textColor="#383838"
+                        android:textSize="15sp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="状态"
+                        android:textColor="#000000"
+                        android:textSize="17sp"
+
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+
+                </RelativeLayout>
+
+                <View  android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#ccdae1"
+
+                    />
+
+                <View  android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#ccdae1" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    style=""
+                    android:padding="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="雇员"
+                        android:textColor="#000000"
+                        android:textSize="17sp"
+                        android:layout_marginTop="6dp" />
+
+                    <TextView
+                        android:paddingTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="详细"
+                        android:textColor="#383838"
+                        android:textSize="15sp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+
+                </RelativeLayout>
+
+                <View  android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#ccdae1" />
             </LinearLayout>
+
+
             <LinearLayout
+                android:layout_marginTop="8dp"
+                android:paddingLeft="4dp"
+                android:background="@drawable/yuanjiao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-                <TextView
+                android:orientation="horizontal"
+                >
+
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="标题"
-                    android:textColor="#000000"
-                    android:textSize="20sp"/>
+                    android:background="@drawable/yuanjiao"
+                    android:src="@drawable/winter"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="详细"
-                    android:textColor="#383838"
-                    android:textSize="15sp"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:padding="8dp">
 
-            </LinearLayout><LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="标题"
-                android:textColor="#000000"
-                android:textSize="20sp"/>
+                </RelativeLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="详细"
-                android:textColor="#383838"
-                android:textSize="15sp"/>
-
-        </LinearLayout><LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="标题"
-                android:textColor="#000000"
-                android:textSize="20sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="详细"
-                android:textColor="#383838"
-                android:textSize="15sp"/>
-
-        </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="标题"
-                    android:textColor="#000000"
-                    android:textSize="20sp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="详细"
-                    android:textColor="#383838"
-                    android:textSize="15sp"/>
-
+                <View  android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#ccdae1" />
             </LinearLayout>
 
 
         </LinearLayout>
 
     </ScrollView>
-
 
 </LinearLayout>

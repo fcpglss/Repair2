@@ -27,8 +27,6 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_activity);
         applys= (Test2) getIntent().getSerializableExtra("applys");
-        textveiew= (TextView) findViewById(R.id.tv_details);
-        textveiew.setText(applys.getA_name());
     }
 
     @Override
