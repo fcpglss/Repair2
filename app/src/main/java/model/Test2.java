@@ -22,6 +22,9 @@ public  class Test2 implements Serializable {
      * a_pingjia :
      */
 
+    private static final long  serialVersionUID=8711368828010083044L;
+
+
     private int a_id;
     private String a_no;
     private String a_name;

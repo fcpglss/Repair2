@@ -22,7 +22,7 @@ import repair.com.repair.R;
  * Created by Administrator on 2016-11-30.
  */
 
-public class ApplysAdapter extends BaseAdapter {
+public class ApplysAdapter2 extends BaseAdapter {
 
     private List<Test2> mlist_test2;
 
@@ -39,7 +39,7 @@ public class ApplysAdapter extends BaseAdapter {
     private boolean mCanGetBitmapFromNetWork = true;
 
 
-    public ApplysAdapter(List<Test2> mlist_test2, Context context) {
+    public ApplysAdapter2(List<Test2> mlist_test2, Context context) {
         this.mlist_test2 = mlist_test2;
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
@@ -92,23 +92,6 @@ public class ApplysAdapter extends BaseAdapter {
 
         }
 
-//
-//        switch (mlist_test2.get(position).getA_category()){
-//            case 1:
-//                viewHolder.ivIcon.setImageResource(R.drawable.water);
-//                break;
-//            case 2:
-//                viewHolder.ivIcon.setImageResource(R.drawable.dian);
-//                break;
-//            case 3:
-//                viewHolder.ivIcon.setImageResource(R.drawable.door);
-//                break;
-//            case 4:
-//                viewHolder.ivIcon.setImageResource(R.drawable.computer);
-//                break;
-//        }
-
-        //viewHolder.ivIcon.setImageResource(R.drawable.actionbar_icon);
         viewHolder.tvTitle.setText(mlist_test2.get(position).getA_name());
         viewHolder.tvContent.setText(mlist_test2.get(position).getA_describe());
         return convertView;

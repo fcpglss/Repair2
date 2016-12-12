@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.avos.avoscloud.AVOSCloud;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+//
+//        AVOSCloud.initialize(this, "8bAqt9avHyIv2bhtQYylAdcb-gzGzoHsz", "J1idP6kt1cHYvPdtw9PAqcSK");
+
+        //Applyss applyss = new Applyss();
+        //applyss.put("a");
+
         init();
         initData();
 

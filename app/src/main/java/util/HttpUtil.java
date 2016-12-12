@@ -40,7 +40,7 @@ public class HttpUtil {
 				while((line=reader.readLine())!=null)
 					{
 						response.append(line);
-						Log.d("MainFragment_Http"," UttpUtil调用: response="+response.toString());
+						//Log.d("MainFragment_Http"," UttpUtil调用: response="+response.toString());
 					}
 
 					if(listener!=null)

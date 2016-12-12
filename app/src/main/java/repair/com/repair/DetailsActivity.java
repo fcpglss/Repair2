@@ -18,17 +18,17 @@ import model.Test2;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private Test2 applys;
+   // private Test2 apply=null;
 
-    private TextView textveiew;
+    private TextView textveiew=null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_activity);
-        applys= (Test2) getIntent().getSerializableExtra("applys");
+    //    apply= (Test2) getIntent().getSerializableExtra("applys");
         textveiew= (TextView) findViewById(R.id.tv_details);
-        textveiew.setText(applys.getA_name());
+      //  textveiew.setText(apply.getA_name()+"");
     }
 
     @Override

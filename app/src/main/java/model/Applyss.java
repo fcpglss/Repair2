@@ -1,6 +1,8 @@
 package model;
 
-public class Applyss {
+import com.avos.avoscloud.AVObject;
+
+public class Applyss  extends AVObject{
 
     private int a_id;
 
