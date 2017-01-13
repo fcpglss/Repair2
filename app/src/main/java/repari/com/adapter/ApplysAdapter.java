@@ -3,7 +3,6 @@ package repari.com.adapter;
 import android.content.Context;
 
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,23 +13,27 @@ import android.widget.TextView;
 import java.util.List;
 
 import imagehodler.ImageLoader;
-import model.Applyss;
-import model.Test2;
+import model.Apply;
+import model.Category;
+import model.Place;
+import model.ResultBean;
 import repair.com.repair.R;
+
 
 /**
  * Created by Administrator on 2016-11-30.
  */
 
 public class ApplysAdapter extends BaseAdapter {
-
-    private List<Test2> mlist_test2;
+    private ResultBean res=null;
 
     private LayoutInflater mInflater;
 
     private Drawable mDefaultBitmapDrawable;
 
-    private ImageLoader mImageLoader;
+    public ImageLoader mImageLoader;
+
+    private static String categoryProprety="";
 
     private static final int mImageWidth=150;
 
@@ -39,8 +42,8 @@ public class ApplysAdapter extends BaseAdapter {
     private boolean mCanGetBitmapFromNetWork = true;
 
 
-    public ApplysAdapter(List<Test2> mlist_test2, Context context) {
-        this.mlist_test2 = mlist_test2;
+    public ApplysAdapter(ResultBean res, Context context) {
+        this.res = res;
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
 
@@ -49,12 +52,12 @@ public class ApplysAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mlist_test2.size();
+        return res.getApplys().size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mlist_test2.get(position);
+        return res.getApplys().get(position);
     }
 
     @Override
@@ -72,6 +75,9 @@ public class ApplysAdapter extends BaseAdapter {
             viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
             viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_content);
+            viewHolder.tvTime = (TextView) convertView.findViewById(R.id.tv_time);
+            viewHolder.ivRightDownIcon = (ImageView) convertView.findViewById(R.id.iv_right_down_icon);
+            viewHolder.img_emergent= (ImageView) convertView.findViewById(R.id.img_emergent);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -79,7 +85,17 @@ public class ApplysAdapter extends BaseAdapter {
 
         ImageView imageView =viewHolder.ivIcon;
         final  String tag= (String) imageView.getTag();
-        final  String uri = mlist_test2.get(position).getA_image();
+        String c_url="";
+        String p_name="";
+        String a_details="";
+
+        //获取当前Apply中的categoryID
+        c_url = getCategoryId(position, res);
+        p_name =getPlaceId(position,res);
+        a_details=res.getApplys().get(position).getA_detalis();
+
+        final  String uri = c_url;
+
         if(!uri.equals(tag))
         {
             imageView.setImageDrawable(mDefaultBitmapDrawable);
@@ -87,39 +103,103 @@ public class ApplysAdapter extends BaseAdapter {
 
         if(mCanGetBitmapFromNetWork)
         {
-            imageView.setTag(uri);
-            mImageLoader.bindBitmap(uri,imageView,mImageWidth,mImageHeigth);
+
+            imageView.setTag(c_url);
+            mImageLoader.bindBitmap(c_url,imageView,mImageWidth,mImageHeigth);
 
         }
 
-//
-//        switch (mlist_test2.get(position).getA_category()){
-//            case 1:
-//                viewHolder.ivIcon.setImageResource(R.drawable.water);
-//                break;
-//            case 2:
-//                viewHolder.ivIcon.setImageResource(R.drawable.dian);
-//                break;
-//            case 3:
-//                viewHolder.ivIcon.setImageResource(R.drawable.door);
-//                break;
-//            case 4:
-//                viewHolder.ivIcon.setImageResource(R.drawable.computer);
-//                break;
-//        }
+        viewHolder.tvTitle.setText(p_name+"─"+a_details);
+        viewHolder.tvContent.setText(res.getApplys().get(position).getA_describe());
 
-        //viewHolder.ivIcon.setImageResource(R.drawable.actionbar_icon);
-        viewHolder.tvTitle.setText(mlist_test2.get(position).getA_name());
-        viewHolder.tvContent.setText(mlist_test2.get(position).getA_describe());
+        viewHolder.tvTime.setText(res.getApplys().get(position).getA_no());
+        setIcon(viewHolder);
+        viewHolder.ivRightDownIcon.setImageResource(getRightIcon(position,res));
         return convertView;
     }
-    public void setList_Applys(List<Test2> test2)
+
+    /**
+     *
+     * 获得相应的category的Image_url
+     */
+
+    private String getCategoryId(int position, ResultBean rs) {
+        int appyly_cid=rs.getApplys().get(position).getA_category();
+
+        String c_url="";
+
+        for(Category category:rs.getCategory())
+        {
+            if(appyly_cid==category.getC_id())
+            {
+                categoryProprety=category.getC_priority();
+                c_url=category.getC_imageurl();
+                break;
+            }
+        }
+        return c_url;
+    }
+
+    private String getPlaceId(int position,ResultBean rs)
     {
-     mlist_test2=test2;
+        int appyly_pid=rs.getApplys().get(position).getA_place();
+
+        String p_name="";
+
+        for(Place place:rs.getPlaces())
+        {
+            if(appyly_pid==place.getP_id())
+            {
+                p_name=place.getP_name();
+                break;
+            }
+        }
+        return p_name;
+    }
+
+    private int getRightIcon(int position,ResultBean rs){
+        int image = 0;
+        String a_status = rs.getApplys().get(position).getA_status();
+           switch (a_status){
+               case "处理中":
+                   image = R.drawable.chulizhong;
+                   break;
+               case "待处理":
+                   image = R.drawable.daichuli;
+                   break;
+               case "已完成":
+                   image = R.drawable.finish;
+                   break;
+               case "已失效":
+                   image = R.drawable.yishixiao;
+                   break;
+               default:
+                   image = R.drawable.daichuli;
+           }
+        return image;
+    }
+    private void setIcon(ViewHolder view)
+    {
+        switch (categoryProprety) {
+            case "1":
+                view.img_emergent.setImageResource(R.drawable.emergent3);
+                break;
+            default:
+        }
+    }
+
+
+
+
+
+    public void setList_Applys(List<Apply> apply)
+    {
+        res.setApplys(apply);
     }
 
     class ViewHolder{
-        TextView tvTitle,tvContent;
-        ImageView ivIcon;
+        TextView tvTitle,tvContent,tvTime;
+        ImageView ivIcon,ivRightDownIcon,img_emergent;
+
     }
 }

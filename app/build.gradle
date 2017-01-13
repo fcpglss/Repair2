@@ -35,9 +35,14 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'junit:junit:4.12'
     compile project(':wraplistview')
-    compile files('libs/avoscloud-sdk-v3.15.3.jar')
     compile files('libs/fastjson.jar')
-    compile files('libs/okhttp-2.6.0-leancloud.jar')
-    compile files('libs/okio-1.6.0-leancloud.jar')
     compile files('libs/nineoldandroids.jar')
+    compile files('libs/mina-core-2.0.16.jar')
+    compile files('libs/slf4j-api-1.7.21.jar')
+    compile files('libs/slf4j-nop-1.7.21.jar')
+
+    compile 'com.zhy:okhttputils:2.6.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okio:okio:1.5.0'
+
 }

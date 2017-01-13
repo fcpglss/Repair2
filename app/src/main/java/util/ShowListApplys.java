@@ -1,37 +1,46 @@
 package util;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+
+import android.util.Log;
+
+import android.widget.Toast;
+
+import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+
+
+import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
-import fragment.MainFragment;
-import medusa.theone.waterdroplistview.view.WaterDropListView;
-import model.Test2;
-import repair.com.repair.DetailsActivity;
-import repari.com.adapter.ApplysAdapter;
 
-import static fragment.MainFragment.writeJsonToLocal;
+import medusa.theone.waterdroplistview.view.WaterDropListView;
+import model.*;
+
+import repair.com.repair.R;
+import repari.com.adapter.ApplysAdapter;
 
 /**
  * Created by hsp on 2016/12/12.
  */
 
 public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
-    List<Test2> mlist_apply=null;
+
+     List<String> viewpager_url=new ArrayList<>();
+    ConvenientBanner convenientBanner=null;
+    ResultBean res=null;
     WaterDropListView waterListView=null;
     ApplysAdapter adapter=null;
-    Context context;
+    Context context=null;
 
-    public ShowListApplys(Context mcontext,List<Test2> mlist,WaterDropListView listview, ApplysAdapter adapter)
+    public ShowListApplys(Context mcontext,WaterDropListView listview, ApplysAdapter adapter,ConvenientBanner convenientBanner)
     {
+        this.convenientBanner=convenientBanner;
         context=mcontext;
-        mlist_apply=mlist;
         waterListView =listview;
         this.adapter =adapter;
     }
@@ -40,40 +49,76 @@ public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
     protected ApplysAdapter doInBackground(String... voids) {
 
         String result_json=voids[0];
-        mlist_apply=JsonUtil.JsonToApply(result_json,mlist_apply);
-
-        if(adapter==null)
-        {
-            adapter=new ApplysAdapter(mlist_apply,context);
-
-        }else
-        {
-            adapter.setList_Applys(mlist_apply);
-            adapter.notifyDataSetChanged();
-        }
-
-        MainFragment.writeJsonToLocal(result_json, MyApplication.getContext());
+        res= JsonUtil.jsonToBean(result_json);
+       if(res==null)
+       {
+           return adapter;
+       }
+      //  Log.d("Main","json:"+result_json+"\n"+"公告:"+res.getAnnouncements().get(0).getImage_url());
+        adapter=getBeanFromJson(res,viewpager_url,adapter);
+        writeJsonToLocal(result_json, MyApplication.getContext());
         return adapter;
     }
 
     @Override
     protected void onPostExecute(ApplysAdapter adapter) {
-        super.onPostExecute(adapter);
 
-        waterListView.setAdapter(adapter);
-        waterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Test2 applys= mlist_apply.get(position-1);
-                Intent intent =new Intent(context,DetailsActivity.class);
-                if(applys==null)
-                {
-                    Log.d("MainFragment","applys为空");
+       setShowView(convenientBanner,res,waterListView,viewpager_url,adapter);
+
+    }
+    public   void setShowView(ConvenientBanner convenientBanner,final ResultBean res,WaterDropListView waterDropListView,List<String> viewpager_url,final ApplysAdapter applysAdapters) {
+        if (convenientBanner != null && res != null) {
+            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+            Log.d("Main", "setPage之前");
+
+            convenientBanner.setPages(
+                    new CBViewHolderCreator<LocalImageHolderView>() {
+                        @Override
+                        public LocalImageHolderView createHolder() {
+                            return new LocalImageHolderView(MyApplication.getContext(), applysAdapters,res);
+                        }
+                    }, viewpager_url);
+            applysAdapters.notifyDataSetChanged();
+            waterDropListView.setAdapter(applysAdapters);
+            waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
+        } else {
+            Toast.makeText(MyApplication.getContext(), "请检查网络...", Toast.LENGTH_LONG).show();
+        }
+    }
+    public  ApplysAdapter getBeanFromJson(ResultBean res ,List<String> viewpager_url,ApplysAdapter applysAdapter)
+    {
+        if (res == null) {
+            return null;
+        } else {
+            for (Announcement announce : res.getAnnouncements()) {
+                if (viewpager_url.size() > 3) {
+                    viewpager_url.remove(0);
                 }
-                intent.putExtra("applys",applys);
-                context.startActivity(intent);
+                viewpager_url.add(announce.getImage_url());
             }
-        });
+            if (applysAdapter == null && res != null) {
+                applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
+
+            } else {
+                applysAdapter.setList_Applys(res.getApplys());
+
+            }
+
+        }
+        return applysAdapter;
+    }
+    public  void writeJsonToLocal(final String jsonString, final Context mContext) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String json = jsonString;
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
+                editor.putString("json", json);
+                editor.commit();
+            }
+        }).start();
+
     }
 
 }

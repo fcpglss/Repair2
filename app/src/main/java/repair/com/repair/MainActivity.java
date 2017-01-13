@@ -1,8 +1,10 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,29 +19,36 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.avos.avoscloud.AVOSCloud;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import db.RepairDB;
+import application.MyApplication;
+import camera.CalculateImage;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.StatisticsFragment;
-import model.Applyss;
-import model.Category;
-import model.Test2;
 import repari.com.adapter.FragmentAdapter;
+
+import static repair.com.repair.R.id.imageView;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String JSON_URL = "http://192.168.43.128:8888/myserver1/servlet/action";
+    public static final String UP_APPLY="http://192.168.43.128:8888/myserver1/Upload2";
+    public static final String GET_JSON="http://192.168.43.128:8888/myserver1/GetJson";
+
+    public static final int TAKE_PHOTO_RAW = 1;
+    public static final int REQUEST_IMAGE =2 ;
+    public static List<Uri> list_uri=new ArrayList<>();
 
     public static final boolean REQUEST=false;
 
     private ViewPager mviewPager;
     private FragmentAdapter mpagerAdapter;
     private List<Fragment> mList;
+
+
 
     private ImageView miImageView;
     private LinearLayout mLinearLayout;
@@ -51,37 +60,20 @@ public class MainActivity extends AppCompatActivity {
     private TextView mfriend;
     private TextView mcontact;
 
-    private RepairDB repairDB; // 操作数据类
-
-    private List<Applyss> mlist_applys=null;  //申请表数据集合
-
-    private List<Test2>   mlist_Test2 =new ArrayList<>();
-
-    private List<Category> mlist_categorys; //申报类型的数据集合
-
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
     private StatisticsFragment statisticsFragment;
 
-    private List<String> list_string=new ArrayList<>();
-
-    private static int Screen1_3;//��Ļ��ȵ�1/3//
+    private static int Screen1_3;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-//
-//        AVOSCloud.initialize(this, "8bAqt9avHyIv2bhtQYylAdcb-gzGzoHsz", "J1idP6kt1cHYvPdtw9PAqcSK");
-
-        //Applyss applyss = new Applyss();
-        //applyss.put("a");
-
+        Log.d("Apply_Fragment","onCreate");
         init();
         initData();
-
-        repairDB=RepairDB.getInstance(this);
         TabListener();
 
     }
@@ -201,10 +193,23 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.et_seach:
                     Intent intent = new Intent(MainActivity.this, SeachActivity.class);
                     startActivity(intent);
+
             }
         }
 
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("Apply_Activity"," resultCode="+RESULT_OK+"  requestCode="+requestCode);
+        if(resultCode == RESULT_OK && requestCode== TAKE_PHOTO_RAW){
+            Log.d("Apply_Activity", "outputFileUri:    " + list_uri.get(0).toString());
+        }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
+            list_uri.add(data.getData());
+            Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
+        }
+    }
+
 
 }
 

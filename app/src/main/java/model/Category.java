@@ -1,8 +1,12 @@
 package model;
 
 
-public class Category {
- 
+import java.io.Serializable;
+
+public class Category implements Serializable {
+
+	private static final long serialVersionUID=8711364L;
+
 	private int c_id;
 	
 	public int getC_id() {
@@ -32,4 +36,15 @@ public class Category {
 	}
 
 	private String c_priority;
+	private String c_imageurl;
+
+	public String getC_imageurl() {
+		return c_imageurl;
+	}
+
+	public void setC_imageurl(String c_imageurl) {
+		this.c_imageurl = c_imageurl;
+	}
+	
+	
 }

@@ -2,20 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="medusa.theone.waterdroplistview" >
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/title_activity_second" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+    <!--<application-->
+        <!--android:allowBackup="true"-->
+        <!--android:icon="@mipmap/ic_launcher"-->
+        <!--android:label="@string/app_name"-->
+        <!--android:theme="@style/AppTheme" >-->
+        <!--&lt;!&ndash;<activity&ndash;&gt;-->
+            <!--&lt;!&ndash;android:name=".activity.MainActivity"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:label="@string/title_activity_second" >&ndash;&gt;-->
+            <!--&lt;!&ndash;<intent-filter>&ndash;&gt;-->
+                <!--&lt;!&ndash;<action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+                <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
+            <!--&lt;!&ndash;</intent-filter>&ndash;&gt;-->
+        <!--&lt;!&ndash;</activity>&ndash;&gt;-->
+    <!--</application>-->
 
 </manifest>

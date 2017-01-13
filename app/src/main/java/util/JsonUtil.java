@@ -1,40 +1,53 @@
 package util;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import model.Apply;
+import model.ResultBean;
 
-import model.Test2;
-
-/**
- * Created by hsp on 2016/12/12.
- */
 
 public class JsonUtil {
 
+//	private static final int APPLY=1;
+//	private static final int CATEGORY=2;
+//	private static final int PLACE=3;
+//	private static final int ANNONCEMENT=4;
+//
+//
+//	private static List<Place> list_place=new ArrayList<>();
+//	private static List<Category> list_category=new ArrayList<>();
+//	private static List<Apply> list_apply=new ArrayList<>();
+//	private static List<Announcement> list_anouncement=new ArrayList<>();
+//	private static List<Employee> list_employee=new ArrayList<>();
 
-    public static List<Test2> JsonToApply(String jsonString, List<Test2> test2) {
-        if (!TextUtils.isEmpty(jsonString)) {
-            try {
-                Gson gson = new GsonBuilder().create();
-                Log.d("MainActivity", " gson对象=" + gson.toString());
-                Type listtype2 = new TypeToken<List<Test2>>() {
-                }.getType();
-                test2 = gson.fromJson(jsonString, listtype2);
-                return test2;
+	public static ResultBean jsonToBean(String jsonString)
+	{
+		try 
+		{
+			if(jsonString!=null&&jsonString.length()>0)
+			{
+				Gson gson =new Gson();
+				ResultBean bean =gson.fromJson(jsonString, ResultBean.class);
+				return bean;
+			}
+		} 
+		catch (Exception e) {
+			System.out.println("传入json不能解析出ResultBean:\n"+e.getMessage().toString());
+		}
+		return null;
+	}
+	public static String beanToJson(Apply apply)
+	{
+		String json = "";
+		Gson gson = new Gson();
+		try {
+			json = gson.toJson(apply, Apply.class);
+		} catch (Exception e) {
+			Log.e("Apply_Fragment", "beanToJson()解析有误:" + e.getMessage().toString());
+		}
 
-            } catch (Exception e) {
-                Log.d("Main", "loadJsonFromLocal解析本地json出错" + e.getMessage().toString());
-            }
-
-        }
-        return test2;
-    }
+		return json;
+	}
 }

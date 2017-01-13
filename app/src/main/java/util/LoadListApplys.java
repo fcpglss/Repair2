@@ -1,24 +1,27 @@
 package util;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+
+
+import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
-import fragment.MainFragment;
-import medusa.theone.waterdroplistview.view.WaterDropListView;
-import model.Test2;
-import repair.com.repair.DetailsActivity;
-import repari.com.adapter.ApplysAdapter;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import medusa.theone.waterdroplistview.view.WaterDropListView;
+import model.Announcement;
+
+import model.ResultBean;
+
+import repair.com.repair.R;
+import repari.com.adapter.ApplysAdapter;
 
 /**
  * Created by hsp on 2016/12/12.
@@ -26,64 +29,85 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
  */
 
 public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
-    List<Test2> mlist_apply=null;
-    WaterDropListView waterListView=null;
-    ApplysAdapter adapter=null;
+    List<String> viewpager_url = new ArrayList<>();
+    ResultBean res = null;
+    ConvenientBanner convenientBanner = null;
+    WaterDropListView waterListView = null;
+    ApplysAdapter adapter = null;
     Context context;
 
-    public LoadListApplys(Context mcontext, List<Test2> mlist, WaterDropListView listview, ApplysAdapter adapter)
-    {
-        context=mcontext;
-        mlist_apply=mlist;
-        waterListView =listview;
-        this.adapter =adapter;
+    public LoadListApplys(Context mcontext, WaterDropListView listview, ApplysAdapter adapter, ConvenientBanner convenientBanner) {
+        context = mcontext;
+        this.convenientBanner = convenientBanner;
+        waterListView = listview;
+        this.adapter = adapter;
     }
 
 
     @Override
     protected ApplysAdapter doInBackground(Void... voids) {
-       try
-       {
-           SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
-           String json =preferences.getString("json","");
-           Log.d("Main", "从sharedPreferences读出来的json: "+json);
-           mlist_apply= JsonUtil.JsonToApply(json,mlist_apply);
-           if(adapter==null)
-           {
-               adapter=new ApplysAdapter(mlist_apply,context);
+        try {
+            SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
+            String json = preferences.getString("json", "");
+            Log.d("Main", "从sharedPreferences读出来的json: " + json);
+            res = JsonUtil.jsonToBean(json);
+            adapter = getBeanFromJson(res, viewpager_url, adapter);
 
-           }else
-           {
-               adapter.setList_Applys(mlist_apply);
-               adapter.notifyDataSetChanged();
-           }
-       }catch(Exception e)
-       {
-           Log.d("Main","LoadListApplys从shared里读取json异常"+e.getMessage().toString());
-       }
+        } catch (Exception e) {
+            Log.d("Main", "LoadListApplys从shared里读取json异常" + e.getMessage().toString());
+        }
 
         return adapter;
     }
 
     @Override
     protected void onPostExecute(ApplysAdapter adapter) {
-        super.onPostExecute(adapter);
-
-        waterListView.setAdapter(adapter);
-        waterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Test2 applys= mlist_apply.get(position-1);
-                Intent intent =new Intent(context,DetailsActivity.class);
-                if(applys==null)
-                {
-                    Log.d("MainFragment","applys为空");
-                }
-                intent.putExtra("applys",applys);
-                context.startActivity(intent);
-            }
-        });
+        setShowView(convenientBanner, res, waterListView, viewpager_url, adapter);
     }
 
-}
+    public void setShowView(ConvenientBanner convenientBanner,final ResultBean res, WaterDropListView waterDropListView, List<String> viewpager_url, final ApplysAdapter applysAdapters) {
+        if (convenientBanner != null && res != null) {
+            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+            Log.d("Main", "setPage之前");
 
+            convenientBanner.setPages(
+                    new CBViewHolderCreator<LocalImageHolderView>() {
+                        @Override
+                        public LocalImageHolderView createHolder() {
+                            return new LocalImageHolderView(MyApplication.getContext(), applysAdapters,res);
+                        }
+                    }, viewpager_url);
+            applysAdapters.notifyDataSetChanged();
+            waterDropListView.setAdapter(applysAdapters);
+            waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
+        } else {
+            Toast.makeText(MyApplication.getContext(), "请检查网络...", Toast.LENGTH_LONG).show();
+        }
+
+    }
+    public  ApplysAdapter getBeanFromJson(ResultBean res ,List<String> viewpager_url,ApplysAdapter applysAdapter)
+    {
+        if (res == null) {
+            return null;
+        } else {
+            for (Announcement announce : res.getAnnouncements()) {
+                if (viewpager_url.size() > 3) {
+                    viewpager_url.remove(0);
+                }
+                viewpager_url.add(announce.getImage_url());
+            }
+            if (applysAdapter == null && res != null) {
+                applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
+
+            } else {
+                applysAdapter.setList_Applys(res.getApplys());
+
+            }
+
+        }
+        return applysAdapter;
+    }
+
+
+}

@@ -1,5 +1,10 @@
 package model;
-public class Place {
+
+import java.io.Serializable;
+
+public class Place implements Serializable{
+
+	private static final long serialVersionUID=8748889646L;
 
 	private  int p_id;
 	

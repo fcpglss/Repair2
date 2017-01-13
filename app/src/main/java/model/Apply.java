@@ -1,28 +1,15 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  */
 
-public  class Test2 implements Serializable {
+public  class Apply implements Serializable {
 
-    /**
-     * a_id : 3
-     * a_no : 2016112301
-     * a_name : Cz
-     * a_tel : 18807772672
-     * a_category : 1
-     * a_place : 2
-     * a_detalis : 218
-     * a_describe : 热水坏了
-     * a_status : 待处理
-     * a_emplopyeeId :
-     * a_image :
-     * a_pingjia :
-     */
-
-    private static final long  serialVersionUID=8711368828010083044L;
+    private static final long serialVersionUID=31544L;
 
 
     private int a_id;
@@ -34,11 +21,31 @@ public  class Test2 implements Serializable {
     private String a_detalis;
     private String a_describe;
     private String a_status;
-    private String a_emplopyeeId;
-    private String a_image;
+    private String employees;
     private String a_pingjia;
+    private String a_createat;
+    
+   
 
-    public int getA_id() {
+	public String getA_createat() {
+		return a_createat;
+	}
+
+	public void setA_createat(String a_createat) {
+		this.a_createat = a_createat;
+	}
+
+	private List<String> a_imaes=null;
+
+    public List<String> getA_imaes() {
+		return a_imaes;
+	}
+
+	public void setA_imaes(List<String> a_imaes) {
+		this.a_imaes = a_imaes;
+	}
+
+	public int getA_id() {
         return a_id;
     }
 
@@ -110,23 +117,18 @@ public  class Test2 implements Serializable {
         this.a_status = a_status;
     }
 
-    public String getA_emplopyeeId() {
-        return a_emplopyeeId;
-    }
+  
 
-    public void setA_emplopyeeId(String a_emplopyeeId) {
-        this.a_emplopyeeId = a_emplopyeeId;
-    }
+   
+    public String getEmployees() {
+		return employees;
+	}
 
-    public String getA_image() {
-        return a_image;
-    }
+	public void setEmployees(String employees) {
+		this.employees = employees;
+	}
 
-    public void setA_image(String a_image) {
-        this.a_image = a_image;
-    }
-
-    public String getA_pingjia() {
+	public String getA_pingjia() {
         return a_pingjia;
     }
 

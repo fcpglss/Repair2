@@ -3,90 +3,89 @@ package fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
+import imagehodler.ImageLoader;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
-import model.Test2;
+import model.Announcement;
+import model.Apply;
+import model.ResultBean;
 import repair.com.repair.AnnocementActivity;
 import repair.com.repair.DetailsActivity;
-import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
-import repari.com.adapter.ApplysAdapter2;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
 import util.LoadListApplys;
+import util.LocalImageHolderView;
 import util.ShowListApplys;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+import util.WaterListViewListener;
+import static repair.com.repair.MainActivity.JSON_URL;
 
 /**
  * Created by hsp on 2016/11/27.
  */
 
 
-public class MainFragment extends Fragment implements  WaterDropListView.IWaterDropListViewListener{
+public class MainFragment extends Fragment implements WaterDropListView.IWaterDropListViewListener {
 
-    private static final String HTTP_URL="http://192.168.31.201:81/get_data2.json";
+    private static  boolean isFirst=true;
 
-    private List<ImageButton> mlist;
-    private ConvenientBanner convenientBanner;
+    private  ConvenientBanner convenientBanner=null;
 
     private List<Integer> mlist_int = new ArrayList<>();
 
-    private View view;
+    public  ResultBean res =null;
 
-    private List<String> mUrList = new ArrayList<String>();
+    private  WaterDropListView waterDropListView;
+
+    private  ApplysAdapter applysAdapter;
+
+    private  List<String> viewpager_url = new ArrayList<>();
 
 
-    private ListView mlistView;
+    private Handler mhandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    Toast.makeText(MyApplication.getContext(), "请检查网络...", Toast.LENGTH_LONG).show();
+                    waterDropListView.stopRefresh();
+                    break;
 
-    private  static List<Test2> mlist_Test2=new ArrayList<>();
-
-    private List<String> list_string;
-
-    private WaterDropListView waterDropListView;
-
-    private MainActivity mainActivity;
-
-    private ArrayAdapter<String>  adapter;
-
-    private ApplysAdapter applysAdapter;
+            }
+        }
+    };
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mainActivity=(MainActivity)context;
+
+
     }
 
     @Override
@@ -102,178 +101,168 @@ public class MainFragment extends Fragment implements  WaterDropListView.IWaterD
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        init();
 
-        if(mlist_int.size()<3)
+        /**
+         * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
+         */
+        if(isFirst)
         {
-            mlist_int.add(R.drawable.fo);
-            mlist_int.add(R.drawable.winter);
-            mlist_int.add(R.drawable.home);
-
-            convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-
-            convenientBanner.startTurning(2000);
-
-             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-
-              convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-
-            convenientBanner.setPages(
-                    new CBViewHolderCreator<LocalImageHolderView>() {
-                        @Override
-                        public LocalImageHolderView createHolder() {
-                            return new LocalImageHolderView();
-                        }
-                    }, mlist_int);
-        }else
-        {
-            convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-            convenientBanner.startTurning(2000);
-             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-              convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-            convenientBanner.setPages(
-                    new CBViewHolderCreator<LocalImageHolderView>() {
-                        @Override
-                        public LocalImageHolderView createHolder() {
-                            return new LocalImageHolderView();
-                        }
-                    }, mlist_int);
+            queryFromServer(null, null);
+            Log.d("Main","获取网络");
         }
-        waterDropListView= (WaterDropListView)getActivity().findViewById(R.id.waterdrop_w);
-        waterDropListView.setWaterDropListViewListener(this);
-        waterDropListView.setPullLoadEnable(true);
-
-        queryFromServer(null,null);
+        else
+        {
+            new LoadListApplys(getActivity(),waterDropListView,applysAdapter,convenientBanner).execute();
+            Log.d("Main","从本地获取");
+        }
 
 
     }
 
     /**
      * 请求服务器数据
-     *
-     *
      */
-    public void queryFromServer(final String code,final String type)
-    {
-        String url;
-        HttpUtil.sendHttpRequest(HTTP_URL, new HttpCallbackListener() {
+    public void queryFromServer(final String code, final String type) {
+
+        HttpUtil.sendHttpRequest(JSON_URL, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
-                final String result_json =response.toString();
+                final String result_json = response.toString();
                 //封装了 Json的解析还有图片的缓存,还有更新适配器的方法
-                new ShowListApplys(getActivity(),mlist_Test2,waterDropListView,applysAdapter).execute(result_json);
+                new ShowListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute(result_json);
+
             }
+
             @Override
             public void onError(Exception e) {
-                Log.d("MainActivity"," onEnrror调用: 请求网络失败\n"+e.getMessage().toString());
+                Log.d("MainActivity", " onEnrror调用: 请求网络失败\n" + e.getMessage().toString());
 
-               new LoadListApplys(getActivity(),mlist_Test2,waterDropListView,applysAdapter).execute();
+                new LoadListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute();
             }
         });
     }
+
     public void onRefresh() {
-        // 刷新时执行异步任务
 
         RefreshHttp();
 
     }
-private void RefreshHttp()
-{
-    String url;
-    HttpUtil.sendHttpRequest(HTTP_URL, new HttpCallbackListener() {
-        @Override
-        public void onFinish(final  String response) {
-            new AsyncTask<Void, Void, ApplysAdapter>()
-            {
 
-                @Override
-                protected ApplysAdapter doInBackground(Void... voids) {
-                    final String result_json =response.toString();
-                    mlist_Test2=JsonUtil.JsonToApply(result_json,mlist_Test2);
-                    if(applysAdapter==null)
-                    {
-                        applysAdapter=new ApplysAdapter(mlist_Test2,getActivity());
+    private void RefreshHttp() {
 
-                    }else
-                    {
-                        applysAdapter.setList_Applys(mlist_Test2);
-//                        applysAdapter.notifyDataSetChanged();
+        HttpUtil.sendHttpRequest(JSON_URL, new HttpCallbackListener() {
+            @Override
+            public void onFinish(final String response) {
+                new AsyncTask<Void, Void, ApplysAdapter>() {
+
+                    @Override
+                    protected ApplysAdapter doInBackground(Void... voids) {
+                        String result_json = response;
+                        res = JsonUtil.jsonToBean(result_json);
+//                        Log.d("Main", "json:" + result_json + "\n" + "公告:" + res.getAnnouncements().get(0).getImage_url());
+                        applysAdapter=getBeanFromJson(res,viewpager_url,applysAdapter);
+                       writeJsonToLocal(result_json, MyApplication.getContext());
+                        return applysAdapter;
                     }
-                    return applysAdapter;
-                }
 
-                @Override
-                protected void onPostExecute(ApplysAdapter applysAdapter) {
-                    super.onPostExecute(applysAdapter);
-                    applysAdapter.notifyDataSetChanged();
-                    waterDropListView.setAdapter(applysAdapter);
-                    waterDropListView.stopRefresh();
-                }
-            }.execute();
+                    @Override
+                    protected void onPostExecute(final ApplysAdapter applysAdapter) {
+
+                        setShowView(convenientBanner,res,waterDropListView,viewpager_url,applysAdapter);
+                        waterDropListView.stopRefresh();
+                    }
+                }.execute();
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("MainActivity", " onEnrror调用: 请求网络失败\n" + e.getMessage().toString());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+
+                            mhandler.sendEmptyMessage(1);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }).start();
+                ;
+
+            }
+        });
+    }
+
+
+    public  void writeJsonToLocal(final String jsonString, final Context mContext) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String json = jsonString;
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
+                editor.putString("json", json);
+                editor.commit();
+            }
+        }).start();
+
+    }
+
+    public   void setShowView(ConvenientBanner convenientBanner,final ResultBean res,WaterDropListView waterDropListView,List<String> viewpager_url,final ApplysAdapter applysAdapters) {
+        if (convenientBanner != null && res != null) {
+            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+            Log.d("Main", "setPage之前");
+
+            convenientBanner.setPages(
+                    new CBViewHolderCreator<LocalImageHolderView>() {
+                        @Override
+                        public LocalImageHolderView createHolder() {
+                            return new LocalImageHolderView(MyApplication.getContext(), applysAdapters,res);
+                        }
+                    }, viewpager_url);
+            applysAdapters.notifyDataSetChanged();
+            waterDropListView.setAdapter(applysAdapters);
+            waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
+        } else {
+            Toast.makeText(MyApplication.getContext(), "请检查网络...", Toast.LENGTH_LONG).show();
+        }
+    }
+
+public   ApplysAdapter getBeanFromJson(ResultBean res ,List<String> viewpager_url,ApplysAdapter applysAdapter)
+{
+    if (res == null) {
+        return null;
+    } else {
+        for (Announcement announce : res.getAnnouncements()) {
+            if (viewpager_url.size() > 3) {
+                viewpager_url.remove(0);
+            }
+            viewpager_url.add(announce.getImage_url());
+        }
+        if (applysAdapter == null && res != null) {
+            applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
+
+        } else {
+            applysAdapter.setList_Applys(res.getApplys());
 
         }
-        @Override
-        public void onError(Exception e) {
-            Log.d("MainActivity"," onEnrror调用: 请求网络失败\n"+e.getMessage().toString());
-            waterDropListView.stopRefresh();
-        }
-    });
+
+    }
+    return applysAdapter;
 }
 
 
-     public  static void  writeJsonToLocal(final String jsonString,final Context mContext)
-     {
-         new Thread(new Runnable() {
-             @Override
-             public void run() {
-                 String json = jsonString;
-                 SharedPreferences.Editor editor =mContext.getSharedPreferences("json_data",mContext.MODE_PRIVATE).edit();
-                 editor.putString("json",json);
-                 editor.commit();
-             }
-         }).start();
 
-     }
 
     @Override
     public void onLoadMore() {
 
     }
 
-    public class LocalImageHolderView implements Holder<Integer> {
-        private ImageButton imageButton;
-
-        @Override
-        public View createView(Context context) {
-            imageButton = new ImageButton(context);
-            imageButton.setScaleType(ImageView.ScaleType.FIT_XY);
-            return imageButton;
-        }
-
-
-        @Override
-        public void UpdateUI(Context context, int position, Integer data) {
-        try {
-            final int recource=data;
-            imageButton.setBackgroundResource(data);
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent =new Intent(getActivity(), AnnocementActivity.class);
-                    Bundle bundle =new Bundle();
-                //    bundle.putInt("img_id",recource);
-                //    this.setArguments(bundle);
-                    intent.putExtra("img_id",recource);
-                    startActivity(intent);
-                }
-            });
-        }
-        catch (Exception ee)
-        {
-            ee.printStackTrace();
-        }
-
-        }
-    }
 
     @Override
     public void onResume() {
@@ -295,16 +284,28 @@ private void RefreshHttp()
 
     @Override
     public void onStop() {
+        isFirst=false;
+
         super.onStop();
         Log.d("MainFragment", "Main_onStop");
     }
 
     @Override
     public void onDestroy() {
+        isFirst=true;
         super.onDestroy();
         Log.d("MainFragment", "Main_onDestroy");
     }
 
+    private void init() {
+        convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
+        convenientBanner.startTurning(2000);
+        waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);
+        waterDropListView.setWaterDropListViewListener(MainFragment.this);
+        waterDropListView.setPullLoadEnable(true);
 
     }
+
+
+}
 
