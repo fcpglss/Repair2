@@ -2,15 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    compileOptions.encoding = "GBK"
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "repair.com.repair"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.apply_fragment.runner.AndroidJUnitRunner"
     }
     aaptOptions {
         cruncherEnabled = false
@@ -36,7 +35,18 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile 'junit:junit:4.12'
     compile project(':wraplistview')
-    compile files('src/libs/mina-core-2.0.16.jar')
-    compile files('src/libs/slf4j-api-1.7.21.jar')
-    compile files('src/libs/slf4j-nop-1.7.21.jar')
+    compile files('libs/fastjson.jar')
+    compile files('libs/nineoldandroids.jar')
+    compile files('libs/mina-core-2.0.16.jar')
+    compile files('libs/slf4j-api-1.7.21.jar')
+    compile files('libs/slf4j-nop-1.7.21.jar')
+
+    compile 'com.zhy:okhttputils:2.6.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okio:okio:1.5.0'
+
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+
+    //对话框依赖
+    compile 'com.orhanobut:dialogplus:1.11@aar'
 }

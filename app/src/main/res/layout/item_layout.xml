@@ -14,22 +14,43 @@
         android:layout_height="35dp"
         android:src="@drawable/actionbar_icon"
         android:layout_marginBottom="6dp"/>
-    
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:gravity="center"
         android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:maxLines="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="#383838"
+                android:text="TiTle"/>
+
+            <ImageView
+                android:id="@+id/img_emergent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                />
+
+        </RelativeLayout>
+
         <TextView
-            android:id="@+id/tv_title"
-            android:maxLines="3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#383838"
-            android:text="TiTle"/>
-        <TextView 
             android:id="@+id/tv_content"
             android:maxLines="3"
             android:layout_width="match_parent"
@@ -42,18 +63,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp">
             <TextView
+                android:id="@+id/tv_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="11sp"
                 android:text="2016-12-1"
                 android:textColor="#B3B3B3"
+                android:layout_gravity="center"
                 />
 
             <ImageView
+                android:id="@+id/iv_right_down_icon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/dot_black"/>
+                android:src="@drawable/chulizhong"
+                android:layout_weight="0.06" />
         </LinearLayout>
     </LinearLayout>
 

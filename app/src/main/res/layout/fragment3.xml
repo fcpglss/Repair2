@@ -1,34 +1,315 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"    
-    android:orientation="vertical" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-
-        <Button
-            android:id="@+id/start_server_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="启动服务器"/>
-
-        <Button
-            android:id="@+id/send_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="发送"/>
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/yuanjiao">
 
         <TextView
-
-            android:id="@+id/tv_details"
             android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-          android:layout_centerInParent="true"
-        android:textSize="20dp"
-        android:text="This is Third Fragment"
-        />
-        
-    
-    
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
+            android:text="数据统计"
+            android:textColor="#CC000000"
+            android:textSize="26sp" />
 
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/yuanjiao"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="报修记录"
+                android:textColor="#BF000000"
+                android:textSize="21sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ccdae1"
+
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="本日报修"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="156651456"
+                android:id="@+id/tv_day"
+                android:textSize="16sp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/tv1"
+                android:layout_toEndOf="@+id/tv1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv2"
+                android:text="156651456"
+                android:id="@+id/tv_week"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="本周报修"
+                android:textSize="16sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv3"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="本月报修"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv3"
+                android:text="156651456"
+                android:id="@+id/tv_month"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv4"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="总报修人数"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv4"
+                android:text="156651456"
+                android:id="@+id/tv_sum"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/yuanjiao"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="维修类型"
+                android:textColor="#BF000000"
+                android:textSize="21sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ccdae1"
+
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv5"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="用水相关"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv5"
+                android:text="156651456"
+                android:id="@+id/tv_water"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv6"
+                android:text="156651456"
+                android:id="@+id/tv_dian"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv6"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="用电相关"
+                android:textSize="16sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv7"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="土建维修"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv7"
+                android:text="156651456"
+                android:id="@+id/tv_tujian"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv8"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="设备维修"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv8"
+                android:text="156651456"
+                android:id="@+id/tv_shebei"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/yuanjiao"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="维修地点"
+                android:textColor="#BF000000"
+                android:textSize="21sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ccdae1"
+
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <Spinner
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sp_louhao">
+
+            </Spinner>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/sp_louhao"
+                android:layout_marginLeft="22dp"
+                android:id="@+id/tv_louhao"
+                android:layout_marginTop="13dp"
+                android:text="12"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>

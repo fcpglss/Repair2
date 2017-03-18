@@ -1,44 +1,67 @@
 package repari.com.adapter;
 
 import android.content.Context;
+
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
 
-import model.Applyss;
-import model.Test2;
+import imagehodler.ImageLoader;
+import model.Apply;
+import model.Area;
+import model.Category;
+import model.Place;
+import model.ResultBean;
 import repair.com.repair.R;
+
 
 /**
  * Created by Administrator on 2016-11-30.
  */
 
 public class ApplysAdapter extends BaseAdapter {
-
-    private List<Test2> mlist_test2;
+    private static final String TAG = "ApplysAdapter";
+    private ResultBean res=null;
 
     private LayoutInflater mInflater;
 
-    public ApplysAdapter(List<Test2> mlist_test2, Context context) {
-        this.mlist_test2 = mlist_test2;
+    private Drawable mDefaultBitmapDrawable;
+
+    public ImageLoader mImageLoader;
+
+    private static String categoryProprety="";
+
+    private static final int mImageWidth=150;
+
+    private static final int mImageHeigth=150;
+
+    private boolean mCanGetBitmapFromNetWork = true;
+
+    private String area_name="";
+
+    public ApplysAdapter(ResultBean res, Context context) {
+        this.res = res;
         mInflater = LayoutInflater.from(context);
+        mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
+
+        mImageLoader = ImageLoader.build(context);
     }
 
     @Override
     public int getCount() {
-        return mlist_test2.size();
+        return res.getApplys().size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mlist_test2.get(position);
+        return res.getApplys().get(position);
     }
 
     @Override
@@ -56,38 +79,150 @@ public class ApplysAdapter extends BaseAdapter {
             viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
             viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_content);
+            viewHolder.tvTime = (TextView) convertView.findViewById(R.id.tv_time);
+            viewHolder.ivRightDownIcon = (ImageView) convertView.findViewById(R.id.iv_right_down_icon);
+            viewHolder.img_emergent= (ImageView) convertView.findViewById(R.id.img_emergent);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        switch (mlist_test2.get(position).getA_category()){
-            case 1:
-                viewHolder.ivIcon.setImageResource(R.drawable.water);
-                break;
-            case 2:
-                viewHolder.ivIcon.setImageResource(R.drawable.dian);
-                break;
-            case 3:
-                viewHolder.ivIcon.setImageResource(R.drawable.door);
-                break;
-            case 4:
-                viewHolder.ivIcon.setImageResource(R.drawable.computer);
-                break;
+        ImageView imageView =viewHolder.ivIcon;
+        final  String tag= (String) imageView.getTag();
+        String c_url="";
+        String p_name="";
+        String a_details="";
+
+        //获取当前Apply中的categoryID
+        c_url = getCategoryId(position, res);
+        Log.d(TAG, "getView:c_url "+c_url);
+        p_name =getPlaceId(position,res);
+        Apply apply=res.getApplys().get(position);
+        a_details=apply.getArea()+" "+apply.getDetailArea()+apply.getFlies()+apply.getRoom();
+
+        final  String uri = c_url;
+
+        if(!uri.equals(tag))
+        {
+            imageView.setImageDrawable(mDefaultBitmapDrawable);
         }
 
-        //viewHolder.ivIcon.setImageResource(R.drawable.actionbar_icon);
-        viewHolder.tvTitle.setText(mlist_test2.get(position).getA_name());
-        viewHolder.tvContent.setText(mlist_test2.get(position).getA_describe());
+        if(mCanGetBitmapFromNetWork)
+        {
+
+            imageView.setTag(c_url);
+            mImageLoader.bindBitmap(c_url,imageView,mImageWidth,mImageHeigth);
+
+        }
+
+        viewHolder.tvTitle.setText(a_details);
+        viewHolder.tvContent.setText(apply.getRepairDetails());
+
+        String temp = res.getApplys().get(position).getRepairTime();
+        viewHolder.tvTime.setText(temp.split(":")[0]+":"+temp.split(":")[1]);
+        setIcon(viewHolder);
+        viewHolder.ivRightDownIcon.setImageResource(getRightIcon(position,res));
         return convertView;
     }
-    public void setList_Applys(List<Test2> test2)
+
+    /**
+     *
+     * 获得相应的category的Image_url
+     */
+
+    private String getCategoryId(int position, ResultBean rs) {
+        String appyly_cid=rs.getApplys().get(position).getClasss();
+        Log.d(TAG, "getCategoryId: apply_c_id +"+appyly_cid);
+
+        String c_url="";
+
+        for(Category category:rs.getCategory())
+        {
+            if(appyly_cid.equals(category.getC_name()))
+            {
+                categoryProprety=category.getC_priority();
+                c_url=category.getC_imageurl();
+                break;
+            }
+        }
+        return c_url;
+    }
+
+    private String getPlaceId(int position,ResultBean rs)
     {
-     mlist_test2=test2;
+        String appyly_pid=rs.getApplys().get(position).getDetailArea();//applyID 要改为String
+
+        String p_name="";
+
+        for(Place place:rs.getPlaces())
+        {
+            if(appyly_pid==place.getP_name())
+            {
+                Log.d(TAG, "getPlaceId: "+appyly_pid);
+
+                for(Area a :rs.getAreas())
+                {
+
+                    if(a.getId()==place.getAreaID())
+                    {
+                        area_name=a.getArea();
+                    }
+                }
+                p_name=place.getP_name();
+                break;
+            }
+        }
+        return p_name;
+    }
+
+
+
+
+
+
+    private int getRightIcon(int position,ResultBean rs){
+        int image = 0;
+        int a_status = rs.getApplys().get(position).getState();
+           switch (a_status){
+               case 1:
+                   image = R.drawable.chulizhong;
+                   break;
+               case 2:
+                   image = R.drawable.daichuli;
+                   break;
+               case 3:
+                   image = R.drawable.finish;
+                   break;
+               case 4:
+                   image = R.drawable.yishixiao;
+                   break;
+               default:
+                   image = R.drawable.daichuli;
+           }
+        return image;
+    }
+    private void setIcon(ViewHolder view)
+    {
+        switch (categoryProprety) {
+            case "1":
+                view.img_emergent.setImageResource(R.drawable.emergent3);
+                break;
+            default:
+        }
+    }
+
+
+
+
+
+    public void setList_Applys(List<Apply> apply)
+    {
+        res.setApplys(apply);
     }
 
     class ViewHolder{
-        TextView tvTitle,tvContent;
-        ImageView ivIcon;
+        TextView tvTitle,tvContent,tvTime;
+        ImageView ivIcon,ivRightDownIcon,img_emergent;
+
     }
 }

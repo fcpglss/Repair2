@@ -1,39 +1,48 @@
 package model;
 
-public class Employee {
+import java.io.Serializable;
+import java.util.Date;
 
-	private int e_id;
-	
-	private String employeeName;
-	
-	private String  fireData;
-	
+public class Employee implements Serializable {
+
+	private static final long serialVersionUID=8715451231544L;
+
+	private String account;
+
+	private String password;
+
+	private String  name;
+
 	private String e_tel;
-	
-	private int e_can;
 
-	public int getE_id() {
-		return e_id;
+	private String e_email;
+
+	private String sex;
+
+	private String job;
+
+	public String getAccount() {
+		return account;
 	}
 
-	public void setE_id(int e_id) {
-		this.e_id = e_id;
+	public void setAccount(String account) {
+		this.account = account;
 	}
 
-	public String getEmployeeName() {
-		return employeeName;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setEmployeeName(String employeeName) {
-		this.employeeName = employeeName;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getFireData() {
-		return fireData;
+	public String getName() {
+		return name;
 	}
 
-	public void setFireData(String fireData) {
-		this.fireData = fireData;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getE_tel() {
@@ -44,14 +53,31 @@ public class Employee {
 		this.e_tel = e_tel;
 	}
 
-	public int getE_can() {
-		return e_can;
+	public String getE_email() {
+		return e_email;
 	}
 
-	public void setE_can(int e_can) {
-		this.e_can = e_can;
+	public void setE_email(String e_email) {
+		this.e_email = e_email;
 	}
 
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getJob() {
+		return job;
+	}
+
+	public void setJob(String job) {
+		this.job = job;
+	}
+
+	
 
 	
 }

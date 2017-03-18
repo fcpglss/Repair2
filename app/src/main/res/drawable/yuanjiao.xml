@@ -9,16 +9,16 @@
          android:startColor="#CCCCCC" /> -->
  
     <padding
-        android:bottom="5dp"
-       android:left="5dp"
-        android:right="5dp"
-        android:top="5dp" />
+        android:bottom="2dp"
+       android:left="2dp"
+        android:right="2dp"
+        android:top="2dp" />
     <!-- 设置圆角矩形 -->
-    <corners android:radius="20dp" />
+    <corners android:radius="5dp" />
 
      <stroke
         android:width="4px"
-        android:color="#b1a9a9" />
+        android:color="#d2d2d2" />
 
     <solid android:color="#ffffff" />
 

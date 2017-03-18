@@ -1,23 +1,26 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016-12-8.
  */
 
-public class Announcement {
+public class Announcement implements Serializable {
 
     /**
      * image_url : E:\Eclipse\JDBCTest\images\ki1.jpg
      * id : 1
      * admin_name : 1
-     * title : Ñ§¹¤´¦
+     * title : Ñ§ï¿½ï¿½ï¿½ï¿½
      * create_at : 2016-12-06
-     * content : ½ñÈÕÍ£Ë®
+     * content : ï¿½ï¿½ï¿½ï¿½Í£Ë®
      */
+    private static final long serialVersionUID=8711368828013044L;
 
     private String image_url;
-    private String id;
-    private String admin_name;
+    private int id;
+    private int admin_name;
     private String title;
     private String create_at;
     private String content;
@@ -30,19 +33,19 @@ public class Announcement {
         this.image_url = image_url;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getAdmin_name() {
+    public int getAdmin_name() {
         return admin_name;
     }
 
-    public void setAdmin_name(String admin_name) {
+    public void setAdmin_name(int admin_name) {
         this.admin_name = admin_name;
     }
 

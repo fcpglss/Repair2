@@ -13,15 +13,24 @@
         android:id="@+id/loop">
 
     </com.bigkoo.convenientbanner.ConvenientBanner>
-<!--
-    <ListView
+    
+    <LinearLayout
+        android:padding="8dp"
+        android:background="#ffffff"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/lv_listView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"></ListView>
-        -->
+        android:orientation="horizontal"
+        android:layout_height="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="报修页面"
+            android:textColor="#e45534"/>
+
+    </LinearLayout>
+    
+    
+
     <medusa.theone.waterdroplistview.view.WaterDropListView
         android:id="@+id/waterdrop_w"
         android:layout_width="match_parent"

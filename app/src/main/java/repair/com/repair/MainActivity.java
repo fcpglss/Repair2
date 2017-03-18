@@ -1,10 +1,10 @@
 package repair.com.repair;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,18 +22,28 @@ import android.widget.LinearLayout.LayoutParams;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.RepairDB;
+import application.MyApplication;
+import camera.CalculateImage;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
-import fragment.StatisticsFragment;
-import model.Applyss;
-import model.Category;
-import model.Test2;
+import fragment.MyRepairFragment;
+
 import repari.com.adapter.FragmentAdapter;
 
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+
+
+    public static  int count=5;
+    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
+    public static final String UP_APPLY="http://192.168.31.201:8888/myserver2/Upload2";//
+    public static final String GET_JSON="http://192.168.31.201:8888/myserver2/ResponseClient";
+
+    public static final int TAKE_PHOTO_RAW = 1;
+    public static final int REQUEST_IMAGE =2 ;
+    public static List<Uri> list_uri=new ArrayList<>();
 
     public static final boolean REQUEST=false;
 
@@ -41,63 +51,44 @@ public class MainActivity extends AppCompatActivity {
     private FragmentAdapter mpagerAdapter;
     private List<Fragment> mList;
 
+
+
     private ImageView miImageView;
     private LinearLayout mLinearLayout;
     private LinearLayout mContactLayout;
     private LinearLayout mFriendLayout;
+    private LinearLayout mTop2Layout;
     private EditText mSeachText; //
     private TextView mchat;
     private TextView mfriend;
     private TextView mcontact;
 
-
-
-    private List<Applyss> mlist_applys=null;
-    private List<Test2>   mlist_Test2 =new ArrayList<>();
-
-
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
-    private StatisticsFragment statisticsFragment;
-    private LinearLayout mTop2Layout;
-    private List<String> list_string=new ArrayList<>();
+   // private StatisticsFragment statisticsFragment;
+    private MyRepairFragment myRepairFragment;
 
     private static int Screen1_3;
 
-    @Override
-    protected void onDestroy() {
-        stopService(new Intent(this,RuquestServer.class));
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Log.d("Apply_Fragment","onCreate");
         init();
-        Connection();
         initData();
-       // queryFromServer(); Fragment��Ĺ㲥û���յ�
         TabListener();
 
     }
-    public void queryFromServer()
-    {
-        SessionManager.getmInstance().writeToServer("query_tb_apply");
-    }
-
-    public void Connection()
-    {
-        Intent intent = new Intent(this,RuquestServer.class);
-        startService(intent);
-    }
 
     /**
-     * ????????
+     * ��ʼ��ʵ��
      */
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
 
+        //��ȡ��Ļ�Ŀ��
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
@@ -109,11 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         mainFragment  = new MainFragment();
         applyFragment = new ApplyFragment();
-        statisticsFragment = new StatisticsFragment();
+      //  statisticsFragment = new StatisticsFragment();
+        myRepairFragment =new MyRepairFragment();
 
         mList.add(mainFragment);
         mList.add(applyFragment);
-        mList.add(statisticsFragment);
+        mList.add(myRepairFragment);
 
         mpagerAdapter = new FragmentAdapter(mList, getSupportFragmentManager());
 
@@ -129,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * ?????????
+     * ��ʼ������
      */
     private void initData() {
 
@@ -156,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            //???????
+            //�ı�ָʾ��
             @Override
             public void onPageScrolled(int position, float offset, int arg2) {
                 // TODO Auto-generated method stub
@@ -181,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         mSeachText.setOnClickListener(linearLayoutListener);
     }
     /**
-     * ?????Tab??TextView???
+     * ��ʼ��Tab��TextView��ɫ
      */
     protected void resetView() {
         // TODO Auto-generated method stub
@@ -202,13 +194,26 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.ll_contact:
                     mviewPager.setCurrentItem(1);
+
                     break;
                 case R.id.et_seach:
-                    Intent intent = new Intent(MainActivity.this, SeachActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(MainActivity.this, SeachActivity.class);
+                    //startActivity(intent);
+
             }
         }
 
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("Apply_Activity"," resultCode="+RESULT_OK+"  requestCode="+requestCode);
+        if(resultCode == RESULT_OK && requestCode== TAKE_PHOTO_RAW){
+            Log.d("Apply_Activity", "outputFileUri:    " + list_uri.get(0).toString());
+        }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
+            list_uri.add(data.getData());
+            Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
+        }
     }
 
 
