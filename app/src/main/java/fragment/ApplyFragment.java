@@ -12,9 +12,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,12 +25,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.google.gson.Gson;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnItemClickListener;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -40,6 +47,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +55,7 @@ import application.MyApplication;
 import camera.CalculateImage;
 import camera.FIleUtils;
 import model.Apply;
+import model.Area;
 import model.Category;
 import model.Place;
 
@@ -56,11 +65,17 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
+import repari.com.adapter.DialogAdapter;
+import repari.com.adapter.DialogDetailAdapter;
 import util.JsonUtil;
 import util.NetworkUtils;
 
 import static android.R.attr.bitmap;
 import static android.R.attr.fillEnabled;
+import static android.R.attr.foreground;
+import static android.R.attr.x;
+import static android.R.attr.y;
+import static android.content.Context.MODE_PRIVATE;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static camera.CalculateImage.getSmallBitmap;
 import static com.zhy.http.okhttp.OkHttpUtils.post;
@@ -76,25 +91,24 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "ApplyFragment";
 
-    private String no = "";
-    private String place = "";
-    private String category = "";
-    private String describe = "";
-    private String details="";
-    private int categoryId;
-    private int placeId;
-    private String name = "";
-    private String tel = "";
-
 
     private EditText et_name, et_tel, et_describe, et_details;
+
+    //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
+    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
+    //记录区域ID
+    int AreaId;
+    //滚动
+    private ScrollView svBackground;
+    private boolean svState=false;
+
     private TextView mtv_no;
     private Button btn_apply;
     private ImageView image_camera, img_add, img_1, img_2, img_3;
 
     private Button btn_clear;
 
-    private Spinner sp_place, sp_category;
+    //    private Spinner sp_place, sp_category;
     private List<String> list_place = new ArrayList<>();
     private List<String> list_category = new ArrayList<>();
     private List<ImageView> imageViewList = new ArrayList<>();
@@ -107,13 +121,27 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     ArrayAdapter categoryAdapter;
     ArrayAdapter placeAdapter;
 
+    //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
+    private List<String> listArea = new ArrayList<>();
+    private List<String> listDetailArea = new ArrayList<>();
+    private List<String> listApplyType = new ArrayList<>();
+    private List<String> listApplyDetailType = new ArrayList<>();
+
+    //对话框
+    DialogPlus dialogArea;
+    DialogPlus dialogDetailArea;
+    DialogPlus dialogApplyType;
+    DialogPlus dialogApplyDetailType;
+    DialogPlus dialogGetImage;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("MainFragment", "Apply_onCreateView");
 
-        return inflater.inflate(R.layout.apply_frag, null);
+//        return inflater.inflate(R.layout.apply_frag, null);
+        return inflater.inflate(R.layout.apply_fragment, null);
     }
 
     @Override
@@ -125,22 +153,30 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         initData();
 
+
     }
 
     private void initView() {
 
+        //后面添加的几个EditText
+        etEmail = (EditText) getActivity().findViewById(R.id.et_email);
+        etApplyPassword = (EditText) getActivity().findViewById(R.id.et_apply_password);
+        etArea = (EditText) getActivity().findViewById(R.id.et_area);
+        etDetailArea = (EditText) getActivity().findViewById(R.id.et_detail_area);
+        etApplyType = (EditText) getActivity().findViewById(R.id.et_apply_type);
+//        etApplyTypeDetails = (EditText) getActivity().findViewById(R.id.et_apply_type_details);
+        //
+
+
         et_name = (EditText) getActivity().findViewById(R.id.et_name);
 
         et_tel = (EditText) getActivity().findViewById(R.id.et_tel);
-        mtv_no = (TextView) getActivity().findViewById(R.id.tv_apply_no);
-        Date date = new Date();
 
-        mtv_no.setText(sdf.format(date).toString());
         et_describe = (EditText) getActivity().findViewById(R.id.et_apply_describe);
         et_details = (EditText) getActivity().findViewById(R.id.et_apply_details);
 
-        image_camera = (ImageView) getActivity().findViewById(R.id.img_camera);
-        image_camera.setOnClickListener(this);
+//        image_camera = (ImageView) getActivity().findViewById(R.id.img_camera);
+//        image_camera.setOnClickListener(this);
         img_add = (ImageView) getActivity().findViewById(R.id.iv_add);
         img_add.setOnClickListener(this);
 
@@ -158,55 +194,53 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         btn_apply.setOnClickListener(this);
         btn_clear.setOnClickListener(this);
 
-        sp_category = (Spinner) getActivity().findViewById(R.id.sp_apply);
-        sp_place = (Spinner) getActivity().findViewById(R.id.sp_local);
-        sp_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                category = (String) sp_category.getSelectedItem();
-                Log.d("ApplyFragmentSpinner", "onItemSelected: " + category);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.d("ApplyFragmentSpinner", "onNothingSelected: " + category);
-
-            }
-        });
-        sp_place.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                place = (String) sp_place.getSelectedItem();
-                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
-            }
-        });
+        //滚动
+        svBackground = (ScrollView) getActivity().findViewById(R.id.sv_apply);
+//        sp_category = (Spinner) getActivity().findViewById(R.id.sp_apply);
+//        sp_place = (Spinner) getActivity().findViewById(R.id.sp_local);
+//        sp_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                category = (String) sp_category.getSelectedItem();
+//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + category);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//                Log.d("ApplyFragmentSpinner", "onNothingSelected: " + category);
+//
+//            }
+//        });
+//        sp_place.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                place = (String) sp_place.getSelectedItem();
+//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
+//            }
+//        });
 
 
     }
 
     private void bindView() {
-        no = mtv_no.getText().toString();
-        name = et_name.getText().toString();
-        tel = et_tel.getText().toString();
 
-        placeId = getPlaceId(place);
-        categoryId = getCategoryId(category);
 
-        describe = et_describe.getText().toString();
-        details=et_details.getText().toString();
+        apply.setRepair(et_name.getText().toString());
+        apply.setTel(et_tel.getText().toString());
+        apply.setEmail(etEmail.getText().toString());
+        apply.setPassword(etApplyPassword.getText().toString());
+        apply.setArea(etArea.getText().toString());
+        apply.setDetailArea(etDetailArea.getText().toString());
 
-        apply.setA_no(mtv_no.getText().toString());
-        apply.setA_name(et_name.getText().toString());
-        apply.setA_tel(et_tel.getText().toString());
-        apply.setA_place(getPlaceId(place));
-        apply.setA_category(categoryId);
-        apply.setA_detalis(details);
-        apply.setA_describe(describe);
+
+        apply.setRoom(et_details.getText().toString());
+        apply.setClasss(etApplyType.getText().toString());
+        apply.setRepairDetails(et_describe.getText().toString());
 
     }
 
@@ -225,13 +259,211 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
             @Override
             protected void onPostExecute(ResultBean resultBean) {
-                setView(resultBean);
-
+//                setView(resultBean);
+                Log.d(TAG, "onPostExecute: ");
+                setDialogView(resultBean);
             }
         }.execute();
 
 
     }
+
+    private void setDialogView(ResultBean resultBean) {
+        if (resultBean != null) {
+//            DialogAdapter areaAdapter = new DialogAdapter(getActivity(),listArea,R.layout.simple_list_item);
+            DialogAdapter detailAreaAdapter = new DialogAdapter(getActivity(), listDetailArea, R.layout.simple_list_item);
+            DialogAdapter areaAdapter = new DialogAdapter(getActivity(), listArea, R.layout.simple_list_item);
+            DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType,resultBean.getCategory(), R.layout.dialog_detail_type);
+//            DialogAdapter ApplyTypeDetails = new DialogAdapter(getActivity(),listApplyDetailType,R.layout.simple_list_item);
+
+            setDialogArea(areaAdapter);
+            setDialogDetailArea(detailAreaAdapter);
+            setDialogApplyType(applyTypeAdapter);
+            }
+
+
+    }
+
+
+
+
+    private void setDialogArea(final DialogAdapter dialogAdapter) {
+
+        for (Area a :
+                res.getAreas()) {
+            listArea.add(a.getArea());
+        }
+
+
+        dialogArea = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head1)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+
+                        if (position!=-1){
+                            etArea.setText(listArea.get(position));
+                            AreaId = position + 1;
+                            Log.d(TAG, "onItemClick: 区域Id " + AreaId);
+
+                            dialogArea.dismiss();
+                        }
+
+
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+
+        //给EditText设置点击事件
+        etArea.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: ");
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    dialogAdapter.notifyDataSetChanged();
+                    etDetailArea.setText("");
+                    dialogArea.show();
+                    Log.d(TAG, "onTouch: dialogDetailArea.show()");
+                }
+                return false;
+            }
+        });
+
+
+    }
+
+    private void setDialogDetailArea(final DialogAdapter dialogAdapter) {
+
+        dialogDetailArea = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head2)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position!=-1){
+                            etDetailArea.setText(listDetailArea.get(position));
+
+                            Log.d(TAG, "onItemClick: 区域Id " + AreaId);
+                            dialogDetailArea.dismiss();
+                        }
+
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+
+        //给EditText设置点击事件
+        etDetailArea.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: ");
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                    listDetailArea.clear();
+
+                    for (Place p :
+                            res.getPlaces()) {
+                        if (etArea.getText().toString() != null && !etArea.equals(""))
+                        {
+                            int areaId=getAreaID(etArea.getText().toString());
+                            if(areaId==p.getAreaID())
+                                listDetailArea.add(p.getP_name());
+                        }
+                    }
+                    dialogAdapter.notifyDataSetChanged();
+
+                    // FIXME: 2017/3/11
+                    Log.d(TAG, "onTouch: etArea数据 "+etArea.getText());
+                    if (!etArea.getText().toString().equals("")){
+                        dialogDetailArea.show();
+                        Log.d(TAG, "onTouch:show ");
+                    }else {
+                        List<String> list = new ArrayList<>();
+                        list.add("请先选择报修区域");
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        dialogGetImage = DialogPlus.newDialog(getActivity())
+                                .setAdapter(dialogAdapter)
+                                .setGravity(Gravity.CENTER)
+                                .setContentWidth(800)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                                        dialogGetImage.dismiss();
+                                    }
+
+                                })
+                                .create();
+                        dialogGetImage.show();
+                    }
+
+                }
+                return false;
+            }
+        });
+
+
+    }
+
+
+    private void setDialogApplyType(DialogDetailAdapter dialogAdapter) {
+
+        for (Category c :
+                res.getCategory()) {
+            listApplyType.add(c.getC_name());
+        }
+
+
+        dialogApplyType = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head3)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position!=-1){
+                            etApplyType.setText(listApplyType.get(position));
+                            dialogApplyType.dismiss();
+                        }
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        etApplyType.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: ");
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    dialogApplyType.show();
+                    Log.d(TAG, "onTouch: dialogDetailArea.show()");
+                }
+                return false;
+            }
+        });
+    }
+
+    private void setDialogApplyTypeDetails(DialogAdapter dialogAdapter) {
+
+    }
+
 
     private void setView(ResultBean resultbean) {
         if (resultbean != null) {
@@ -241,8 +473,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 categoryAdapter.notifyDataSetChanged();
                 placeAdapter.notifyDataSetChanged();
 
-                sp_category.setAdapter(categoryAdapter);
-                sp_place.setAdapter(placeAdapter);
+//                sp_category.setAdapter(categoryAdapter);
+//                sp_place.setAdapter(placeAdapter);
 
             } else {
                 for (Category c : resultbean.getCategory()) {
@@ -253,8 +485,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 }
                 categoryAdapter.notifyDataSetChanged();
                 placeAdapter.notifyDataSetChanged();
-                sp_category.setAdapter(categoryAdapter);
-                sp_place.setAdapter(placeAdapter);
+//                sp_category.setAdapter(categoryAdapter);
+//                sp_place.setAdapter(placeAdapter);
             }
 
         } else {
@@ -367,8 +599,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_apply:
 
                 bindView();
-                Date date = new Date();
-                apply.setA_createat(sdf.format(date));
                 upApply();
                 break;
 
@@ -378,14 +608,51 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
                 break;
 
-            case R.id.img_camera:
-                startCamera();
-                break;
+//            case R.id.img_camera:
+//                startCamera();
+//                break;
 
             case R.id.iv_add:
-                startGallery();
+//                startGallery();
+
+                addPic();
+
                 break;
         }
+
+    }
+
+    private void addPic() {
+        List<String> list = new ArrayList<>();
+        list.add("打开相机");
+        list.add("选择本地图片");
+        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+        dialogGetImage = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head4)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position==0){
+                            Log.d(TAG, "onItemClick: positon = "+position);
+                            startCamera();
+                        }
+                        if (position ==1){
+                            Log.d(TAG, "onItemClick: positon = "+position);
+                            startGallery();
+                        }
+                        dialogGetImage.dismiss();
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        dialogGetImage.show();
 
     }
 
@@ -471,6 +738,19 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         return -1;
     }
 
+    private int getAreaID(String areaName) {
+        int areaID;
+        List<Area> categories = res.getAreas();
+        for (Area area : categories) {
+            if (area.getArea().equals(areaName)) {
+                areaID = area.getId();
+                return areaID;
+            }
+        }
+        return -1;
+    }
+
+
     private void startGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -490,7 +770,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             if (true) {
 
                 String json = JsonUtil.beanToJson(apply);
-                Log.d(TAG, "upApply: json " +json);
+                Log.d(TAG, "upApply: json " + json);
 
                 List<File> files = getFiles(list_uri);
 
@@ -502,8 +782,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onResponse(String response, int id) {
-                        clearAll();
+                        //clearAll();
                         Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
+                        writePhoneToLocal(apply, MyApplication.getContext());
+
                     }
                 });
 
@@ -516,6 +798,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    //将手机号写入本地文件。
+    private void writePhoneToLocal(Apply apply, Context mcontext) {
+        String phone = apply.getTel();
+        SharedPreferences.Editor editor = mcontext.getSharedPreferences("phoneData", MODE_PRIVATE).edit();
+        editor.putString("phone", apply.getTel());
+        editor.apply();
+    }
+
 
     private List<File> getFiles(List<Uri> list_uri) {
 
@@ -526,9 +816,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
                 paths[i] = getPath(list_uri.get(i));
 
-                Log.d(TAG, "getFiles: "+paths[i]);
+                Log.d(TAG, "getFiles: " + paths[i]);
                 String newPath = compressImage(paths[i]);
-               // Log.d(TAG, "getFiles: "+newPath);
+                // Log.d(TAG, "getFiles: "+newPath);
                 files.add(new File(newPath));
             }
         }
@@ -585,8 +875,15 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         et_describe.setText("");
         et_details.setText("");
 
-        sp_category.setSelection(0);
-        sp_place.setSelection(0);
+        etArea.setText("");
+        etDetailArea.setText("");
+        etEmail.setText("");
+        etApplyType.setText("");
+//        etApplyTypeDetails.setText("");
+        etApplyPassword.setText("");
+
+//        sp_category.setSelection(0);
+//        sp_place.setSelection(0);
 
         img_1.setImageBitmap(null);
         img_2.setImageBitmap(null);
@@ -604,23 +901,19 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private RequestCall submit(String json, List<File> files) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file"+i+".jpg", files.get(i));
-            Log.d(TAG, "submit: " +files.get(i).getPath());
+            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
+            Log.d(TAG, "submit: " + files.get(i).getPath());
         }
 
         Log.d(TAG, "submit: json添加参数");
-       postFormBuilder.addParams("apply", json);
-        if(files.size()>0)
-        {
+        postFormBuilder.addParams("apply", json);
+        if (files.size() > 0) {
             postFormBuilder.url(UP_APPLY);
-        }
-        else
-        {
+        } else {
             postFormBuilder.url(GET_JSON);
         }
 
-
-
         return postFormBuilder.build();
     }
+
 }

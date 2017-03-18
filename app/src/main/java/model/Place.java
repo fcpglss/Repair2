@@ -7,8 +7,18 @@ public class Place implements Serializable{
 	private static final long serialVersionUID=8748889646L;
 
 	private  int p_id;
-	
+
 	private String p_name;
+
+	private int areaID;
+
+	public int getAreaID() {
+		return areaID;
+	}
+
+	public void setAreaID(int areaID) {
+		this.areaID = areaID;
+	}
 
 	public int getP_id() {
 		return p_id;

@@ -71,7 +71,7 @@
           
              <ImageView android:layout_width="wrap_content"
                  android:layout_height="32dp"
-                 android:src="@drawable/tongji1"/>
+                 android:src="@drawable/my"/>
         
         <TextView 
               android:id="@+id/tv_friend"
@@ -80,7 +80,7 @@
             android:textSize="12dp"
            android:gravity="center_vertical"
              android:textColor="#000000"
-            android:text="统计查询"/>
+            android:text="我的报修"/>
         
     </LinearLayout>
     

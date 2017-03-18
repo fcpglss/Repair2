@@ -22,9 +22,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SeachActivity" android:windowSoftInputMode="stateVisible">
+        <!--<activity android:name=".SeachActivity" android:windowSoftInputMode="stateVisible">-->
 
-        </activity>
+        <!--</activity>-->
 
         <activity android:name=".AnnocementActivity">
 
@@ -33,6 +33,8 @@
         <activity android:name=".DetailsActivity">
 
         </activity>
+        <activity android:name=".AppraiseActivity"/>
+        <activity android:name=".ChangeActivity"/>
     </application>
 
 </manifest>

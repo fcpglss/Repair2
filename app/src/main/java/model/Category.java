@@ -8,7 +8,7 @@ public class Category implements Serializable {
 	private static final long serialVersionUID=8711364L;
 
 	private int c_id;
-	
+
 	public int getC_id() {
 		return c_id;
 	}
@@ -26,7 +26,7 @@ public class Category implements Serializable {
 	}
 
 	private String c_name;
-	
+
 	public String getC_priority() {
 		return c_priority;
 	}

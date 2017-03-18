@@ -10,11 +10,61 @@ import java.util.List;
 public class ResultBean implements Serializable {
 	private static final long serialVersionUID=8745487853134L;
 
+
+	private List<Room> rooms;
+
+	private List<Flies> flies;
+
+	public List<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(List<Room> rooms) {
+		this.rooms = rooms;
+	}
+
+	public List<Flies> getFlies() {
+		return flies;
+	}
+
+	public void setFlies(List<Flies> flies) {
+		this.flies = flies;
+	}
+
+	public List<Area> getArea() {
+		return area;
+	}
+
+	public void setArea(List<Area> area) {
+		this.area = area;
+	}
+
+	private List<Area> area ;
+
+	private List<State> states;
+
     private List<Apply> applys;
     
     private List<Category> category;
-    
-    private List<Announcement> announcements;
+
+	public List<Area> getAreas() {
+		return area;
+	}
+
+	public void setAreas(List<Area> areas) {
+		this.area = areas;
+	}
+
+	public List<State> getStates() {
+		return states;
+
+	}
+
+	public void setStates(List<State> states) {
+		this.states = states;
+	}
+
+	private List<Announcement> announcements;
     
     private List<Place> places;
     

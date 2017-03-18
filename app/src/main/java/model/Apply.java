@@ -11,128 +11,170 @@ public  class Apply implements Serializable {
 
     private static final long serialVersionUID=31544L;
 
+    private String id;
+    private String repair;
+    private String tel;
+    private String email;
+    private String password;
+    private String area;
+    private String detailArea;
+    private String flies;
+    private String room;
+    private String classs;
+    private String detailClass;
+    private String repairDetails;
+    private int state;
+    private String repairTime;
+    private String logisticMan;
+    private String dealTime;
+    private String serverMan;
+    private String material;
+    private String compensation;
+    private String finilTime;
+    private String evaluate;
+    private String evalText;
 
-    private int a_id;
-    private String a_no;
-    private String a_name;
-    private String a_tel;
-    private int a_category;
-    private int a_place;
-    private String a_detalis;
-    private String a_describe;
-    private String a_status;
-    private String employees;
-    private String a_pingjia;
-    private String a_createat;
-    
-   
-
-	public String getA_createat() {
-		return a_createat;
-	}
-
-	public void setA_createat(String a_createat) {
-		this.a_createat = a_createat;
-	}
-
-	private List<String> a_imaes=null;
+    private List<String> a_imaes=null;
 
     public List<String> getA_imaes() {
-		return a_imaes;
-	}
-
-	public void setA_imaes(List<String> a_imaes) {
-		this.a_imaes = a_imaes;
-	}
-
-	public int getA_id() {
-        return a_id;
+        return a_imaes;
+    }
+    public void setA_imaes(List<String> a_imaes) {
+        this.a_imaes = a_imaes;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getRepair() {
+        return repair;
+    }
+    public void setRepair(String repair) {
+        this.repair = repair;
+    }
+    public String getTel() {
+        return tel;
+    }
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getArea() {
+        return area;
+    }
+    public void setArea(String area) {
+        this.area = area;
+    }
+    public String getDetailArea() {
+        return detailArea;
+    }
+    public void setDetailArea(String detailArea) {
+        this.detailArea = detailArea;
+    }
+    public String getRoom() {
+        return room;
+    }
+    public void setRoom(String room) {
+        this.room = room;
+    }
+    public String getClasss() {
+        return classs;
+    }
+    public void setClasss(String classs) {
+        this.classs = classs;
+    }
+    public String getDetailClass() {
+        return detailClass;
+    }
+    public void setDetailClass(String detailClass) {
+        this.detailClass = detailClass;
+    }
+    public String getRepairDetails() {
+        return repairDetails;
+    }
+    public void setRepairDetails(String repairDetails) {
+        this.repairDetails = repairDetails;
+    }
+    public int getState() {
+        return state;
+    }
+    public void setState(int state) {
+        this.state = state;
+    }
+    public String getRepairTime() {
+        return repairTime;
+    }
+    public String getFlies() {
+        return flies;
+    }
+    public void setFlies(String flies) {
+        this.flies = flies;
+    }
+    public void setRepairTime(String repairTime) {
+        this.repairTime = repairTime;
+    }
+    public String getLogisticMan() {
+        return logisticMan;
+    }
+    public void setLogisticMan(String logisticMan) {
+        this.logisticMan = logisticMan;
+    }
+    public String getDealTime() {
+        return dealTime;
+    }
+    public void setDealTime(String dealTime) {
+        this.dealTime = dealTime;
+    }
+    public String getServerMan() {
+        return serverMan;
+    }
+    public void setServerMan(String serverMan) {
+        this.serverMan = serverMan;
+    }
+    public String getMaterial() {
+        return material;
+    }
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+    public String getCompensation() {
+        return compensation;
+    }
+    public void setCompensation(String compensation) {
+        this.compensation = compensation;
+    }
+    public String getFinilTime() {
+        return finilTime;
+    }
+    public void setFinilTime(String finilTime) {
+        this.finilTime = finilTime;
+    }
+    public String getEvaluate() {
+        return evaluate;
+    }
+    public void setEvaluate(String evaluate) {
+        this.evaluate = evaluate;
+    }
+    public String getEvalText() {
+        return evalText;
+    }
+    public void setEvalText(String evalText) {
+        this.evalText = evalText;
     }
 
-    public void setA_id(int a_id) {
-        this.a_id = a_id;
-    }
 
-    public String getA_no() {
-        return a_no;
-    }
 
-    public void setA_no(String a_no) {
-        this.a_no = a_no;
-    }
-
-    public String getA_name() {
-        return a_name;
-    }
-
-    public void setA_name(String a_name) {
-        this.a_name = a_name;
-    }
-
-    public String getA_tel() {
-        return a_tel;
-    }
-
-    public void setA_tel(String a_tel) {
-        this.a_tel = a_tel;
-    }
-
-    public int getA_category() {
-        return a_category;
-    }
-
-    public void setA_category(int a_category) {
-        this.a_category = a_category;
-    }
-
-    public int getA_place() {
-        return a_place;
-    }
-
-    public void setA_place(int a_place) {
-        this.a_place = a_place;
-    }
-
-    public String getA_detalis() {
-        return a_detalis;
-    }
-
-    public void setA_detalis(String a_detalis) {
-        this.a_detalis = a_detalis;
-    }
-
-    public String getA_describe() {
-        return a_describe;
-    }
-
-    public void setA_describe(String a_describe) {
-        this.a_describe = a_describe;
-    }
-
-    public String getA_status() {
-        return a_status;
-    }
-
-    public void setA_status(String a_status) {
-        this.a_status = a_status;
-    }
-
-  
-
-   
-    public String getEmployees() {
-		return employees;
-	}
-
-	public void setEmployees(String employees) {
-		this.employees = employees;
-	}
-
-	public String getA_pingjia() {
-        return a_pingjia;
-    }
-
-    public void setA_pingjia(String a_pingjia) {
-        this.a_pingjia = a_pingjia;
-    }
 }

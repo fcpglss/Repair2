@@ -3,6 +3,7 @@ package repari.com.adapter;
 import android.content.Context;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import imagehodler.ImageLoader;
 import model.Apply;
+import model.Area;
 import model.Category;
 import model.Place;
 import model.ResultBean;
@@ -25,6 +27,7 @@ import repair.com.repair.R;
  */
 
 public class ApplysAdapter extends BaseAdapter {
+    private static final String TAG = "ApplysAdapter";
     private ResultBean res=null;
 
     private LayoutInflater mInflater;
@@ -41,6 +44,7 @@ public class ApplysAdapter extends BaseAdapter {
 
     private boolean mCanGetBitmapFromNetWork = true;
 
+    private String area_name="";
 
     public ApplysAdapter(ResultBean res, Context context) {
         this.res = res;
@@ -91,8 +95,10 @@ public class ApplysAdapter extends BaseAdapter {
 
         //获取当前Apply中的categoryID
         c_url = getCategoryId(position, res);
+        Log.d(TAG, "getView:c_url "+c_url);
         p_name =getPlaceId(position,res);
-        a_details=res.getApplys().get(position).getA_detalis();
+        Apply apply=res.getApplys().get(position);
+        a_details=apply.getArea()+" "+apply.getDetailArea()+apply.getFlies()+apply.getRoom();
 
         final  String uri = c_url;
 
@@ -109,10 +115,11 @@ public class ApplysAdapter extends BaseAdapter {
 
         }
 
-        viewHolder.tvTitle.setText(p_name+"─"+a_details);
-        viewHolder.tvContent.setText(res.getApplys().get(position).getA_describe());
+        viewHolder.tvTitle.setText(a_details);
+        viewHolder.tvContent.setText(apply.getRepairDetails());
 
-        viewHolder.tvTime.setText(res.getApplys().get(position).getA_no());
+        String temp = res.getApplys().get(position).getRepairTime();
+        viewHolder.tvTime.setText(temp.split(":")[0]+":"+temp.split(":")[1]);
         setIcon(viewHolder);
         viewHolder.ivRightDownIcon.setImageResource(getRightIcon(position,res));
         return convertView;
@@ -124,13 +131,14 @@ public class ApplysAdapter extends BaseAdapter {
      */
 
     private String getCategoryId(int position, ResultBean rs) {
-        int appyly_cid=rs.getApplys().get(position).getA_category();
+        String appyly_cid=rs.getApplys().get(position).getClasss();
+        Log.d(TAG, "getCategoryId: apply_c_id +"+appyly_cid);
 
         String c_url="";
 
         for(Category category:rs.getCategory())
         {
-            if(appyly_cid==category.getC_id())
+            if(appyly_cid.equals(category.getC_name()))
             {
                 categoryProprety=category.getC_priority();
                 c_url=category.getC_imageurl();
@@ -142,14 +150,24 @@ public class ApplysAdapter extends BaseAdapter {
 
     private String getPlaceId(int position,ResultBean rs)
     {
-        int appyly_pid=rs.getApplys().get(position).getA_place();
+        String appyly_pid=rs.getApplys().get(position).getDetailArea();//applyID 要改为String
 
         String p_name="";
 
         for(Place place:rs.getPlaces())
         {
-            if(appyly_pid==place.getP_id())
+            if(appyly_pid==place.getP_name())
             {
+                Log.d(TAG, "getPlaceId: "+appyly_pid);
+
+                for(Area a :rs.getAreas())
+                {
+
+                    if(a.getId()==place.getAreaID())
+                    {
+                        area_name=a.getArea();
+                    }
+                }
                 p_name=place.getP_name();
                 break;
             }
@@ -157,20 +175,25 @@ public class ApplysAdapter extends BaseAdapter {
         return p_name;
     }
 
+
+
+
+
+
     private int getRightIcon(int position,ResultBean rs){
         int image = 0;
-        String a_status = rs.getApplys().get(position).getA_status();
+        int a_status = rs.getApplys().get(position).getState();
            switch (a_status){
-               case "处理中":
+               case 1:
                    image = R.drawable.chulizhong;
                    break;
-               case "待处理":
+               case 2:
                    image = R.drawable.daichuli;
                    break;
-               case "已完成":
+               case 3:
                    image = R.drawable.finish;
                    break;
-               case "已失效":
+               case 4:
                    image = R.drawable.yishixiao;
                    break;
                default:

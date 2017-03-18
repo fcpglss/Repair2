@@ -26,17 +26,20 @@ import application.MyApplication;
 import camera.CalculateImage;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
-import fragment.StatisticsFragment;
+import fragment.MyRepairFragment;
+
 import repari.com.adapter.FragmentAdapter;
 
-import static repair.com.repair.R.id.imageView;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
-    public static final String JSON_URL = "http://192.168.43.128:8888/myserver1/servlet/action";
-    public static final String UP_APPLY="http://192.168.43.128:8888/myserver1/Upload2";
-    public static final String GET_JSON="http://192.168.43.128:8888/myserver1/GetJson";
+
+    public static  int count=5;
+    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
+    public static final String UP_APPLY="http://192.168.31.201:8888/myserver2/Upload2";//
+    public static final String GET_JSON="http://192.168.31.201:8888/myserver2/ResponseClient";
 
     public static final int TAKE_PHOTO_RAW = 1;
     public static final int REQUEST_IMAGE =2 ;
@@ -62,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
-    private StatisticsFragment statisticsFragment;
+   // private StatisticsFragment statisticsFragment;
+    private MyRepairFragment myRepairFragment;
 
     private static int Screen1_3;
 
@@ -96,11 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         mainFragment  = new MainFragment();
         applyFragment = new ApplyFragment();
-        statisticsFragment = new StatisticsFragment();
+      //  statisticsFragment = new StatisticsFragment();
+        myRepairFragment =new MyRepairFragment();
 
         mList.add(mainFragment);
         mList.add(applyFragment);
-        mList.add(statisticsFragment);
+        mList.add(myRepairFragment);
 
         mpagerAdapter = new FragmentAdapter(mList, getSupportFragmentManager());
 
@@ -189,10 +194,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.ll_contact:
                     mviewPager.setCurrentItem(1);
+
                     break;
                 case R.id.et_seach:
-                    Intent intent = new Intent(MainActivity.this, SeachActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(MainActivity.this, SeachActivity.class);
+                    //startActivity(intent);
 
             }
         }

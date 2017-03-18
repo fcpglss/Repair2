@@ -7,67 +7,74 @@ public class Employee implements Serializable {
 
 	private static final long serialVersionUID=8715451231544L;
 
-	private int e_id;
-	
-	private String employeeName;
-	
-	private String  fireData;
-	
+	private String account;
+
+	private String password;
+
+	private String  name;
+
 	private String e_tel;
-	
-	private String e_can;
-	
-	private int e_age;
-	private String e_company;
-	private String e_idcard;
-	public int getE_id() {
-		return e_id;
+
+	private String e_email;
+
+	private String sex;
+
+	private String job;
+
+	public String getAccount() {
+		return account;
 	}
-	public void setE_id(int e_id) {
-		this.e_id = e_id;
+
+	public void setAccount(String account) {
+		this.account = account;
 	}
-	public String getEmployeeName() {
-		return employeeName;
+
+	public String getPassword() {
+		return password;
 	}
-	public void setEmployeeName(String employeeName) {
-		this.employeeName = employeeName;
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	
-	public String getFireData() {
-		return fireData;
+
+	public String getName() {
+		return name;
 	}
-	public void setFireData(String fireData) {
-		this.fireData = fireData;
+
+	public void setName(String name) {
+		this.name = name;
 	}
+
 	public String getE_tel() {
 		return e_tel;
 	}
+
 	public void setE_tel(String e_tel) {
 		this.e_tel = e_tel;
 	}
-	public String getE_can() {
-		return e_can;
+
+	public String getE_email() {
+		return e_email;
 	}
-	public void setE_can(String e_can) {
-		this.e_can = e_can;
+
+	public void setE_email(String e_email) {
+		this.e_email = e_email;
 	}
-	public int getE_age() {
-		return e_age;
+
+	public String getSex() {
+		return sex;
 	}
-	public void setE_age(int e_age) {
-		this.e_age = e_age;
+
+	public void setSex(String sex) {
+		this.sex = sex;
 	}
-	public String getE_company() {
-		return e_company;
+
+	public String getJob() {
+		return job;
 	}
-	public void setE_company(String e_company) {
-		this.e_company = e_company;
-	}
-	public String getE_idcard() {
-		return e_idcard;
-	}
-	public void setE_idcard(String e_idcard) {
-		this.e_idcard = e_idcard;
+
+	public void setJob(String job) {
+		this.job = job;
 	}
 
 	

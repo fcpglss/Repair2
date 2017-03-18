@@ -299,7 +299,7 @@ public   ApplysAdapter getBeanFromJson(ResultBean res ,List<String> viewpager_ur
 
     private void init() {
         convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-        convenientBanner.startTurning(2000);
+        convenientBanner.startTurning(5000);
         waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);
         waterDropListView.setWaterDropListViewListener(MainFragment.this);
         waterDropListView.setPullLoadEnable(true);

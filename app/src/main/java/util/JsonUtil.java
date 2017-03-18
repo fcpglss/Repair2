@@ -10,26 +10,19 @@ import model.ResultBean;
 
 public class JsonUtil {
 
-//	private static final int APPLY=1;
-//	private static final int CATEGORY=2;
-//	private static final int PLACE=3;
-//	private static final int ANNONCEMENT=4;
-//
-//
-//	private static List<Place> list_place=new ArrayList<>();
-//	private static List<Category> list_category=new ArrayList<>();
-//	private static List<Apply> list_apply=new ArrayList<>();
-//	private static List<Announcement> list_anouncement=new ArrayList<>();
-//	private static List<Employee> list_employee=new ArrayList<>();
+
+	private static final String TAG = "JsonUtil";
 
 	public static ResultBean jsonToBean(String jsonString)
 	{
+
 		try 
 		{
 			if(jsonString!=null&&jsonString.length()>0)
 			{
 				Gson gson =new Gson();
 				ResultBean bean =gson.fromJson(jsonString, ResultBean.class);
+
 				return bean;
 			}
 		} 

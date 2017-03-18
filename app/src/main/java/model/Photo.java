@@ -5,28 +5,22 @@ import java.io.Serializable;
 public class Photo implements Serializable{
 
 	private static final long serialVersionUID=874L;
-	private int id;
-	private int a_id;
-	private String imagesurl;
 
-	public int getA_id() {
-		return a_id;
+	private String repairID;
+	private String photo;
+
+
+	public String getRepairID() {
+		return repairID;
 	}
-	public void setA_id(int a_id) {
-		this.a_id = a_id;
+	public void setRepairID(String repairID) {
+		this.repairID = repairID;
 	}
-	
-	public int getId() {
-		return id;
+	public String getPhoto() {
+		return photo;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getImagesurl() {
-		return imagesurl;
-	}
-	public void setImagesurl(String imagesurl) {
-		this.imagesurl = imagesurl;
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 	
 }

@@ -1,15 +1,22 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -25,10 +32,11 @@ import model.Employee;
 import model.Photo;
 import model.Place;
 import model.ResultBean;
+import repari.com.adapter.DialogAdapterImg;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static repair.com.repair.R.id.ifRoom;
-import static repair.com.repair.R.id.t;
+import static repair.com.repair.R.id.iv_star1;
 import static repair.com.repair.R.id.tv_details_category;
 //import static repair.com.repair.R.id.tv_details_employee;
 import static repair.com.repair.R.id.tv_employee_can;
@@ -43,12 +51,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private static final String TAG = "DetailsActivity";
     boolean visable = false;//员工详细页面默认不可见
 
-    private TextView tv_no, tv_name, tv_tel, tv_date, tv_category, tv_status,  tv_place, tv_describe;
+    LinearLayout l;
 
-    private TextView tv_details_employee1, tv_details_employee2, tv_details_employee3, tv_details_employee4;
-    private List<String> allEmployeeName = new ArrayList<>();
 
-    private TextView tv_employee_company, tv_employee_phone, tv_employee_can,tv_paigong;
+    //评价星星
+    private ImageView star1,star2,star3,star4,star5;
+    //评价文字
+    private TextView appraise;
+    //大图片
+    private ImageView bigImg;
+    private ImageView showBigImg;
+    //背景
+    LinearLayout linearLayoutDetail;
+    //对话框
+    private DialogPlus dialogPlus;
+
+    private TextView tv_email, tvName, tv_tel, tv_date, tv_category, tv_status, tv_place, tv_describe,tvFinishTime;
+
+    private TextView tv_details_employee1;
+
+    private TextView tv_employee_company, tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
     private LinearLayout ll_employee_details;
 
@@ -58,25 +80,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private ResultBean res = null;
     private Category category = null;
     private Place place = null;
+
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
+    private List<ImageView> star_list=new ArrayList<ImageView>();
     public ImageLoader mImageLoader = ImageLoader.build(MyApplication.getContext());
     private List<String> list_imageView = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.details_activity);
 
-
+        setContentView(R.layout.detailinfo);
 
 
         initView();
         apply = (Apply) this.getIntent().getSerializableExtra("apply_item");
 
-        if (apply.getEmployees()!=null){
+        if (apply.getLogisticMan() != null) {
             iv_employee_arr.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             tv_paigong.setVisibility(View.VISIBLE);
         }
         res = (ResultBean) this.getIntent().getSerializableExtra("res");
@@ -91,22 +114,46 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_employee_can = (TextView) findViewById(R.id.tv_employee_can);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
+        //
+
+        //星星
+        star1 = (ImageView) findViewById(R.id.iv_star1);
+        star2 = (ImageView) findViewById(R.id.iv_star2);
+        star3 = (ImageView) findViewById(R.id.iv_star3);
+        star4 = (ImageView) findViewById(R.id.iv_star4);
+        star5 = (ImageView) findViewById(R.id.iv_star5);
+        star_list.add(star1);
+        star_list.add(star2);
+        star_list.add(star3);
+        star_list.add(star4);
+        star_list.add(star5);
+        //评价文字
+        appraise = (TextView) findViewById(R.id.tv_appraise);
+        //大图片
+        bigImg = (ImageView) findViewById(R.id.detail_show_big_img);
+        showBigImg = (ImageView) findViewById(R.id.iv_show_big_img);
+
+        //背景
+        linearLayoutDetail = (LinearLayout) findViewById(R.id.ll_detail_info);
 
         tv_paigong = (TextView) findViewById(R.id.tv_paigong);
 
         tv_details_employee1 = (TextView) findViewById(R.id.tv_details_employee1);
-        tv_details_employee2 = (TextView) findViewById(R.id.tv_details_employee2);
-        tv_details_employee3 = (TextView) findViewById(R.id.tv_details_employee3);
-        tv_details_employee4 = (TextView) findViewById(R.id.tv_details_employee4);
+//        tv_details_employee2 = (TextView) findViewById(R.id.tv_details_employee2);
+//        tv_details_employee3 = (TextView) findViewById(R.id.tv_details_employee3);
+//        tv_details_employee4 = (TextView) findViewById(R.id.tv_details_employee4);
 
 
-        tv_no = (TextView) findViewById(R.id.tv_details_no);
-        tv_name = (TextView) findViewById(R.id.tv_details_name);
+
+        tvName = (TextView) findViewById(R.id.tv_details_name);
         tv_tel = (TextView) findViewById(R.id.tv_details_tel);
         tv_category = (TextView) findViewById(tv_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
+        tvFinishTime= (TextView) findViewById(R.id.tv_details_finish_date);
         tv_status = (TextView) findViewById(R.id.tv_details_details);
         tv_place = (TextView) findViewById(R.id.tv_details_place);
+        tv_email= (TextView) findViewById(R.id.tv_details_email);
+
 
         // tv_employee= (TextView) findViewById(R.id.tv_details_employee);
 
@@ -118,6 +165,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         img1 = (ImageView) findViewById(R.id.img_pc1);
         img2 = (ImageView) findViewById(R.id.img_pc2);
         img3 = (ImageView) findViewById(R.id.img_pc3);
+        img1.setOnClickListener(this);
+        img2.setOnClickListener(this);
+        img3.setOnClickListener(this);
+
 
 
         imageviewList.add(img1);
@@ -126,37 +177,84 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         img_back.setOnClickListener(this);
 
+
         //员工详细信息箭头点击事件
         iv_employee_arr.setOnClickListener(this);
-        //员工名字点击事件
-        tv_details_employee1.setOnClickListener(this);
-        tv_details_employee2.setOnClickListener(this);
-        tv_details_employee3.setOnClickListener(this);
-        tv_details_employee4.setOnClickListener(this);
 
+        //员工名字点击事件
+
+        //tv_details_employee1.setOnClickListener(this);
+
+        //只有一个员工了 连点击事件都不用了直接显示那个员工
+//        tv_details_employee2.setOnClickListener(this);
+//        tv_details_employee3.setOnClickListener(this);
+//        tv_details_employee4.setOnClickListener(this);
+
+    }
+
+    private void clickPic(View v){
+        ImageView iV = (ImageView) v;
+        showBigImg.setImageDrawable(iV.getDrawable());
+        showBigImg.setVisibility(View.VISIBLE);
+        //设置背景
+        linearLayoutDetail.setBackgroundColor(Color.BLACK);
+
+        showBigImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBigImg.setVisibility(View.GONE);
+                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+            }
+        });
+    }
+    private void imgOnClick(View v) {
+        DialogAdapterImg dialogAdapterImg = new DialogAdapterImg(this, (ImageView) v,R.layout.dialog_show_img);
+        dialogPlus = DialogPlus.newDialog(this)
+                .setAdapter(dialogAdapterImg)
+                .setGravity(Gravity.CENTER)
+                .setContentWidth(800)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        dialogPlus.dismiss();
+                    }
+
+                })
+                .setExpanded(true, 1000)
+                .create();
+        dialogPlus.show();
     }
 
     private void bindItem() {
         getCategory();
         getPlace();
-        tv_no.setText("" + apply.getA_no());
-        tv_name.setText(apply.getA_name());
-        tv_tel.setText(apply.getA_tel());
+        //详细信息不显示单号
+//        tv_no.setText("" + apply.getA_no());
+        tvName.setText(apply.getRepair());
+        setNameXXX();
+        tv_tel.setText(apply.getTel());
+        setTelXXXX();
+        tv_email.setText(apply.getEmail());
+
         tv_category.setText(category.getC_name());
-        tv_place.setText(place.getP_name() + "—" + apply.getA_detalis());
-        tv_status.setText(apply.getA_status());
-        // tv_employee.setText(""+apply.getEmployees());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-        tv_date.setText(apply.getA_createat());
+        tv_place.setText(place.getP_name()+"_"+apply.getRoom());
 
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+        Log.d(TAG, "bindItem: 1" + apply.getDealTime());
+        tv_date.setText(setTime(apply.getRepairTime()));
+        Log.d(TAG, "bindItem: 2"+apply.getFinilTime());
 
+        tvFinishTime.setText(setTime(apply.getFinilTime()));
 
-
-        tv_describe.setText(apply.getA_describe());
+        tv_describe.setText(apply.getRepairDetails());
         img_category.setImageResource(getCategoryIcon());
+
+        getApplyImages();
+
         img_status.setImageResource(getRightIcon());
         if (apply.getA_imaes().size() > 0) {
             for (int i = 0; i <= apply.getA_imaes().size() - 1; i++) {
@@ -165,50 +263,114 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             Log.d(TAG, "该Apply的images集合为空");
         }
-        getApplyImages();
 
-        allEmployeeName = getEmployNames(apply);
 
-        setName();
+
+
+        //直接设置员工信息 但是默认被隐藏
+        setEmployeeInf(apply.getLogisticMan());
+        Log.d(TAG, "bindItem: "+Integer.parseInt(apply.getEvaluate()));
+        //设置星星
+       setStarColor(Integer.parseInt(apply.getEvaluate()));
+        //设置评价内容
+        appraise.setText(apply.getEvalText());
 
     }
 
-    private void setName() {
+    private void setNameXXX()
+    {
+        if(tvName.getText()!=null&&!tvName.getText().equals(" "))
+        {
+            String name=  tvName.getText().toString();
+            int len=name.length();
+            name=name.replace(name.substring(1,len),"**");
+            tvName.setText(name);
+        }
+    }
+    private void setTelXXXX()
+    {
+        if(tv_tel.getText()!=null&&!tv_tel.getText().equals(" "))
+        {
+            String tel=tv_tel.getText().toString();
+            String temp=tel.substring(3,7);
+            tv_tel.setText(tel.replace(temp,"****"));
+        }
+    }
+    private String setTime(String datetime) {
 
-        if (allEmployeeName == null) {
-            Log.d(TAG, "setName: 空");
-        } else {
-            Log.d(TAG, "setName: " + allEmployeeName.size());
-            if (allEmployeeName.size() > 0){
-                tv_details_employee1.setText(allEmployeeName.get(0));
-                Log.d(TAG, "setName:allEmployeeName.get(0) " + allEmployeeName.get(0));
+        if (datetime != null && !datetime.equals(""))
+        {
+           return datetime.split(":")[0]+":"+datetime.split(":")[1];
+        }
+        return "";
+    }
+
+
+
+
+
+
+    private void setEmployeeInf(String logisticAccount)
+    {
+        if(getEmploye(logisticAccount)!=null)
+        {
+            Employee e=getEmploye(logisticAccount);
+            tv_details_employee1.setText(e.getName());
+            tv_employee_phone.setText(" "+e.getE_tel());
+        }
+        else
+        {
+            tv_details_employee1.setText(" ");
+            tv_employee_phone.setText(" ");
+            tv_employee_can.setText(" ");
+            tv_employee_company.setText(" ");
+        }
+    }
+
+
+    //获取到apply中LogisticMan字段，（员工姓名)的对象
+    private Employee getEmploye(String employeeAccount) {
+
+        Employee employee=new Employee();
+        if(employeeAccount!=null && !employeeAccount.equals(""))
+        {
+            List<Employee> list_employee = res.getEmployee();
+            for (Employee e : list_employee) {
+                if (e.getAccount().equals(employeeAccount)) {
+                    return e;
+                }
             }
-
-            if (allEmployeeName.size() > 1){
-                Log.d(TAG, "setName:allEmployeeName.get(1) " + allEmployeeName.get(1));
-                tv_details_employee2.setText(allEmployeeName.get(1));
-            }
-
-            if (allEmployeeName.size() > 2){
-                Log.d(TAG, "setName:allEmployeeName.get(2) " + allEmployeeName.get(2));
-                tv_details_employee2.setText(allEmployeeName.get(2));
-            }
-
-            if (allEmployeeName.size() > 3){
-                Log.d(TAG, "setName:allEmployeeName.get(3) " + allEmployeeName.get(3));
-                tv_details_employee2.setText(allEmployeeName.get(3));
-            }
-
         }
 
-
+        return employee;
     }
+
+
+
+
+    private String getState()
+    {
+       switch (apply.getState())
+       {
+           case 1 :
+               return "正在处理";
+           case 2:
+               return "派员中";
+           case 3:
+               return "已完工";
+           case 4:
+               return "已失效";
+       }
+       return "正在审核";
+    }
+
+
 
 
     private void getCategory() {
 
         for (Category c : res.getCategory()) {
-            if (apply.getA_category() == c.getC_id()) {
+            if (apply.getClasss().equals(c.getC_name())) {
                 category = c;
                 break;
             }
@@ -219,7 +381,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private void getPlace() {
 
         for (Place place : res.getPlaces()) {
-            if (apply.getA_place() == place.getP_id()) {
+            if (apply.getDetailArea().equals(place.getP_name())) {
                 this.place = place;
                 break;
             }
@@ -230,17 +392,17 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private int getRightIcon() {
         int image = R.id.iv_icon;
 
-        switch (apply.getA_status()) {
-            case "处理中":
+        switch (apply.getState()) {
+            case 1:
                 image = R.drawable.chulizhong;
                 break;
-            case "待处理":
+            case 2:
                 image = R.drawable.daichuli;
                 break;
-            case "已完成":
+            case 3:
                 image = R.drawable.finish;
                 break;
-            case "已失效":
+            case 4:
                 image = R.drawable.yishixiao;
                 break;
             default:
@@ -260,7 +422,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             }
             for (int i = 0; i < list_imageView.size(); i++) {
                 mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
-                Log.d(TAG, "执行了一次bindBitmap"+list_imageView.get(i));
+                Log.d(TAG, "执行了一次bindBitmap "+list_imageView.get(i));
             }
 
 
@@ -274,78 +436,23 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private int getCategoryIcon() {
         int image = R.id.iv_icon;
 
-        switch (apply.getA_category()) {
-            case 1:
+        switch (apply.getClasss()) {
+            case "水":
                 image = R.drawable.water;
                 break;
-            case 2:
+            case "电":
                 image = R.drawable.dian;
                 break;
-            case 3:
+            case "土建":
                 image = R.drawable.door;
                 break;
-            case 4:
+            case "设备":
                 image = R.drawable.computer;
                 break;
             default:
                 image = R.drawable.computer;
         }
         return image;
-    }
-
-    private void getEmployee(Apply apply) {
-//        String company="";
-//
-//      String[] employees=apply.getEmployees().split(" ");
-//        for (int i=0;i<employees.length;i++)
-//        {
-//            for(Employee e : res.getEmployee())
-//            {
-//                if(employees[i].equals(e.getEmployeeName()))
-//                {
-//                    company+=e.getE_company();
-//                }
-//            }
-//        }
-//        tv_employee_company.setText(company);
-
-        if (apply.getEmployees() == null) {
-            return;
-        }
-        String applyEmployees = apply.getEmployees();
-        Log.d(TAG, "getEmployee: " + applyEmployees);
-        String[] applyEmployee = applyEmployees.split(" ");
-        Log.d(TAG, "getEmployee: " + applyEmployee[0]);
-        String companyString = "";
-        String telString = "";
-        String canString = "";
-
-        Log.d(TAG, "getEmployee: " + res.getEmployee().size());
-        for (int i = 0; i < applyEmployee.length; i++) {
-            for (int j = 0; j < res.getEmployee().size(); j++) {
-//                Log.d(TAG, "getEmployee: res.getEmployee().get(1).getEmployeeName() "+res.getEmployee().get(1).getEmployeeName());
-//                Log.d(TAG, "getEmployee: applyEmployee"+applyEmployee[0]);
-
-                //公司
-                if (res.getEmployee().get(j).getEmployeeName().equals(applyEmployee[i])) {
-                    String companyString1 = companyString;
-                    if (!res.getEmployee().get(j).getE_company().equals(companyString1)) {
-                        companyString = companyString + res.getEmployee().get(j).getE_company();
-                    }
-                    String telStringTest = telString;
-                    if (!res.getEmployee().get(j).getE_tel().equals(telStringTest)) {
-                        telString = telString + " " + res.getEmployee().get(j).getE_tel();
-                    }
-                    //canString = canString+res.getEmployee().get(j).getE_can();
-                }
-
-            }
-        }
-
-        tv_employee_company.setText(companyString);
-        tv_employee_phone.setText(telString);
-        // tv_employee_can.setText(canString);
-
     }
 
 
@@ -362,6 +469,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
 
+
         switch (view.getId()) {
             case R.id.img_back2:
                 Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
@@ -369,7 +477,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.iv_employee_arr:
 
-                if (apply.getEmployees()!=null){
+                if (apply.getLogisticMan()!=null){
 
                     if (visable == false) {
                         ll_employee_details.setVisibility(View.VISIBLE);
@@ -386,73 +494,31 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
                 break;
-            case R.id.tv_details_employee1:
-                setNameOnclick(allEmployeeName.get(0));
+            case R.id.iv_star1:
                 break;
-            case R.id.tv_details_employee2:
-                setNameOnclick(allEmployeeName.get(1));
+            case R.id.img_pc1:
+                clickPic(view);
                 break;
-            case R.id.tv_details_employee3:
-                setNameOnclick(allEmployeeName.get(2));
+            case R.id.img_pc2:
+                clickPic(view);
                 break;
-            case R.id.tv_details_employee4:
-                setNameOnclick(allEmployeeName.get(3));
+            case R.id.img_pc3:
+                clickPic(view);
                 break;
         }
     }
 
-    private void setNameOnclick(String name) {
-        Log.d(TAG, "setNameOnclick: Onclick 里面"+name);
-        Employee employee = getEmployeeInfo(name);
-        if (employee.getE_company() != null)
-            Log.d(TAG, "setNameOnclick: "+employee.getE_company());
-            tv_employee_company.setText(employee.getE_company());
-        if (employee.getE_tel() != null)
-            tv_employee_phone.setText(employee.getE_tel());
-        if (employee.getE_can() != null)
-            tv_employee_can.setText(employee.getE_can());
-    }
 
-
-    private List<String> getEmployNames(Apply apply) {
-
-        if (apply.getEmployees() == null) {
-            return null;
-        }
-        List<String> a = new ArrayList<>();
-        String applyEmployees = apply.getEmployees();
-
-        String reg = "\\s+";
-
-        String[] applyEmployee = applyEmployees.split(reg);
-        Log.d(TAG, "getEmployNames: " + applyEmployees);
-        for (int i = 0; i < applyEmployee.length; i++) {
-            Log.d(TAG, "getEmployNames: pp" + applyEmployee[i]);
-            a.add(applyEmployee[i]);
-        }
-
-
-        return a;
-    }
-
-    private Employee getEmployeeInfo(String name) {
-        Log.d(TAG, "getEmployeeInfo: 有没有"+name);
-
-        Log.d(TAG, "getEmployeeInfo: start");
-        Employee employee = new Employee();
-
-        for (int i = 0; i < res.getEmployee().size(); i++) {
-            Log.d(TAG, "getEmployeeInfo: "+res.getEmployee().get(i).getEmployeeName());
-
-            if (res.getEmployee().get(i) == null) return null;
-            if (res.getEmployee().get(i).getEmployeeName().equals(name)) {
-                Log.d(TAG, "getEmployeeInfo: "+res.getEmployee().get(i).getE_company());
-                employee.setEmployeeName(name);
-                employee.setE_company(res.getEmployee().get(i).getE_company());
-                employee.setE_tel(res.getEmployee().get(i).getE_tel());
-                employee.setE_can(res.getEmployee().get(i).getE_can());
+    private void setStarColor(int appraise)
+    {
+        if(appraise>0)
+        {
+            for(int i=0;i<appraise;i++)
+            {
+                star_list.get(i).setColorFilter(getResources().getColor(R.color.starColor));
             }
         }
-        return employee;
+
     }
+
 }
