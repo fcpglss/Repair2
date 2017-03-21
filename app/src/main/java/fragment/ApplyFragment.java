@@ -108,23 +108,18 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     int AreaId;
     //滚动
     private ScrollView svBackground;
-    private boolean svState=false;
-
-    private TextView mtv_no;
     private Button btn_apply;
     private ImageView image_camera, img_add, img_1, img_2, img_3;
 
     private Button btn_clear;
 
-    //    private Spinner sp_place, sp_category;
     private List<String> list_place = new ArrayList<>();
     private List<String> list_category = new ArrayList<>();
     private List<ImageView> imageViewList = new ArrayList<>();
 
     private Apply apply = new Apply();
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static ResultBean res = null;
+    public static ResultBean addressRes = null;
 
     ArrayAdapter categoryAdapter;
     ArrayAdapter placeAdapter;
@@ -136,9 +131,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private List<String> listApplyDetailType = new ArrayList<>();
 
     private Response response;
-
-
-
 
     //对话框
     DialogPlus dialogArea;
@@ -163,24 +155,17 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
 
         initView();
-
-       // initData();
         queryFromServer(null,null);
 
     }
 
     private void initView() {
 
-        //后面添加的几个EditText
         etEmail = (EditText) getActivity().findViewById(R.id.et_email);
         etApplyPassword = (EditText) getActivity().findViewById(R.id.et_apply_password);
         etArea = (EditText) getActivity().findViewById(R.id.et_area);
         etDetailArea = (EditText) getActivity().findViewById(R.id.et_detail_area);
         etApplyType = (EditText) getActivity().findViewById(R.id.et_apply_type);
-//        etApplyTypeDetails = (EditText) getActivity().findViewById(R.id.et_apply_type_details);
-        //
-
-
         et_name = (EditText) getActivity().findViewById(R.id.et_name);
 
         et_tel = (EditText) getActivity().findViewById(R.id.et_tel);
@@ -188,8 +173,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         et_describe = (EditText) getActivity().findViewById(R.id.et_apply_describe);
         et_details = (EditText) getActivity().findViewById(R.id.et_apply_details);
 
-//        image_camera = (ImageView) getActivity().findViewById(R.id.img_camera);
-//        image_camera.setOnClickListener(this);
         img_add = (ImageView) getActivity().findViewById(R.id.iv_add);
         img_add.setOnClickListener(this);
 
@@ -238,30 +221,31 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             public void onFinish(String responseString) {
                 //请求成功后获取到json
                 final String responseJson = responseString.toString();
+                Log.d(TAG, "请求成功onFinish: "+responseJson);
                 //解析json获取到Response;
                 response=JsonUtil.jsonToResponse(responseJson);
                 if(response.getErrorType()!=0)
                 {
-                    if(res!=null)
+                    if(addressRes!=null)
                     {
-                        setDialogView(res);
+                        setDialogView(addressRes);
                     }
                     else
                     {
                         String addressJson=Util.loadAddressFromLocal(MyApplication.getContext());
-                        res=JsonUtil.jsonToBean(addressJson);
-                        setDialogView(res);
+                        addressRes=JsonUtil.jsonToBean(addressJson);
+                        setDialogView(addressRes);
                     }
 
                 }
                 else
                 {
-                    res=response.getResultBean();
+                    addressRes=response.getResultBean();
                     Looper.prepare();
-                    setDialogView(res);
+                    setDialogView(addressRes);
                     //将resultbean的数据写入本地"address_data"的文件key为：address。
-                    Util.writeAddressToLocal(res,MyApplication.getContext());
-                    Looper.loop();;
+                    Util.writeAddressToLocal(addressRes,MyApplication.getContext());
+                    Looper.loop();
 
                 }
 
@@ -274,32 +258,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 rp.setError(true);
                 rp.setErrorMessage("网络异常，返回空值");
                 response=rp;
-                Log.d(TAG, "onError: "+e.getMessage());
+                Log.d(TAG, "onError: "+e.getMessage()+",response错误信息:"+rp.getErrorMessage());
             }
         });
     }
 
 
-//    private void initData() {
-//        new AsyncTask<Void, Void, ResultBean>() {
-//
-//            @Override
-//            protected ResultBean doInBackground(Void... voids) {
-//                SharedPreferences preferences = getActivity().getSharedPreferences("json_data", getActivity().MODE_PRIVATE);
-//                String json = preferences.getString("json", "");
-//                res = JsonUtil.jsonToBean(json);
-//                return res;
-//            }
-//
-//
-//            @Override
-//            protected void onPostExecute(ResultBean resultBean) {
-////                setView(resultBean);
-//                Log.d(TAG, "onPostExecute: ");
-//                setDialogView(resultBean);
-//            }
-//        }.execute();
-//    }
 
     private void setDialogView(ResultBean resultBean) {
         if (resultBean != null) {
@@ -318,16 +282,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
-
     private void setDialogArea(final DialogAdapter dialogAdapter) {
 
         for (Area a :
-                res.getAreas()) {
+                addressRes.getAreas()) {
             listArea.add(a.getArea());
         }
-
-
         dialogArea = DialogPlus.newDialog(getActivity())
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
@@ -409,7 +369,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     listDetailArea.clear();
 
                     for (Place p :
-                            res.getPlaces()) {
+                            addressRes.getPlaces()) {
                         if (etArea.getText().toString() != null && !etArea.equals(""))
                         {
                             int areaId=getAreaID(etArea.getText().toString());
@@ -455,7 +415,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private void setDialogApplyType(DialogDetailAdapter dialogAdapter) {
 
         for (Category c :
-                res.getCategory()) {
+                addressRes.getCategory()) {
             listApplyType.add(c.getC_name());
         }
 
@@ -506,9 +466,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 categoryAdapter.notifyDataSetChanged();
                 placeAdapter.notifyDataSetChanged();
 
-//                sp_category.setAdapter(categoryAdapter);
-//                sp_place.setAdapter(placeAdapter);
-
             } else {
                 for (Category c : resultbean.getCategory()) {
                     list_category.add(c.getC_name());
@@ -518,8 +475,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 }
                 categoryAdapter.notifyDataSetChanged();
                 placeAdapter.notifyDataSetChanged();
-//                sp_category.setAdapter(categoryAdapter);
-//                sp_place.setAdapter(placeAdapter);
             }
 
         } else {
@@ -718,62 +673,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
 
-//    @Override
-//    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//
-//        switch (view.getId())
-//        {
-//            case R.id.sp_apply:
-//
-//                category = categoryAdapter.getItem(i).toString();
-//                Log.d("ApplyFragmentSpinner", "onItemSelected: "+category);
-//
-////                category= (String) sp_category.getSelectedItem();
-//                break;
-//            case R.id.sp_local:
-//
-//                place = placeAdapter.getItem(i).toString();
-//                Log.d("ApplyFragmentSpinner", "onItemSelected: "+place);
-//
-////                place= (String) sp_place.getSelectedItem();
-//                break;
-//        }
-//    }
-//
-//    @Override
-//    public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//        category= (String) sp_category.getSelectedItem();
-//        place= (String) sp_place.getSelectedItem();
-//    }
-
-    private int getPlaceId(String placeName) {
-        int placeId;
-        List<Place> places = res.getPlaces();
-        for (Place p : places) {
-            if (p.getP_name().equals(placeName)) {
-                placeId = p.getP_id();
-                return placeId;
-            }
-        }
-        return -1;
-    }
-
-    private int getCategoryId(String categoryName) {
-        int categoryId;
-        List<Category> categories = res.getCategory();
-        for (Category c : categories) {
-            if (c.getC_name().equals(categoryName)) {
-                categoryId = c.getC_id();
-                return categoryId;
-            }
-        }
-        return -1;
-    }
 
     private int getAreaID(String areaName) {
         int areaID;
-        List<Area> categories = res.getAreas();
+        List<Area> categories = addressRes.getAreas();
         for (Area area : categories) {
             if (area.getArea().equals(areaName)) {
                 areaID = area.getId();

@@ -15,16 +15,20 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.MyApplication;
+import fragment.ApplyFragment;
 import imagehodler.ImageLoader;
 import model.Apply;
 import model.Area;
 import model.Category;
-import model.Photo;
 import model.Place;
 import model.ResultBean;
 import repair.com.repair.AppraiseActivity;
 import repair.com.repair.ChangeActivity;
+import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
+import util.JsonUtil;
+import util.Util;
 
 
 /**
@@ -35,15 +39,13 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private static final String TAG = "MyRepairAdapter";
 
-    private ResultBean res=null;
+    private ResultBean myRes =null;
 
     private LayoutInflater mInflater;
 
     private Drawable mDefaultBitmapDrawable;
 
     public ImageLoader mImageLoader;
-
-    private static String categoryProprety="";
 
     private static final int mImageWidth=150;
 
@@ -57,24 +59,22 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private Context context;
 
-
     public MyRepairAdapter(ResultBean res, Context context) {
-        this.res = res;
+        this.myRes = res;
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
-
         this.context = context;
         mImageLoader = ImageLoader.build(context);
     }
 
     @Override
     public int getCount() {
-        return res.getApplys().size();
+        return myRes.getApplys().size();
     }
 
     @Override
     public Object getItem(int position) {
-        return res.getApplys().get(position);
+        return myRes.getApplys().get(position);
     }
 
     @Override
@@ -85,6 +85,7 @@ public class MyRepairAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
+        Apply apply=myRes.getApplys().get(position);
         if (convertView == null) {
             viewHolder = new ViewHolder();
 
@@ -109,17 +110,13 @@ public class MyRepairAdapter extends BaseAdapter {
         ImageView imageView =viewHolder.ivPhoto;
         final  String tag= (String) imageView.getTag();
         String photoUrl="";
-        String p_name="";
         String a_details="";
 
-
-        photoUrl=getPhotoUrl(position,res).get(0).toString();
+        photoUrl=getPhotoUrl(position, myRes).get(0).toString();
         Log.d(TAG, "getView: photoUrl"+photoUrl);
-        p_name=res.getApplys().get(position).getDetailArea();
-        categoryName=getCategoryId(position,res);
-        categoryName=res.getCategory().get(position).getC_name();
-        a_details=res.getApplys().get(position).getRoom();
 
+        categoryName= apply.getClasss();
+        a_details=Util.setTitle(apply);
         final  String uri = photoUrl;
 
         if(!uri.equals(tag))
@@ -129,22 +126,18 @@ public class MyRepairAdapter extends BaseAdapter {
 
         if(mCanGetBitmapFromNetWork)
         {
-
             imageView.setTag(photoUrl);
             mImageLoader.bindBitmap(photoUrl,imageView,mImageWidth,mImageHeigth);
         }
 
-        viewHolder.tvTime.setText(setTime(res.getApplys().get(position).getRepairTime()));
-
-        viewHolder.tvName.setText(res.getApplys().get(position).getRepair());
-        viewHolder.ivState.setImageResource(getState(position,res));
-        viewHolder.tvAddress.setText(area_name+p_name+" "+a_details);
+        viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
+        viewHolder.tvName.setText(apply.getRepair());
+        viewHolder.ivState.setImageResource(getState(position, myRes));
+        viewHolder.tvAddress.setText(area_name+a_details);
         viewHolder.tvType.setText(categoryName);
-
         //判断是否能修改和评价然后跳转
-        JumpApprise(viewHolder.tvAppraise,res.getApplys().get(position).getState(),position);
-        JumpChange(viewHolder.tvChange,res.getApplys().get(position).getState(),position);
-
+        JumpApprise(viewHolder.tvAppraise, apply.getState(),position);
+        JumpChange(viewHolder.tvChange, apply.getState(),position);
         return convertView;
     }
 
@@ -156,7 +149,11 @@ public class MyRepairAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     // 放入被点击的item的Id ,跳转修改Activity
                     Intent intent = new Intent(context, ChangeActivity.class);
-                    intent.putExtra("apply",res.getApplys().get(position));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("apply",myRes.getApplys().get(position));
+                    bundle.putSerializable("address",getAddressRes());
+                    intent.putExtras(bundle);
                     context.startActivity(intent);
                 }
             });
@@ -173,7 +170,7 @@ public class MyRepairAdapter extends BaseAdapter {
                     //放入被点击的item的Id,跳转评价Activity
                     Intent intent = new Intent(context, AppraiseActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("apply",res.getApplys().get(position));
+                    bundle.putSerializable("apply", myRes.getApplys().get(position));
                     intent.putExtras(bundle);
                     context.startActivity(intent);
                 }
@@ -194,8 +191,16 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private List<String> getPhotoUrl(int position, ResultBean rs) {
         List<String> photoList=new ArrayList<>();
+        if(rs==null)
+        {
+            photoList.add("myRes没有值");
+            return photoList;
+        }
         photoList=rs.getApplys().get(position).getA_imaes();
-
+        if(photoList.size()==0)
+        {
+            photoList.add("未知图片");
+        }
         return photoList;
     }
 
@@ -221,62 +226,15 @@ public class MyRepairAdapter extends BaseAdapter {
         return image;
     }
 
-
-    private String getCategoryId(int position, ResultBean rs) {
-        String appyly_cid=rs.getApplys().get(position).getClasss();
-
-        for(Category category:rs.getCategory())
-        {
-            if(appyly_cid.equals(category.getC_name()))
-            {
-                categoryName=category.getC_name();
-                break;
-            }
-            else
-            {
-                categoryName="其他";
-            }
-        }
-
-        return categoryName;
-    }
-
-
-
-
-
-
-    private String getPlaceId(int position,ResultBean rs)
+    private ResultBean getAddressRes()
     {
-        String appyly_pid=rs.getApplys().get(position).getDetailArea();//applyID 要改为String
-
-        String p_name="";
-
-        for(Place place:rs.getPlaces())
-        {
-            if(appyly_pid.equals(place.getP_name()))
-            {
-                Log.d(TAG, "getPlaceId: "+appyly_pid);
-
-                for(Area a :rs.getAreas())
-                {
-
-                    if(a.getId()==place.getAreaID())
-                    {
-                        area_name=a.getArea();
-                    }
-                }
-                p_name=place.getP_name();
-                break;
-            }
+        ResultBean addressRes= ApplyFragment.addressRes;
+        if(addressRes==null) {
+            Log.d(TAG, "getAddressRes: 内存中的addresRes为null，从本地address_data中读取");
+            String address = Util.loadAddressFromLocal(context);
+            addressRes = JsonUtil.jsonToBean(address);
         }
-        return p_name;
-    }
-
-
-    public void setList_Applys(List<Apply> apply)
-    {
-        res.setApplys(apply);
+        return addressRes;
     }
 
     class ViewHolder{
