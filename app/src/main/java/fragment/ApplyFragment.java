@@ -259,9 +259,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     res=response.getResultBean();
                     Looper.prepare();
                     setDialogView(res);
-                    Looper.loop();;
                     //将resultbean的数据写入本地"address_data"的文件key为：address。
                     Util.writeAddressToLocal(res,MyApplication.getContext());
+                    Looper.loop();;
+
                 }
 
             }

@@ -38,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static  int count=5;
-//    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
-//    public static final String UP_APPLY="http://192.168.31.201:8888/myserver2/Upload2";//
-//    public static final String GET_JSON="http://192.168.31.201:8888/myserver2/ResponseClient";
+    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
+    public static final String UP_APPLY="http://192.168.31.201:8888/myserver2/Upload2";//
+    public static final String GET_JSON="http://192.168.31.201:8888/myserver2/ResponseClient";
+    public static final String FRIST_URL="http://192.168.31.201:8888/myserver2/FirstRequest";
 
-    public static final String FRIST_URL="http://192.168.43.128:8888/myserver2/FirstRequest";
-    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
-    public static final String UP_APPLY="http://192.168.43.128:8888/myserver2/Upload2";//
-    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
+//    public static final String FRIST_URL="http://192.168.43.128:8888/myserver2/FirstRequest";
+//    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
+//    public static final String UP_APPLY="http://192.168.43.128:8888/myserver2/Upload2";//
+//    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
 
 
 

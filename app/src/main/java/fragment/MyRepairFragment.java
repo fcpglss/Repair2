@@ -66,6 +66,7 @@ public class MyRepairFragment extends Fragment {
 
     ResultBean res = null;
 
+
     private Response myResponse;
 
     @Override
