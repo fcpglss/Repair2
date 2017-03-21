@@ -128,7 +128,7 @@ public class ApplysAdapter extends BaseAdapter {
 
     private String getCategoryId(int position, ResultBean rs) {
         String appyly_cid=rs.getApplys().get(position).getClasss();
-        Log.d(TAG, "getCategoryId: apply_c_id +"+appyly_cid);
+
 
         String c_url="";
 

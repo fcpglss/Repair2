@@ -223,7 +223,8 @@ public class Util {
 				String json = JsonUtil.beanToResultBean(resultBean);
 				SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
 				editor.putString("json", json);
-				editor.commit();
+				editor.apply();
+				Log.d(TAG, "writeJsonToLocal: 成功将FirstRequest的Json写入本地json_data文件中，key:json");
 			}
 		}).start();
 
@@ -236,7 +237,8 @@ public class Util {
 				String json = JsonUtil.beanToResultBean(resultBean);
 				SharedPreferences.Editor editor = mContext.getSharedPreferences("address_data", mContext.MODE_PRIVATE).edit();
 				editor.putString("address", json);
-				editor.commit();
+				editor.apply();
+				Log.d(TAG, "writeAddressToLocal: 成功将address的Json写入本地address_data文件中，key:address");
 			}
 		}).start();
 	}
@@ -246,7 +248,7 @@ public class Util {
 		SharedPreferences preferences = context.getSharedPreferences("address_data", context.MODE_PRIVATE);
 		String json = preferences.getString("address", "");
 
-		Log.d(TAG, "loadAddressFromLocal: "+json);
+		Log.d(TAG, "loadAddressFromLocal:从本地address_data文件中读出json: "+json);
 		return json;
 	}
 	public static String loadFirstFromLocal(Context context)
@@ -254,7 +256,7 @@ public class Util {
 		SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
 		String json = preferences.getString("json", "");
 
-		Log.d(TAG, "loadFirstFromLocal: "+json);
+		Log.d(TAG, "loadFirstFromLocal: 从本地文件json_data中读出json:"+json);
 		return json;
 	}
 }
