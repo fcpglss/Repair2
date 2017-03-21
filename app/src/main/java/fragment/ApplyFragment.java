@@ -9,6 +9,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -59,6 +60,7 @@ import model.Area;
 import model.Category;
 import model.Place;
 
+import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -67,8 +69,12 @@ import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.DialogAdapter;
 import repari.com.adapter.DialogDetailAdapter;
+import util.HttpCallbackListener;
+import util.HttpUtil;
 import util.JsonUtil;
 import util.NetworkUtils;
+import util.ShowListApplys;
+import util.Util;
 
 import static android.R.attr.bitmap;
 import static android.R.attr.fillEnabled;
@@ -79,7 +85,9 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static camera.CalculateImage.getSmallBitmap;
 import static com.zhy.http.okhttp.OkHttpUtils.post;
+import static repair.com.repair.MainActivity.FRIST_URL;
 import static repair.com.repair.MainActivity.GET_JSON;
+import static repair.com.repair.MainActivity.JSON_URL;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
@@ -127,6 +135,11 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private List<String> listApplyType = new ArrayList<>();
     private List<String> listApplyDetailType = new ArrayList<>();
 
+    private Response response;
+
+
+
+
     //对话框
     DialogPlus dialogArea;
     DialogPlus dialogDetailArea;
@@ -151,8 +164,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         initView();
 
-        initData();
-
+       // initData();
+        queryFromServer(null,null);
 
     }
 
@@ -196,33 +209,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         //滚动
         svBackground = (ScrollView) getActivity().findViewById(R.id.sv_apply);
-//        sp_category = (Spinner) getActivity().findViewById(R.id.sp_apply);
-//        sp_place = (Spinner) getActivity().findViewById(R.id.sp_local);
-//        sp_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                category = (String) sp_category.getSelectedItem();
-//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + category);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//                Log.d("ApplyFragmentSpinner", "onNothingSelected: " + category);
-//
-//            }
-//        });
-//        sp_place.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                place = (String) sp_place.getSelectedItem();
-//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//                Log.d("ApplyFragmentSpinner", "onItemSelected: " + place);
-//            }
-//        });
 
 
     }
@@ -243,38 +229,84 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         apply.setRepairDetails(et_describe.getText().toString());
 
     }
+    public void queryFromServer(final String code, final String type) {
 
-
-    private void initData() {
-        new AsyncTask<Void, Void, ResultBean>() {
-
+        String jsonurl=JSON_URL+"?applyFragment=applyfragment";
+        Log.d(TAG, "queryFromServer: "+jsonurl);
+        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
             @Override
-            protected ResultBean doInBackground(Void... voids) {
-                SharedPreferences preferences = getActivity().getSharedPreferences("json_data", getActivity().MODE_PRIVATE);
-                String json = preferences.getString("json", "");
-                res = JsonUtil.jsonToBean(json);
-                return res;
+            public void onFinish(String responseString) {
+                //请求成功后获取到json
+                final String responseJson = responseString.toString();
+                //解析json获取到Response;
+                response=JsonUtil.jsonToResponse(responseJson);
+                if(response.getErrorType()!=0)
+                {
+                    if(res!=null)
+                    {
+                        setDialogView(res);
+                    }
+                    else
+                    {
+                        String addressJson=Util.loadAddressFromLocal(MyApplication.getContext());
+                        res=JsonUtil.jsonToBean(addressJson);
+                        setDialogView(res);
+                    }
+
+                }
+                else
+                {
+                    res=response.getResultBean();
+                    Looper.prepare();
+                    setDialogView(res);
+                    Looper.loop();;
+                    //将resultbean的数据写入本地"address_data"的文件key为：address。
+                    Util.writeAddressToLocal(res,MyApplication.getContext());
+                }
+
             }
-
-
             @Override
-            protected void onPostExecute(ResultBean resultBean) {
-//                setView(resultBean);
-                Log.d(TAG, "onPostExecute: ");
-                setDialogView(resultBean);
+            public void onError(Exception e) {
+
+                Response rp= new Response();
+                rp.setErrorType(-1);
+                rp.setError(true);
+                rp.setErrorMessage("网络异常，返回空值");
+                response=rp;
+                Log.d(TAG, "onError: "+e.getMessage());
             }
-        }.execute();
-
-
+        });
     }
+
+
+//    private void initData() {
+//        new AsyncTask<Void, Void, ResultBean>() {
+//
+//            @Override
+//            protected ResultBean doInBackground(Void... voids) {
+//                SharedPreferences preferences = getActivity().getSharedPreferences("json_data", getActivity().MODE_PRIVATE);
+//                String json = preferences.getString("json", "");
+//                res = JsonUtil.jsonToBean(json);
+//                return res;
+//            }
+//
+//
+//            @Override
+//            protected void onPostExecute(ResultBean resultBean) {
+////                setView(resultBean);
+//                Log.d(TAG, "onPostExecute: ");
+//                setDialogView(resultBean);
+//            }
+//        }.execute();
+//    }
 
     private void setDialogView(ResultBean resultBean) {
         if (resultBean != null) {
-//            DialogAdapter areaAdapter = new DialogAdapter(getActivity(),listArea,R.layout.simple_list_item);
+
             DialogAdapter detailAreaAdapter = new DialogAdapter(getActivity(), listDetailArea, R.layout.simple_list_item);
             DialogAdapter areaAdapter = new DialogAdapter(getActivity(), listArea, R.layout.simple_list_item);
             DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType,resultBean.getCategory(), R.layout.dialog_detail_type);
-//            DialogAdapter ApplyTypeDetails = new DialogAdapter(getActivity(),listApplyDetailType,R.layout.simple_list_item);
+
 
             setDialogArea(areaAdapter);
             setDialogDetailArea(detailAreaAdapter);
@@ -491,7 +523,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         } else {
             Log.d("Apply_Fragment", "res为null");
-            initData();
+            queryFromServer(null,null);
         }
 
     }
@@ -777,7 +809,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 submit(json, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Toast.makeText(MyApplication.getContext(), e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

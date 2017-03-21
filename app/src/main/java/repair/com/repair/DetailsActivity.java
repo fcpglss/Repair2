@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.squareup.okhttp.internal.Util;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -239,7 +240,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_email.setText(apply.getEmail());
 
         tv_category.setText(category.getC_name());
-        tv_place.setText(place.getP_name()+"_"+apply.getRoom());
+        tv_place.setText(util.Util.setAddress(apply));
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -291,6 +292,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     {
         if(tv_tel.getText()!=null&&!tv_tel.getText().equals(" "))
         {
+            if(tv_tel.length()!=11)
+            {
+                tv_tel.setText("***");
+                return ;
+            }
             String tel=tv_tel.getText().toString();
             String temp=tel.substring(3,7);
             tv_tel.setText(tel.replace(temp,"****"));
@@ -329,14 +335,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
     //获取到apply中LogisticMan字段，（员工姓名)的对象
-    private Employee getEmploye(String employeeAccount) {
+    private Employee getEmploye(String employeeName) {
 
         Employee employee=new Employee();
-        if(employeeAccount!=null && !employeeAccount.equals(""))
+        if(employeeName!=null && !employeeName.equals(""))
         {
             List<Employee> list_employee = res.getEmployee();
             for (Employee e : list_employee) {
-                if (e.getAccount().equals(employeeAccount)) {
+                if (e.getName().equals(employeeName)) {
                     return e;
                 }
             }

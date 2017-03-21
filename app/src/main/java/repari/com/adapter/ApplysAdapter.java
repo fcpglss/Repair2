@@ -20,6 +20,7 @@ import model.Category;
 import model.Place;
 import model.ResultBean;
 import repair.com.repair.R;
+import util.Util;
 
 
 /**
@@ -96,9 +97,9 @@ public class ApplysAdapter extends BaseAdapter {
         //获取当前Apply中的categoryID
         c_url = getCategoryId(position, res);
         Log.d(TAG, "getView:c_url "+c_url);
-        p_name =getPlaceId(position,res);
+      //  p_name =getPlaceId(position,res);
         Apply apply=res.getApplys().get(position);
-        a_details=apply.getArea()+" "+apply.getDetailArea()+apply.getFlies()+apply.getRoom();
+        a_details= Util.setTitle(apply);
 
         final  String uri = c_url;
 
@@ -130,6 +131,10 @@ public class ApplysAdapter extends BaseAdapter {
      * 获得相应的category的Image_url
      */
 
+
+
+
+
     private String getCategoryId(int position, ResultBean rs) {
         String appyly_cid=rs.getApplys().get(position).getClasss();
         Log.d(TAG, "getCategoryId: apply_c_id +"+appyly_cid);
@@ -148,32 +153,36 @@ public class ApplysAdapter extends BaseAdapter {
         return c_url;
     }
 
-    private String getPlaceId(int position,ResultBean rs)
-    {
-        String appyly_pid=rs.getApplys().get(position).getDetailArea();//applyID 要改为String
 
-        String p_name="";
 
-        for(Place place:rs.getPlaces())
-        {
-            if(appyly_pid==place.getP_name())
-            {
-                Log.d(TAG, "getPlaceId: "+appyly_pid);
 
-                for(Area a :rs.getAreas())
-                {
 
-                    if(a.getId()==place.getAreaID())
-                    {
-                        area_name=a.getArea();
-                    }
-                }
-                p_name=place.getP_name();
-                break;
-            }
-        }
-        return p_name;
-    }
+//    private String getPlaceId(int position,ResultBean rs)
+//    {
+//        String appyly_pid=rs.getApplys().get(position).getDetailArea();//applyID 要改为String
+//
+//        String p_name="";
+//
+//        for(Place place:rs.getPlaces())
+//        {
+//            if(appyly_pid==place.getP_name())
+//            {
+//                Log.d(TAG, "getPlaceId: "+appyly_pid);
+//
+//                for(Area a :rs.getAreas())
+//                {
+//
+//                    if(a.getId()==place.getAreaID())
+//                    {
+//                        area_name=a.getArea();
+//                    }
+//                }
+//                p_name=place.getP_name();
+//                break;
+//            }
+//        }
+//        return p_name;
+//    }
 
 
 

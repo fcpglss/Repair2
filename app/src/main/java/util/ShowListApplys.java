@@ -37,26 +37,27 @@ public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
     ApplysAdapter adapter=null;
     Context context=null;
 
-    public ShowListApplys(Context mcontext,WaterDropListView listview, ApplysAdapter adapter,ConvenientBanner convenientBanner)
+    public ShowListApplys(Context mcontext,WaterDropListView listview, ApplysAdapter adapter,ConvenientBanner convenientBanner,ResultBean resultBean)
     {
         this.convenientBanner=convenientBanner;
         context=mcontext;
         waterListView =listview;
         this.adapter =adapter;
+        res=resultBean;
     }
 
     @Override
     protected ApplysAdapter doInBackground(String... voids) {
 
-        String result_json=voids[0];
-        res= JsonUtil.jsonToBean(result_json);
+//        String result_json=voids[0];
+//        res= JsonUtil.jsonToBean(result_json);
+
        if(res==null)
        {
            return adapter;
        }
-      //  Log.d("Main","json:"+result_json+"\n"+"公告:"+res.getAnnouncements().get(0).getImage_url());
         adapter=getBeanFromJson(res,viewpager_url,adapter);
-        writeJsonToLocal(result_json, MyApplication.getContext());
+       // writeJsonToLocal(result_json, MyApplication.getContext());
         return adapter;
     }
 

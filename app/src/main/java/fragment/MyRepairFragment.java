@@ -34,6 +34,7 @@ import java.util.List;
 
 import application.MyApplication;
 import model.Place;
+import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
 import repair.com.repair.AppraiseActivity;
@@ -65,6 +66,7 @@ public class MyRepairFragment extends Fragment {
 
     ResultBean res = null;
 
+    private Response myResponse;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -142,13 +144,14 @@ public class MyRepairFragment extends Fragment {
                 submit(phone, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onError: ");
                     }
                     @Override
                     public void onResponse(String response, int id) {
-                       res=JsonUtil.jsonToBean(response);
-//                        Log.d(TAG, "onResponse: res 数据 "+res.getApplys().get(0).getRepair());
+                       myResponse=JsonUtil.jsonToResponse(response);
+                        res=myResponse.getResultBean();
+                        Log.d(TAG, "onResponse: "+response);
                         initView(res);
                     }
                 });

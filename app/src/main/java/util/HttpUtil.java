@@ -35,15 +35,13 @@ public class HttpUtil {
 					connection=(HttpURLConnection) new URL(address).openConnection();
 					connection.setRequestProperty("Charset", "utf-8");
 					connection.setRequestProperty("Accept-Charset", "utf-8");
-
+					connection.setReadTimeout(8000);
 					connection.setDoInput(true);
 					Log.d("MainFragment_Http"," UttpUtil建立连接: response="+address .toString());
 					connection.setRequestMethod("GET");
-					//connection.setRequestMethod("POST");
+
 					Log.d("MainFragment_Http"," UttpUtil调用: Connection.setReadTimeout=");
-					//DataOutputStream out =new DataOutputStream(connection.getOutputStream());
-				//	out.write(data.getBytes());
-				//	out.flush();
+
 					if(connection.getResponseCode()==200) {
 
 

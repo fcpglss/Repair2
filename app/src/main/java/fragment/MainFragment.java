@@ -31,9 +31,11 @@ import imagehodler.ImageLoader;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Announcement;
 import model.Apply;
+import model.Response;
 import model.ResultBean;
 import repair.com.repair.AnnocementActivity;
 import repair.com.repair.DetailsActivity;
+import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
 import util.HttpCallbackListener;
@@ -42,7 +44,10 @@ import util.JsonUtil;
 import util.LoadListApplys;
 import util.LocalImageHolderView;
 import util.ShowListApplys;
+import util.Util;
 import util.WaterListViewListener;
+
+import static repair.com.repair.MainActivity.FRIST_URL;
 import static repair.com.repair.MainActivity.JSON_URL;
 
 /**
@@ -52,6 +57,8 @@ import static repair.com.repair.MainActivity.JSON_URL;
 
 public class MainFragment extends Fragment implements WaterDropListView.IWaterDropListViewListener {
 
+    private static final String TAG = "MainFragment";
+    
     private static  boolean isFirst=true;
 
     private  ConvenientBanner convenientBanner=null;
@@ -66,6 +73,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     private  List<String> viewpager_url = new ArrayList<>();
 
+    private Response response;
 
     private Handler mhandler = new Handler() {
         @Override
@@ -102,20 +110,29 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-
         /**
          * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
          */
         if(isFirst)
         {
-            queryFromServer(null, null);
-            Log.d("Main","获取网络");
+            queryFromServer(null,null);
+            Log.d(TAG, "第一次载入");
         }
         else
         {
-            new LoadListApplys(getActivity(),waterDropListView,applysAdapter,convenientBanner).execute();
-            Log.d("Main","从本地获取");
+            if(res!=null)
+            {
+                //封装了图片的缓存,还有更新适配器的方法
+                new ShowListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner,res).execute();
+                Log.d(TAG, "不是第一次载入，从内存中读取res");
+            }
+            else
+            {
+                new LoadListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute();
+                Log.d(TAG, "不是第一次载入，从本地address_data文件中读取");
+            }
         }
+
 
 
     }
@@ -125,23 +142,63 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
      */
     public void queryFromServer(final String code, final String type) {
 
-        HttpUtil.sendHttpRequest(JSON_URL, new HttpCallbackListener() {
+        HttpUtil.sendHttpRequest(FRIST_URL, new HttpCallbackListener() {
             @Override
-            public void onFinish(String response) {
-                final String result_json = response.toString();
-                //封装了 Json的解析还有图片的缓存,还有更新适配器的方法
-                new ShowListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute(result_json);
+            public void onFinish(String responseString) {
+                //请求成功后获取到json
+                final String responseJson = responseString.toString();
+                //解析json获取到Response;
+                response=JsonUtil.jsonToResponse(responseJson);
 
+                res=response.getResultBean();
+                if(res!=null)
+                {
+                    //封装了图片的缓存,还有更新适配器的方法
+                    new ShowListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner,res).execute();
+                    //将resultbean的数据写入本地"json"的文件。
+                    Util.writeJsonToLocal(res,MyApplication.getContext());
+                }
+                else
+                {
+                    response.setErrorType(-2);
+                    response.setError(false);
+                    response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
+                    checkError();
+                }
             }
-
             @Override
             public void onError(Exception e) {
-                Log.d("MainActivity", " onEnrror调用: 请求网络失败\n" + e.getMessage().toString());
 
-                new LoadListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute();
+                Response rp= new Response();
+                rp.setErrorType(-1);
+                rp.setError(true);
+                rp.setErrorMessage("网络异常，返回空值");
+                response=rp;
+                Log.d("MainActivity", " onEnrror调用:" +e.getMessage());
+                checkError();
             }
         });
     }
+
+    //判断请求或返回过程中是否有错，若没有错则为0,则从本地文件里面读出数据
+    private void checkError()
+    {
+        if(response.getErrorType()!=0)
+        {
+          //  Toast.makeText(MyApplication.getContext(),response.getErrorMessage(),Toast.LENGTH_SHORT).show();
+            if(res!=null)
+            {
+                new ShowListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner,res).execute();
+            }
+            else
+            {
+                new LoadListApplys(getActivity(), waterDropListView, applysAdapter, convenientBanner).execute();
+            }
+        }
+
+    }
+
+
 
     public void onRefresh() {
 
@@ -191,7 +248,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                         }
                     }
                 }).start();
-                ;
+
 
             }
         });

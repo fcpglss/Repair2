@@ -34,7 +34,7 @@ import repair.com.repair.R;
 public class MyRepairAdapter extends BaseAdapter {
 
     private static final String TAG = "MyRepairAdapter";
-    
+
     private ResultBean res=null;
 
     private LayoutInflater mInflater;
@@ -114,8 +114,10 @@ public class MyRepairAdapter extends BaseAdapter {
 
 
         photoUrl=getPhotoUrl(position,res).get(0).toString();
-        p_name =getPlaceId(position,res);
+        Log.d(TAG, "getView: photoUrl"+photoUrl);
+        p_name=res.getApplys().get(position).getDetailArea();
         categoryName=getCategoryId(position,res);
+        categoryName=res.getCategory().get(position).getC_name();
         a_details=res.getApplys().get(position).getRoom();
 
         final  String uri = photoUrl;

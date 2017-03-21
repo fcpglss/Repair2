@@ -29,6 +29,9 @@ import repari.com.adapter.ApplysAdapter;
  */
 
 public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
+
+    private static final String TAG = "LoadListApplys";
+
     List<String> viewpager_url = new ArrayList<>();
     ResultBean res = null;
     ConvenientBanner convenientBanner = null;
@@ -47,16 +50,13 @@ public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
     @Override
     protected ApplysAdapter doInBackground(Void... voids) {
         try {
-            SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
-            String json = preferences.getString("json", "");
-            Log.d("Main", "从sharedPreferences读出来的json: " + json);
+            String json=Util.loadFirstFromLocal(context);
             res = JsonUtil.jsonToBean(json);
             adapter = getBeanFromJson(res, viewpager_url, adapter);
 
         } catch (Exception e) {
-            Log.d("Main", "LoadListApplys从shared里读取json异常" + e.getMessage().toString());
+            Log.d(TAG, "doInBackground: "+e.getMessage().toString());
         }
-
         return adapter;
     }
 
@@ -69,7 +69,7 @@ public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
         if (convenientBanner != null && res != null) {
             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
             convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-            Log.d("Main", "setPage之前");
+
 
             convenientBanner.setPages(
                     new CBViewHolderCreator<LocalImageHolderView>() {
@@ -82,7 +82,7 @@ public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
             waterDropListView.setAdapter(applysAdapters);
             waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
         } else {
-            Toast.makeText(MyApplication.getContext(), "请检查网络...", Toast.LENGTH_LONG).show();
+            Toast.makeText(MyApplication.getContext(), "本地也没有数据，请检查网络", Toast.LENGTH_LONG).show();
         }
 
     }

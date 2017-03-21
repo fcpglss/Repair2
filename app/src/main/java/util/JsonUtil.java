@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import model.Apply;
+import model.Response;
 import model.ResultBean;
 
 
@@ -27,7 +28,8 @@ public class JsonUtil {
 			}
 		} 
 		catch (Exception e) {
-			System.out.println("传入json不能解析出ResultBean:\n"+e.getMessage().toString());
+
+			Log.d(TAG, "jsonToBean: "+e.getMessage().toString());
 		}
 		return null;
 	}
@@ -38,9 +40,41 @@ public class JsonUtil {
 		try {
 			json = gson.toJson(apply, Apply.class);
 		} catch (Exception e) {
-			Log.e("Apply_Fragment", "beanToJson()解析有误:" + e.getMessage().toString());
+			Log.d(TAG, "beanToJson: "+e.getMessage().toString());
 		}
 
 		return json;
 	}
+	public static String beanToResultBean(ResultBean resultbean)
+	{
+		String json = "";
+		Gson gson = new Gson();
+		try {
+			json = gson.toJson(resultbean, ResultBean.class);
+		} catch (Exception e) {
+			Log.d(TAG, "beanToResultBean: "+e.getMessage().toString());
+		}
+
+		return json;
+	}
+	public static Response jsonToResponse(String json)
+	{
+
+		try
+		{
+			if(json!=null&&json.length()>0)
+			{
+				Gson gson =new Gson();
+				Response response =gson.fromJson(json, Response.class);
+
+				return response;
+			}
+		}
+		catch (Exception e) {
+
+			Log.d(TAG, "jsonToResponse: "+e.getMessage().toString());
+		}
+		return null;
+	}
+
 }
