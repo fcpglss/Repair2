@@ -49,8 +49,6 @@ public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
     @Override
     protected ApplysAdapter doInBackground(String... voids) {
 
-//        String result_json=voids[0];
-//        res= JsonUtil.jsonToBean(result_json);
 
        if(res==null)
        {
@@ -109,18 +107,9 @@ public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
         }
         return applysAdapter;
     }
-    public  void writeJsonToLocal(final String jsonString, final Context mContext) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String json = jsonString;
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
-                editor.putString("json", json);
-                editor.commit();
-            }
-        }).start();
+
+
+
 
     }
-
-}
 

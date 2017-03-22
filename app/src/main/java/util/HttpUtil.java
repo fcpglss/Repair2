@@ -38,6 +38,7 @@ public class HttpUtil {
 					connection=(HttpURLConnection) new URL(address).openConnection();
 					connection.setRequestProperty("Charset", "utf-8");
 					connection.setRequestProperty("Accept-Charset", "utf-8");
+					connection.setConnectTimeout(5000);
 					connection.setReadTimeout(8000);
 					connection.setDoInput(true);
 					connection.setRequestMethod("GET");
@@ -48,16 +49,12 @@ public class HttpUtil {
 						String line;
 						while ((line = reader.readLine()) != null) {
 							response.append(line);
-
 						}
-
 						if (listener != null) {
 							listener.onFinish(response.toString());
 						}
 					}
-
 				} catch (Exception e) {
-
 					if(listener!=null)
 					{
 						listener.onError(e);
@@ -81,6 +78,5 @@ public class HttpUtil {
 			}
 		}).start();
 	}
-
 
 }

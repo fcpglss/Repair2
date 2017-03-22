@@ -9,7 +9,9 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -131,27 +133,47 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private List<String> listApplyDetailType = new ArrayList<>();
 
     private Response response;
-
+    private Handler mhandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 2:
+                    Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
+                    String addressJson2=Util.loadAddressFromLocal(MyApplication.getContext());
+                    addressRes=JsonUtil.jsonToBean(addressJson2);
+                    setDialogView(addressRes);
+                    break;
+                case 3:
+                    setDialogView(addressRes);
+                    break;
+                case 4:
+                    Log.d(TAG, "handleMessage4: 内存没有数据，尝试从本地文件读取");
+                    String addressJson=Util.loadAddressFromLocal(MyApplication.getContext());
+                    addressRes=JsonUtil.jsonToBean(addressJson);
+                    setDialogView(addressRes);
+                    break;
+            }
+        }
+    };
     //对话框
     DialogPlus dialogArea;
     DialogPlus dialogDetailArea;
     DialogPlus dialogApplyType;
-    DialogPlus dialogApplyDetailType;
     DialogPlus dialogGetImage;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("MainFragment", "Apply_onCreateView");
+        Log.d(TAG, "Apply_onCreateView");
 
-//        return inflater.inflate(R.layout.apply_frag, null);
         return inflater.inflate(R.layout.apply_fragment, null);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        Log.d("Apply_Fragment", "onActivityCreated");
+        Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 
         initView();
@@ -193,11 +215,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         //滚动
         svBackground = (ScrollView) getActivity().findViewById(R.id.sv_apply);
 
-
     }
 
     private void bindView() {
-
 
         apply.setRepair(et_name.getText().toString());
         apply.setTel(et_tel.getText().toString());
@@ -205,7 +225,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         apply.setPassword(etApplyPassword.getText().toString());
         apply.setArea(etArea.getText().toString());
         apply.setDetailArea(etDetailArea.getText().toString());
-
 
         apply.setRoom(et_details.getText().toString());
         apply.setClasss(etApplyType.getText().toString());
@@ -226,39 +245,34 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 response=JsonUtil.jsonToResponse(responseJson);
                 if(response.getErrorType()!=0)
                 {
+                    //response出现错误，尝试从内存中获取数据
                     if(addressRes!=null)
                     {
-                        setDialogView(addressRes);
+                        mhandler.sendEmptyMessage(4);
                     }
+                    //内存没有，尝试从本地获取数据
                     else
                     {
-                        String addressJson=Util.loadAddressFromLocal(MyApplication.getContext());
-                        addressRes=JsonUtil.jsonToBean(addressJson);
-                        setDialogView(addressRes);
+                        mhandler.sendEmptyMessage(2);
                     }
-
                 }
+                //连接成功，抛到主线程更新UI
                 else
                 {
                     addressRes=response.getResultBean();
-                    Looper.prepare();
-                    setDialogView(addressRes);
-                    //将resultbean的数据写入本地"address_data"的文件key为：address。
+                    mhandler.sendEmptyMessage(3);
                     Util.writeAddressToLocal(addressRes,MyApplication.getContext());
-                    Looper.loop();
-
                 }
-
             }
             @Override
             public void onError(Exception e) {
-
                 Response rp= new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
                 rp.setErrorMessage("网络异常，返回空值");
                 response=rp;
                 Log.d(TAG, "onError: "+e.getMessage()+",response错误信息:"+rp.getErrorMessage());
+                mhandler.sendEmptyMessage(2);
             }
         });
     }
