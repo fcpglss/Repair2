@@ -120,8 +120,6 @@ public class MyRepairFragment extends Fragment {
     }
 
 
-
-
     private void loadPhone()
     {
         SharedPreferences preferences =getActivity().getSharedPreferences("phoneData",getActivity().MODE_PRIVATE);

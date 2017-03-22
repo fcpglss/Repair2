@@ -175,10 +175,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-
         initView();
-        queryFromServer(null,null);
-
+        queryFromServer(JSON_URL);
     }
 
     private void initView() {
@@ -231,9 +229,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         apply.setRepairDetails(et_describe.getText().toString());
 
     }
-    public void queryFromServer(final String code, final String type) {
+    public void queryFromServer(String url) {
 
-        String jsonurl=JSON_URL+"?applyFragment=applyfragment";
+        String jsonurl=url+"?applyFragment=applyfragment";
         Log.d(TAG, "queryFromServer: "+jsonurl);
         HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
             @Override
@@ -472,31 +470,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private void setView(ResultBean resultbean) {
-        if (resultbean != null) {
-            categoryAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list_category);
-            placeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list_place);
-            if (list_place.size() == resultbean.getPlaces().size()) {
-                categoryAdapter.notifyDataSetChanged();
-                placeAdapter.notifyDataSetChanged();
 
-            } else {
-                for (Category c : resultbean.getCategory()) {
-                    list_category.add(c.getC_name());
-                }
-                for (Place place : resultbean.getPlaces()) {
-                    list_place.add(place.getP_name());
-                }
-                categoryAdapter.notifyDataSetChanged();
-                placeAdapter.notifyDataSetChanged();
-            }
-
-        } else {
-            Log.d("Apply_Fragment", "res为null");
-            queryFromServer(null,null);
-        }
-
-    }
 
 
     @Override

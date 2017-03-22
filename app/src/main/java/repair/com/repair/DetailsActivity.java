@@ -3,26 +3,24 @@ package repair.com.repair;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.squareup.okhttp.internal.Util;
 
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import application.MyApplication;
@@ -30,18 +28,20 @@ import imagehodler.ImageLoader;
 import model.Apply;
 import model.Category;
 import model.Employee;
-import model.Photo;
 import model.Place;
+import model.Response;
 import model.ResultBean;
 import repari.com.adapter.DialogAdapterImg;
+import util.HttpCallbackListener;
+import util.HttpUtil;
+import util.JsonUtil;
+import util.Util;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-import static repair.com.repair.R.id.ifRoom;
-import static repair.com.repair.R.id.iv_star1;
+import static repair.com.repair.R.id.edit_query;
 import static repair.com.repair.R.id.tv_details_category;
-//import static repair.com.repair.R.id.tv_details_employee;
-import static repair.com.repair.R.id.tv_employee_can;
 import static repair.com.repair.R.id.tv_employee_company;
+//import static repair.com.repair.R.id.tv_details_employee;
+
 
 /**
  * Created by hsp on 2016/12/1.
@@ -50,10 +50,9 @@ import static repair.com.repair.R.id.tv_employee_company;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "DetailsActivity";
+    private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
+
     boolean visable = false;//员工详细页面默认不可见
-
-    LinearLayout l;
-
 
     //评价星星
     private ImageView star1,star2,star3,star4,star5;
@@ -78,7 +77,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView img_category, img_status, img_back;
     private ImageView img1, img2, img3;
     private Apply apply = null;
-    private ResultBean res = null;
+    private Employee employee=null;
+    private String repairId;
+
+    private ResultBean detailRes = null;
     private Category category = null;
     private Place place = null;
 
@@ -87,6 +89,30 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private List<ImageView> star_list=new ArrayList<ImageView>();
     public ImageLoader mImageLoader = ImageLoader.build(MyApplication.getContext());
     private List<String> list_imageView = new ArrayList<>();
+    private Response response;
+
+    private Handler mhandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 2:
+                    Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
+                    Toast.makeText(MyApplication.getContext(),response.getErrorMessage(),Toast.LENGTH_SHORT).show();
+                    break;
+                case 3:
+                    if (apply.getLogisticMan() != null) {
+                        iv_employee_arr.setVisibility(View.VISIBLE);
+                    } else {
+                        tv_paigong.setVisibility(View.VISIBLE);
+                    }
+                    bindItem();
+                    break;
+
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,18 +120,59 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         setContentView(R.layout.detailinfo);
 
-
         initView();
-        apply = (Apply) this.getIntent().getSerializableExtra("apply_item");
 
-        if (apply.getLogisticMan() != null) {
-            iv_employee_arr.setVisibility(View.VISIBLE);
-        } else {
-            tv_paigong.setVisibility(View.VISIBLE);
+        repairId=getIntent().getStringExtra("repairId");
+        Log.d(TAG, "onCreate: 获取repairId="+repairId);
+        if(apply==null)
+        {
+            queryFromServer(URL,repairId);
         }
-        res = (ResultBean) this.getIntent().getSerializableExtra("res");
-        bindItem();
+        else
+        {
+            if (apply.getLogisticMan() != null) {
+                iv_employee_arr.setVisibility(View.VISIBLE);
+            } else {
+                tv_paigong.setVisibility(View.VISIBLE);
+            }
+            bindItem();
+        }
 
+    }
+    public void queryFromServer(String url,String repairId) {
+
+        String jsonurl = url + "?detail=" + repairId;
+        Log.d(TAG, "queryFromServer: " + jsonurl);
+        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String responseString) {
+                //请求成功后获取到json
+                final String responseJson = responseString.toString();
+                Log.d(TAG, "请求成功onFinish: " + responseJson);
+                response = JsonUtil.jsonToResponse(responseJson);
+                if (response.getErrorType() != 0) {
+                    //连接成功，但读取数据失败
+                    mhandler.sendEmptyMessage(2);
+                }
+                //连接成功，抛到主线程更新UI
+                else {
+                    detailRes = response.getResultBean();
+                    apply=detailRes.getApplys().get(0);
+                    employee=detailRes.getEmployee().get(0);
+                    mhandler.sendEmptyMessage(3);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Response rp = new Response();
+                rp.setErrorType(-1);
+                rp.setError(true);
+                rp.setErrorMessage("网络异常，返回空值");
+                response = rp;
+                mhandler.sendEmptyMessage(2);
+            }
+        });
     }
 
     private void initView() {
@@ -115,7 +182,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_employee_can = (TextView) findViewById(R.id.tv_employee_can);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
-        //
 
         //星星
         star1 = (ImageView) findViewById(R.id.iv_star1);
@@ -170,26 +236,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         img2.setOnClickListener(this);
         img3.setOnClickListener(this);
 
-
-
         imageviewList.add(img1);
         imageviewList.add(img2);
         imageviewList.add(img3);
-
         img_back.setOnClickListener(this);
-
 
         //员工详细信息箭头点击事件
         iv_employee_arr.setOnClickListener(this);
 
-        //员工名字点击事件
-
-        //tv_details_employee1.setOnClickListener(this);
-
-        //只有一个员工了 连点击事件都不用了直接显示那个员工
-//        tv_details_employee2.setOnClickListener(this);
-//        tv_details_employee3.setOnClickListener(this);
-//        tv_details_employee4.setOnClickListener(this);
 
     }
 
@@ -230,9 +284,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void bindItem() {
         getCategory();
-        getPlace();
-        //详细信息不显示单号
-//        tv_no.setText("" + apply.getA_no());
+        Log.d(TAG, "bindItem: "+apply.getRepair());
         tvName.setText(apply.getRepair());
         setNameXXX();
         tv_tel.setText(apply.getTel());
@@ -245,9 +297,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-        Log.d(TAG, "bindItem: 1" + apply.getDealTime());
+
         tv_date.setText(setTime(apply.getRepairTime()));
-        Log.d(TAG, "bindItem: 2"+apply.getFinilTime());
 
         tvFinishTime.setText(setTime(apply.getFinilTime()));
 
@@ -265,11 +316,24 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             Log.d(TAG, "该Apply的images集合为空");
         }
 
-
-
-
         //直接设置员工信息 但是默认被隐藏
-        setEmployeeInf(apply.getLogisticMan());
+       // setEmployeeInf(apply.getLogisticMan());
+        if(employee!=null)
+        {
+            Log.d(TAG, "bindItem:employee的getName "+employee.getName());
+            tv_details_employee1.setText(employee.getName());
+            tv_employee_phone.setText(employee.getE_tel());
+            tv_employee_can.setText(employee.getJob());
+        }
+        else
+        {
+
+            tv_details_employee1.setText("");
+            tv_employee_phone.setText("");
+            tv_employee_can.setText("");
+        }
+
+
         Log.d(TAG, "bindItem: "+Integer.parseInt(apply.getEvaluate()));
         //设置星星
        setStarColor(Integer.parseInt(apply.getEvaluate()));
@@ -340,7 +404,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         Employee employee=new Employee();
         if(employeeName!=null && !employeeName.equals(""))
         {
-            List<Employee> list_employee = res.getEmployee();
+            List<Employee> list_employee = detailRes.getEmployee();
             for (Employee e : list_employee) {
                 if (e.getName().equals(employeeName)) {
                     return e;
@@ -375,20 +439,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void getCategory() {
 
-        for (Category c : res.getCategory()) {
+        for (Category c : detailRes.getCategory()) {
             if (apply.getClasss().equals(c.getC_name())) {
                 category = c;
-                break;
-            }
-        }
-
-    }
-
-    private void getPlace() {
-
-        for (Place place : res.getPlaces()) {
-            if (apply.getDetailArea().equals(place.getP_name())) {
-                this.place = place;
                 break;
             }
         }
@@ -430,7 +483,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
                 Log.d(TAG, "执行了一次bindBitmap "+list_imageView.get(i));
             }
-
 
         } else {
             Log.d(TAG, "list_imageView为0,该Apply没有图片");

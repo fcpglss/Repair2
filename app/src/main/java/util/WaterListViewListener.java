@@ -35,18 +35,18 @@ public class WaterListViewListener implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        Apply applys = res.getApplys().get(position - 1);
+        String  repairID = res.getApplys().get(position - 1).getId();
 
         Intent intent = new Intent(MyApplication.getContext(), DetailsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle bundle = new Bundle();
+        intent.putExtra("repairId",repairID);
 
-        bundle.putSerializable("res",res);
-
-        bundle.putSerializable("apply_item",applys);
-
-        intent.putExtras(bundle);
+//        Bundle bundle = new Bundle();
+//
+//        bundle.putSerializable("apply_item",repairID);
+//
+//        intent.putExtras(bundle);
 
         mContext.startActivity(intent);
     }
