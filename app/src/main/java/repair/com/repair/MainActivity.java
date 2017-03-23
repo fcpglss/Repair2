@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,16 +33,16 @@ import model.Response;
 import repari.com.adapter.FragmentAdapter;
 
 
-
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
 
-    public static  int count=5;
+    public static int count = 5;
     public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
-    public static final String UP_APPLY="http://192.168.31.201:8888/myserver2/Upload2";//
-    public static final String GET_JSON="http://192.168.31.201:8888/myserver2/ResponseClient";
-    public static final String FRIST_URL="http://192.168.31.201:8888/myserver2/FirstRequest";
+    public static final String UP_APPLY = "http://192.168.31.201:8888/myserver2/Upload2";//
+    public static final String GET_JSON = "http://192.168.31.201:8888/myserver2/ResponseClient";
+    public static final String FRIST_URL = "http://192.168.31.201:8888/myserver2/FirstRequest";
+    public static final String SENDMORE_URL = "http://192.168.31.201:8888/myserver2/sendmore";
 
 //    public static final String FRIST_URL="http://192.168.43.128:8888/myserver2/FirstRequest";
 //    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
@@ -49,12 +50,15 @@ public class MainActivity extends AppCompatActivity {
 //    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
 
 
-
     public static final int TAKE_PHOTO_RAW = 1;
-    public static final int REQUEST_IMAGE =2 ;
-    public static List<Uri> list_uri=new ArrayList<>();
+    public static final int REQUEST_IMAGE = 2;
 
-    public static final boolean REQUEST=false;
+    public static Uri photoUri;
+
+    public static List<Uri> list_uri = new ArrayList<>();
+    public static Uri[] arrayUri2 = new Uri[3];
+
+    public static final boolean REQUEST = false;
 
     private Response response;
 
@@ -62,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mviewPager;
     private FragmentAdapter mpagerAdapter;
     private List<Fragment> mList;
-
 
 
     private ImageView miImageView;
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
-   // private StatisticsFragment statisticsFragment;
+    // private StatisticsFragment statisticsFragment;
     private MyRepairFragment myRepairFragment;
 
     private static int Screen1_3;
@@ -87,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Log.d("Apply_Fragment","onCreate");
+        Log.d("Apply_Fragment", "onCreate");
         init();
         initData();
         TabListener();
@@ -110,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
         mList = new ArrayList<Fragment>();
 
-        mainFragment  = new MainFragment();
+        mainFragment = new MainFragment();
         applyFragment = new ApplyFragment();
-      //  statisticsFragment = new StatisticsFragment();
-        myRepairFragment =new MyRepairFragment();
+        //  statisticsFragment = new StatisticsFragment();
+        myRepairFragment = new MyRepairFragment();
 
         mList.add(mainFragment);
         mList.add(applyFragment);
@@ -184,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         mFriendLayout.setOnClickListener(linearLayoutListener);
         mSeachText.setOnClickListener(linearLayoutListener);
     }
+
     /**
      * ��ʼ��Tab��TextView��ɫ
      */
@@ -194,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         mcontact.setTextColor(Color.BLACK);
 
     }
+
     private class LinearLayoutListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -216,18 +221,59 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("Apply_Activity"," resultCode="+RESULT_OK+"  requestCode="+requestCode);
-        if(resultCode == RESULT_OK && requestCode== TAKE_PHOTO_RAW){
-            Log.d("Apply_Activity", "outputFileUri:    " + list_uri.get(0).toString());
+        Log.d("Apply_Activity", " resultCode=" + RESULT_OK + "  requestCode=" + requestCode);
+        if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO_RAW) {
+//            Uri uri=null;
+//            if(data!=null&&data.getData()!=null) {
+//
+//                uri = data.getData();
+//                Log.d(TAG, "onActivityResult: data。getdat()的uri"+uri);
+//                list_uri.add(uri);
+//            }
+//            if(uri==null)
+//            {
+//                if(photoUri!=null)
+//                {
+//                    Log.d(TAG, "onActivityResult: photoUri："+photoUri);
+//                    uri=photoUri;
+//                    list_uri.add(uri);
+//                }
+//            }
+            MainActivity.list_uri.add(Uri.fromFile(ApplyFragment.fileUri));
+
         }
         if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
             list_uri.add(data.getData());
+            Log.d(TAG, "addItem");
+//            addItem(data.getData());
             Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
         }
     }
 
+    private void addItem(Uri uri) {
+       if (arrayUri2[0]==null){
+           arrayUri2[0]=uri;
+       }else {
+           if (arrayUri2[1]==null){
+               arrayUri2[1]=uri;
+           }else {
+               if (arrayUri2[2]==null){
+                   arrayUri2[2]=uri;
+               }else {
+                   arrayUri2[0]=arrayUri2[1];
+                   arrayUri2[1]=arrayUri2[2];
+                   arrayUri2[2]=uri;
+
+                   for (Uri u:arrayUri2){
+                       Log.d(TAG, "addItem: "+u.toString());
+                   }
+               }
+           }
+       }
+    }
 
 }
 

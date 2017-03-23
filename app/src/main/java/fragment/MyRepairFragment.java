@@ -104,7 +104,7 @@ public class MyRepairFragment extends Fragment {
 
         lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
         llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
-        adapter=new MyRepairAdapter(resultbean, MyApplication.getContext());
+        adapter=new MyRepairAdapter(resultbean, getActivity());
         if(resultbean!=null)
         {
             adapter.notifyDataSetChanged();

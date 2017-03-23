@@ -17,6 +17,7 @@ import java.util.List;
 import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Announcement;
+import model.Apply;
 import model.Response;
 import model.ResultBean;
 import repair.com.repair.R;
@@ -28,6 +29,8 @@ import util.LocalImageHolderView;
 import util.Util;
 import util.WaterListViewListener;
 import static repair.com.repair.MainActivity.FRIST_URL;
+import static repair.com.repair.MainActivity.JSON_URL;
+import static repair.com.repair.MainActivity.SENDMORE_URL;
 
 /**
  * Created by hsp on 2016/11/27.
@@ -37,6 +40,12 @@ import static repair.com.repair.MainActivity.FRIST_URL;
 public class MainFragment extends Fragment implements WaterDropListView.IWaterDropListViewListener {
 
     private static final String TAG = "MainFragment";
+
+    private static int start=0;
+    private static int end=5;
+
+    private static boolean moreFlag=false;
+
 
     private static final int  ERROR=2; //第一次网络不同标志
 
@@ -54,6 +63,10 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     public  ResultBean res =null;
 
+    public ResultBean moreRes =null;
+
+    public Response  moreResponse=null;
+
     private  WaterDropListView waterDropListView;
 
     private  ApplysAdapter applysAdapter;
@@ -61,6 +74,10 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     private  List<String> viewpager_url = new ArrayList<>();
 
     private Response response;
+
+    private List<Apply>  firstList=new ArrayList<>();
+
+    private List<Apply>  moreList= new ArrayList<>();
 
     private Handler mhandler = new Handler() {
         @Override
@@ -102,6 +119,14 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                 case 5:
                     Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
                     waterDropListView.stopRefresh();
+                    break;
+                case 6:
+                    Toast.makeText(getActivity(),"下边已经没有数据了",Toast.LENGTH_SHORT).show();
+                    waterDropListView.stopLoadMore();
+                    break;
+                case 7:
+                    updateView();
+                    waterDropListView.stopLoadMore();
                     break;
             }
         }
@@ -267,10 +292,69 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     }
     return applysAdapter;
     }
+
+    //// FIXME: 2017/3/22
     @Override
     public void onLoadMore() {
 
+        if(moreFlag)
+        {
+           mhandler.sendEmptyMessage(6);
+            Log.d(TAG, "onFinish: moreFlag:"+moreFlag);
+            return ;
+        }
+        else
+        {
+            Log.d(TAG, "onFinish: moreFlag:"+moreFlag);
+            start=start+5;
+            end=end+5;
+        }
+
+        HttpUtil.sendHttpRequest(SENDMORE_URL+"?start="+start+"&&end="+end, new HttpCallbackListener() {
+
+                @Override
+                public void onFinish(String responseString) {
+                    //请求成功后获取到json
+                    final String responseJson = responseString.toString();
+                    //解析json获取到Response;
+                    moreResponse=JsonUtil.jsonToResponse(responseJson);
+                    moreRes=moreResponse.getResultBean();
+                    if(moreRes!=null)
+                    {
+                        moreList=moreRes.getApplys();
+                        setMoreApply(moreList);
+                        mhandler.sendEmptyMessage(7);
+                        Util.writeJsonToLocal(res,MyApplication.getContext());
+                    }
+                    else
+                    {
+                        response.setErrorType(-2);
+                        response.setError(false);
+                        response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
+                        Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
+                        mhandler.sendEmptyMessage(NOTDATA);
+                    }
+                }
+                @Override
+                public void onError(Exception e) {
+                    Response rp= new Response();
+                    rp.setErrorType(-1);
+                    rp.setError(true);
+                    rp.setErrorMessage("网络异常，返回空值");
+                    response=rp;
+                    Log.d(TAG, " onEnrror调用:" +e.getMessage());
+                    checkError();
+                }
+            });
+}
+    private void setMoreApply(List<Apply> applyList)
+    {
+        for(Apply apply :applyList)
+        {
+            res.getApplys().add(apply);
+        }
     }
+
 
     @Override
     public void onResume() {

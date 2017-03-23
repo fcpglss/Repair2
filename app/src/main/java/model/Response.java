@@ -13,12 +13,15 @@ public class Response implements Serializable{
     private boolean error;
     private int errorType;
     private String errorMessage;
+
     private boolean isEnd;
+
     public boolean isEnd() {
         return isEnd;
     }
-    public void setEnd(boolean isEnd) {
-        this.isEnd = isEnd;
+
+    public void setEnd(boolean end) {
+        isEnd = end;
     }
 
     public boolean isError() {

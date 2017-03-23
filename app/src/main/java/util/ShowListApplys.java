@@ -28,13 +28,13 @@ import repari.com.adapter.ApplysAdapter;
  * Created by hsp on 2016/12/12.
  */
 
-public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
+public class ShowListApplys  {
 
      List<String> viewpager_url=new ArrayList<>();
     ConvenientBanner convenientBanner=null;
     ResultBean res=null;
     WaterDropListView waterListView=null;
-    ApplysAdapter adapter=null;
+   public  ApplysAdapter adapter=null;
     Context context=null;
 
     public ShowListApplys(Context mcontext,WaterDropListView listview, ApplysAdapter adapter,ConvenientBanner convenientBanner,ResultBean resultBean)
@@ -46,26 +46,21 @@ public class ShowListApplys extends AsyncTask<String,Void,ApplysAdapter> {
         res=resultBean;
     }
 
-    @Override
-    protected ApplysAdapter doInBackground(String... voids) {
 
 
-       if(res==null)
-       {
-           return adapter;
-       }
+    public  void setView()
+    {
+        if(res==null)
+        {
+            return ;
+        }
         adapter=getBeanFromJson(res,viewpager_url,adapter);
-       // writeJsonToLocal(result_json, MyApplication.getContext());
-        return adapter;
-    }
-
-    @Override
-    protected void onPostExecute(ApplysAdapter adapter) {
-
-       setShowView(convenientBanner,res,waterListView,viewpager_url,adapter);
+        setShowView(convenientBanner,res,waterListView,viewpager_url,adapter);
 
     }
-    public   void setShowView(ConvenientBanner convenientBanner,final ResultBean res,WaterDropListView waterDropListView,List<String> viewpager_url,final ApplysAdapter applysAdapters) {
+
+
+    public  void setShowView(ConvenientBanner convenientBanner,final ResultBean res,WaterDropListView waterDropListView,List<String> viewpager_url,final ApplysAdapter applysAdapters) {
         if (convenientBanner != null && res != null) {
             convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
             convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);

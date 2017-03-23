@@ -1,5 +1,6 @@
 package fragment;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,7 +29,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -60,10 +63,12 @@ import camera.FIleUtils;
 import model.Apply;
 import model.Area;
 import model.Category;
+import model.Flies;
 import model.Place;
 
 import model.Response;
 import model.ResultBean;
+import model.Room;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -81,6 +86,7 @@ import util.Util;
 import static android.R.attr.bitmap;
 import static android.R.attr.fillEnabled;
 import static android.R.attr.foreground;
+import static android.R.attr.path;
 import static android.R.attr.x;
 import static android.R.attr.y;
 import static android.content.Context.MODE_PRIVATE;
@@ -93,7 +99,9 @@ import static repair.com.repair.MainActivity.JSON_URL;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
+import static repair.com.repair.MainActivity.arrayUri2;
 import static repair.com.repair.MainActivity.list_uri;
+import static repair.com.repair.MainActivity.photoUri;
 import static util.NetworkUtils.isNetworkConnected;
 
 
@@ -108,10 +116,24 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
     //记录区域ID
     int AreaId;
+    int PlaceId;//楼号ID
+    int fliesId;//层号ID
+    // 添加层号 房间号
+    private EditText etFloor,etRoom;
+
+
     //滚动
     private ScrollView svBackground;
     private Button btn_apply;
     private ImageView image_camera, img_add, img_1, img_2, img_3;
+
+    private RelativeLayout rl1,rl2,rl3;
+    //打叉图片
+    private ImageView ivX1,ivX2,ivX3;
+    //显示大图
+    private LinearLayout llBigImg;
+    private ImageView ivBigImg;
+
 
     private Button btn_clear;
 
@@ -129,8 +151,16 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
     private List<String> listArea = new ArrayList<>();
     private List<String> listDetailArea = new ArrayList<>();
+    private List<String> listFloor = new ArrayList<>();
+    private List<String> listRoom = new ArrayList<>();
+
     private List<String> listApplyType = new ArrayList<>();
     private List<String> listApplyDetailType = new ArrayList<>();
+
+    //用来比较的list
+    List<Uri> list = new ArrayList<>();
+
+    Uri[] arrayUri = new Uri[3];
 
     private Response response;
     private Handler mhandler = new Handler() {
@@ -142,6 +172,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
                     String addressJson2=Util.loadAddressFromLocal(MyApplication.getContext());
                     addressRes=JsonUtil.jsonToBean(addressJson2);
+                    Log.d(TAG, "handleMessage:2 本地数据addressRes"+ addressJson2);
                     setDialogView(addressRes);
                     break;
                 case 3:
@@ -159,6 +190,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     //对话框
     DialogPlus dialogArea;
     DialogPlus dialogDetailArea;
+    DialogPlus dialogFloor;
+    DialogPlus dialogRoom;
+
     DialogPlus dialogApplyType;
     DialogPlus dialogGetImage;
 
@@ -188,6 +222,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         etApplyType = (EditText) getActivity().findViewById(R.id.et_apply_type);
         et_name = (EditText) getActivity().findViewById(R.id.et_name);
 
+        etFloor = (EditText) getActivity().findViewById(R.id.et_floor);
+        etRoom = (EditText) getActivity().findViewById(R.id.et_room);
+
         et_tel = (EditText) getActivity().findViewById(R.id.et_tel);
 
         et_describe = (EditText) getActivity().findViewById(R.id.et_apply_describe);
@@ -199,9 +236,24 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         img_1 = (ImageView) getActivity().findViewById(R.id.iv_img1);
         img_2 = (ImageView) getActivity().findViewById(R.id.iv_img2);
         img_3 = (ImageView) getActivity().findViewById(R.id.iv_img3);
-        img_1.setOnClickListener(this);
-        img_2.setOnClickListener(this);
-        img_3.setOnClickListener(this);
+
+        //包裹三张图片的RelativeLayout
+        rl1 = (RelativeLayout) getActivity().findViewById(R.id.rl_img1);
+        rl2 = (RelativeLayout) getActivity().findViewById(R.id.rl_img2);
+        rl3 = (RelativeLayout) getActivity().findViewById(R.id.rl_img3);
+        //打叉图片
+        ivX1 = (ImageView) getActivity().findViewById(R.id.iv_img_x1);
+        ivX2 = (ImageView) getActivity().findViewById(R.id.iv_img_x2);
+        ivX3 = (ImageView) getActivity().findViewById(R.id.iv_img_x3);
+        //设置打叉点击事件
+        XOnclick();
+        //大图
+        llBigImg = (LinearLayout) getActivity().findViewById(R.id.ll_big_img);
+        ivBigImg = (ImageView) getActivity().findViewById(R.id.iv_big_img);
+
+        //设置图片点击事件
+        imgOnclick();
+
         imageViewList.add(img_1);
         imageViewList.add(img_2);
         imageViewList.add(img_3);
@@ -215,6 +267,80 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    private void imgOnclick() {
+        img_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setBigImg(v);
+            }
+        });
+        img_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setBigImg(v);
+            }
+        });
+        img_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setBigImg(v);
+            }
+        });
+    }
+
+    private void setBigImg(View v) {
+        ImageView iv= (ImageView) v;
+        llBigImg.setVisibility(View.VISIBLE);
+        ivBigImg.setImageDrawable(iv.getDrawable());
+        ivBigImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llBigImg.setVisibility(View.GONE);
+                ivBigImg.setImageDrawable(null);
+            }
+        });
+    }
+
+    private void XOnclick() {
+
+        ivX1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                img_1.setImageDrawable(null);
+                rl1.setVisibility(View.GONE);
+                rl2.setVisibility(View.GONE);
+                rl3.setVisibility(View.GONE);
+                list_uri.remove(0);
+                switchImage();
+
+            }
+        });
+        ivX2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                img_2.setImageDrawable(null);
+                rl1.setVisibility(View.GONE);
+                rl2.setVisibility(View.GONE);
+                rl3.setVisibility(View.GONE);
+                list_uri.remove(1);
+                switchImage();
+            }
+        });
+        ivX3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_3.setImageDrawable(null);
+                rl1.setVisibility(View.GONE);
+                rl2.setVisibility(View.GONE);
+                rl3.setVisibility(View.GONE);
+                list_uri.remove(2);
+                switchImage();
+            }
+        });
+    }
+
     private void bindView() {
 
         apply.setRepair(et_name.getText().toString());
@@ -223,15 +349,15 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         apply.setPassword(etApplyPassword.getText().toString());
         apply.setArea(etArea.getText().toString());
         apply.setDetailArea(etDetailArea.getText().toString());
-
-        apply.setRoom(et_details.getText().toString());
+        apply.setFlies(etFloor.getText().toString());
+        apply.setRoom(etRoom.getText().toString());
         apply.setClasss(etApplyType.getText().toString());
         apply.setRepairDetails(et_describe.getText().toString());
 
     }
     public void queryFromServer(String url) {
 
-        String jsonurl=url+"?applyFragment=applyfragment";
+        String jsonurl=url+"?applyfragment";
         Log.d(TAG, "queryFromServer: "+jsonurl);
         HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
             @Override
@@ -280,18 +406,30 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private void setDialogView(ResultBean resultBean) {
         if (resultBean != null) {
 
-            DialogAdapter detailAreaAdapter = new DialogAdapter(getActivity(), listDetailArea, R.layout.simple_list_item);
+
             DialogAdapter areaAdapter = new DialogAdapter(getActivity(), listArea, R.layout.simple_list_item);
+            DialogAdapter detailAreaAdapter = new DialogAdapter(getActivity(), listDetailArea, R.layout.simple_list_item);
+            DialogAdapter floorAdapter = new DialogAdapter(getActivity(),listFloor,R.layout.simple_list_item);
+            DialogAdapter roomAdapter = new DialogAdapter(getActivity(),listRoom,R.layout.simple_list_item);
             DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType,resultBean.getCategory(), R.layout.dialog_detail_type);
 
 
+            //选择区域对话框
             setDialogArea(areaAdapter);
+            //选择楼号对话框
             setDialogDetailArea(detailAreaAdapter);
+            //选择层数对话框
+            setDialogFloor(floorAdapter);
+            //选择房间对话框
+            setDialogRoom(roomAdapter);
+            //选择类型对话框
             setDialogApplyType(applyTypeAdapter);
             }
 
 
     }
+
+
 
 
     private void setDialogArea(final DialogAdapter dialogAdapter) {
@@ -376,6 +514,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
+                etDetailArea.setText("");
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
                     listDetailArea.clear();
@@ -387,11 +526,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                             int areaId=getAreaID(etArea.getText().toString());
                             if(areaId==p.getAreaID())
                                 listDetailArea.add(p.getP_name());
+
                         }
                     }
                     dialogAdapter.notifyDataSetChanged();
 
-                    // FIXME: 2017/3/11
+                    // 提示先选择区域
                     Log.d(TAG, "onTouch: etArea数据 "+etArea.getText());
                     if (!etArea.getText().toString().equals("")){
                         dialogDetailArea.show();
@@ -420,6 +560,165 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+
+    }
+
+
+    private void setDialogFloor(final DialogAdapter dialogAdapter) {
+
+        dialogFloor = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head6)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position!=-1){
+                            etFloor.setText(listFloor.get(position));
+                            dialogFloor.dismiss();
+                        }
+
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+
+        //给EditText设置点击事件
+        etFloor.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: ");
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                    listFloor.clear();
+                    Log.d(TAG, "onTouch: for之前");
+
+                    //// FIXME: 2017/3/22 添加相应数据
+                    for (Flies f : addressRes.getFlies()) {
+                        Log.d(TAG, "onTouch: f："+f.getFlies());
+                        if (etDetailArea.getText().toString() != null && !etDetailArea.equals(""))
+                        {
+                            int id = getDetailId(etDetailArea.getText().toString());
+                            Log.d(TAG, "onTouch: id "+id);
+                            Log.d(TAG, "onTouch: f.getaFloor:"+f.getaFloor());
+                            Log.d(TAG, "onTouch: f.getid "+f.getId());
+                            if(id == f.getaFloor()){
+                                listFloor.add(f.getFlies());
+                                Log.d(TAG, "onTouch: 层号 ："+f.getFlies());
+                            }
+                        }
+                    }
+
+
+                    dialogAdapter.notifyDataSetChanged();
+
+
+                    if (!etDetailArea.getText().toString().equals("")){
+                        dialogFloor.show();
+                        Log.d(TAG, "onTouch:show ");
+                    }else {
+                        List<String> list = new ArrayList<>();
+                        list.add("请先选择楼号");
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        dialogGetImage = DialogPlus.newDialog(getActivity())
+                                .setAdapter(dialogAdapter)
+                                .setGravity(Gravity.CENTER)
+                                .setContentWidth(800)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                                        dialogGetImage.dismiss();
+                                    }
+
+                                })
+                                .create();
+                        dialogGetImage.show();
+                    }
+
+                }
+                return false;
+            }
+        });
+
+    }
+
+    private void setDialogRoom(final DialogAdapter dialogAdapter) {
+
+        dialogRoom = DialogPlus.newDialog(getActivity())
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head7)
+                .setContentWidth(800)
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position!=-1){
+                            etRoom.setText(listRoom.get(position));
+                            dialogRoom.dismiss();
+                        }
+
+                    }
+
+                })
+                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+
+        //给EditText设置点击事件
+        etRoom.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: ");
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                    listRoom.clear();
+
+                    // FIXME: 2017/3/22 添加相应数据
+                    for (Room r:addressRes.getRooms()) {
+                        if (etFloor.getText().toString() != null && !etFloor.equals(""))
+                        {
+                            int Id=getFloor(etFloor.getText().toString());
+                            if(Id==r.getFlies())
+                                listRoom.add(r.getRoomNumber());
+                        }
+                    }
+
+                    dialogAdapter.notifyDataSetChanged();
+
+                    // 提示先选择区域
+                    if (!etFloor.getText().toString().equals("")){
+                        dialogRoom.show();
+                        Log.d(TAG, "onTouch:show ");
+                    }else {
+                        List<String> list = new ArrayList<>();
+                        list.add("请先选择层号");
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        dialogGetImage = DialogPlus.newDialog(getActivity())
+                                .setAdapter(dialogAdapter)
+                                .setGravity(Gravity.CENTER)
+                                .setContentWidth(800)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                                        dialogGetImage.dismiss();
+                                    }
+                                })
+                                .create();
+                        Log.d(TAG, "onTouch: warnning show");
+                        dialogGetImage.show();
+                    }
+
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -512,45 +811,16 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     list_uri.remove(i);
                 }
             }
-            switch (list_uri.size() - 1) {
 
-
-                case 0:
-                    img_1.getLayoutParams().height = 200;
-                    img_1.getLayoutParams().width = 200;
-                    img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                    img_2.setImageBitmap(null);
-                    img_3.setImageBitmap(null);
-                    break;
-                case 1:
-
-
-                    img_1.getLayoutParams().height = 200;
-                    img_1.getLayoutParams().width = 200;
-                    img_2.getLayoutParams().height = 200;
-                    img_2.getLayoutParams().width = 200;
-
-                    img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                    img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
-                    img_3.setImageBitmap(null);
-                    break;
-                case 2:
-
-
-                    img_1.getLayoutParams().height = 200;
-                    img_1.getLayoutParams().width = 200;
-                    img_2.getLayoutParams().height = 200;
-                    img_2.getLayoutParams().width = 200;
-                    img_3.getLayoutParams().height = 200;
-                    img_3.getLayoutParams().width = 200;
-
-                    img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                    img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
-                    img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(2)), 180, 180));
-                    break;
-
-
+            for (Uri u:list_uri){
+                int i=0;
+                arrayUri[i]=u;
+                Log.d(TAG, "onResume: "+u.toString());
+                i++;
             }
+
+            //判断和赋值
+            switchImage();
 
 
         } else {
@@ -559,6 +829,33 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         }
         Log.d("MainFragment", "Apply_onResume");
+    }
+
+    private void switchImage() {
+
+        switch (list_uri.size() - 1) {
+            case 0:
+                rl1.setVisibility(View.VISIBLE);
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
+                break;
+            case 1:
+                rl1.setVisibility(View.VISIBLE);
+                rl2.setVisibility(View.VISIBLE);
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
+                break;
+            case 2:
+
+                rl1.setVisibility(View.VISIBLE);
+                rl2.setVisibility(View.VISIBLE);
+                rl3.setVisibility(View.VISIBLE);
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
+                img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(2)), 180, 180));
+                break;
+
+
+        }
     }
 
     @Override
@@ -590,9 +887,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
             case R.id.iv_add:
 //                startGallery();
-
                 addPic();
-
                 break;
         }
 
@@ -632,15 +927,20 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    public static File fileUri;
     private void startCamera() {
-        File file = FIleUtils.createImageFile();
-        MainActivity.list_uri.add(Uri.fromFile(file));
+        fileUri= FIleUtils.createImageFile();
+//        ContentValues values =new ContentValues();
+//        values.put(MediaStore.Images.Media.TITLE,file.getAbsolutePath());
+//        photoUri=getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+//        MainActivity.list_uri.add(Uri.fromFile(file));
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileUri));
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             getActivity().startActivityForResult(intent, TAKE_PHOTO_RAW);
-
         }
+
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -673,6 +973,28 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         }
         return -1;
     }
+    private int getDetailId(String detailName){
+        int id ;
+        List<Place> list = addressRes.getPlaces();
+        for (Place p:list){
+            if (p.getP_name().equals(detailName)){
+                PlaceId = p.getP_id();
+                return PlaceId;
+            }
+        }
+        return -1;
+    }
+    private  int getFloor(String floorName){
+        int id = 0;
+        List<Flies> list = addressRes.getFlies();
+        for(Flies f:list){
+            if (f.getFlies().equals(floorName)){
+                id = f.getId();
+            }
+            return id;
+        }
+        return -1;
+    }
 
 
     private void startGallery() {
@@ -696,6 +1018,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 String json = JsonUtil.beanToJson(apply);
                 Log.d(TAG, "upApply: json " + json);
 
+                for (Uri u :
+                        list_uri) {
+                    Log.d(TAG, "upApply: "+u.toString());
+                }
                 List<File> files = getFiles(list_uri);
 
                 submit(json, files).execute(new StringCallback() {
@@ -738,7 +1064,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         if (list_uri.size() > 0 && list_uri != null) {
             for (int i = 0; i < list_uri.size(); i++) {
 
-                paths[i] = getPath(list_uri.get(i));
+
+                if (list_uri.get(i).toString().split(":")[0].equals("file")){
+                    String s = list_uri.get(i).toString().split("//")[1];
+                    paths[i] = s;
+                }else {
+                    paths[i] = getPath(list_uri.get(i));
+                }
 
                 Log.d(TAG, "getFiles: " + paths[i]);
                 String newPath = compressImage(paths[i]);
@@ -809,16 +1141,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 //        sp_category.setSelection(0);
 //        sp_place.setSelection(0);
 
-        img_1.setImageBitmap(null);
-        img_2.setImageBitmap(null);
-        img_3.setImageBitmap(null);
-
-        img_1.getLayoutParams().height = 0;
-        img_1.getLayoutParams().width = 0;
-        img_2.getLayoutParams().height = 0;
-        img_2.getLayoutParams().width = 0;
-        img_3.getLayoutParams().height = 0;
-        img_3.getLayoutParams().width = 0;
+        rl1.setVisibility(View.GONE);
+        rl2.setVisibility(View.GONE);
+        rl3.setVisibility(View.GONE);
         list_uri.clear();
     }
 

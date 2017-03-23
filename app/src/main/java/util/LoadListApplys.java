@@ -28,7 +28,7 @@ import repari.com.adapter.ApplysAdapter;
  * 从SharedPreference中加载json
  */
 
-public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
+public class LoadListApplys{
 
     private static final String TAG = "LoadListApplys";
 
@@ -36,7 +36,7 @@ public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
     ResultBean res = null;
     ConvenientBanner convenientBanner = null;
     WaterDropListView waterListView = null;
-    ApplysAdapter adapter = null;
+   public  ApplysAdapter adapter = null;
     Context context;
 
     public LoadListApplys(Context mcontext, WaterDropListView listview, ApplysAdapter adapter, ConvenientBanner convenientBanner) {
@@ -47,23 +47,19 @@ public class LoadListApplys extends AsyncTask<Void,Void,ApplysAdapter> {
     }
 
 
-    @Override
-    protected ApplysAdapter doInBackground(Void... voids) {
+    public void setView()
+    {
+
         try {
             String json=Util.loadFirstFromLocal(context);
             res = JsonUtil.jsonToBean(json);
             adapter = getBeanFromJson(res, viewpager_url, adapter);
-
+            setShowView(convenientBanner, res, waterListView, viewpager_url, adapter);
         } catch (Exception e) {
-            Log.d(TAG, "doInBackground: "+e.getMessage().toString());
+            Log.d(TAG, "LoadlistApplys: "+e.getMessage().toString());
         }
-        return adapter;
     }
 
-    @Override
-    protected void onPostExecute(ApplysAdapter adapter) {
-        setShowView(convenientBanner, res, waterListView, viewpager_url, adapter);
-    }
 
     public void setShowView(ConvenientBanner convenientBanner,final ResultBean res, WaterDropListView waterDropListView, List<String> viewpager_url, final ApplysAdapter applysAdapters) {
         if (convenientBanner != null && res != null) {

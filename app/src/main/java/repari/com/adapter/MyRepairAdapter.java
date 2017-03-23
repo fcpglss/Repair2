@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.DialogPlusBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,47 +140,67 @@ public class MyRepairAdapter extends BaseAdapter {
         viewHolder.ivState.setImageResource(getState(position, myRes));
         viewHolder.tvAddress.setText(area_name+a_details);
         viewHolder.tvType.setText(categoryName);
+
         //判断是否能修改和评价然后跳转
         JumpApprise(viewHolder.tvAppraise, apply.getState(),position);
         JumpChange(viewHolder.tvChange, apply.getState(),position);
+
         return convertView;
     }
 
-    private void JumpChange(TextView tvChange, int state, final int position) {
-        // FIXME: 2017/3/14 已完工状态是数字几来着？我默认放了1
-        if (state == 1){
+    private void JumpChange(TextView tvChange, final int state, final int position) {
+
             tvChange.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // 放入被点击的item的Id ,跳转修改Activity
-                    Intent intent = new Intent(context, ChangeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("apply",myRes.getApplys().get(position));
-                    bundle.putSerializable("address",getAddressRes());
-                    intent.putExtras(bundle);
-                    context.startActivity(intent);
+                    if (state == 1) {
+                        // 放入被点击的item的Id ,跳转修改Activity
+                        Intent intent = new Intent(context, ChangeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("apply",myRes.getApplys().get(position));
+                        bundle.putSerializable("address",getAddressRes());
+                        intent.putExtras(bundle);
+                        context.startActivity(intent);
+                    }else {
+                        Toast.makeText(context, "维修单已开始处理，不能再修改", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
         }
 
-    }
+
+    public  static DialogPlus dialogPlus =null;
 
     private void JumpApprise(TextView tvAppraise, final int position, int state) {
-        // FIXME: 2017/3/14 已完工状态是数字几来着？我默认放了4
-        if (state == 4){
+        Log.d(TAG, "JumpApprise: if 判断之前");
+
+
             tvAppraise.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //放入被点击的item的Id,跳转评价Activity
-                    Intent intent = new Intent(context, AppraiseActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("apply", myRes.getApplys().get(position));
-                    intent.putExtras(bundle);
-                    context.startActivity(intent);
+                    //fixme  先改为true随时可以跳转
+                    if (true){
+                        Log.d(TAG, "JumpApprise  onClick: 点击事件");
+                        DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context,R.layout.dialog_input_password,
+                                myRes.getApplys(),position);
+                        //点击弹出对话框输入密码
+                        dialogPlus = DialogPlus.newDialog(context)
+                                .setAdapter(dialogAdapterPassword)
+                                .setGravity(Gravity.CENTER)
+                                .setContentWidth(800)
+                                .setContentHeight(500)
+                                .setHeader(R.layout.dialog_head5)
+                                .create();
+                        dialogPlus.show();
+                        Log.d(TAG, "JumpApprise onClick: show()已被调用");
+                    }else {
+                        Toast.makeText(context, "维修单未完成不能评价", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
-        }
     }
 
 

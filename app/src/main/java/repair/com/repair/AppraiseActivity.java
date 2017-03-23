@@ -1,6 +1,7 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public class AppraiseActivity extends AppCompatActivity {
     ImageView star1,star2,star3,star4,star5;
     //数星星
     int starCount=0;
+    boolean starState=true;
 
     //评价内容
     EditText etAppraiseContent;
@@ -67,7 +69,13 @@ public class AppraiseActivity extends AppCompatActivity {
     //获取维修地点
     private String getAddress() {
 
-        return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(apply.getArea());
+        sb.append(apply.getDetailArea());
+        sb.append(apply.getRoom());
+
+
+        return sb.toString();
     }
 
     //获取数据Apply 这个页面只用到apply
@@ -98,7 +106,7 @@ public class AppraiseActivity extends AppCompatActivity {
 
     //星星的点击事件实现
     private void starOnClick(){
-        List<ImageView> list = new ArrayList<>();
+        final List<ImageView> list = new ArrayList<>();
         list.add(star1);
         list.add(star2);
         list.add(star3);
@@ -109,15 +117,25 @@ public class AppraiseActivity extends AppCompatActivity {
             list.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    starCount = finalI;
-                    //改变星星颜色
-                    for (int j = 0; j < finalI; j++) {
-                        // FIXME: 2017/3/14 改变前i个颜色
+                    if(starState){
+                        starCount = finalI;
+                        //改变星星颜色
+                        for (int j = 0; j < finalI; j++) {
+                            // FIXME: 2017/3/14 改变前i个颜色
+                            list.get(j).setColorFilter(getResources().getColor(R.color.starColor));
+                        }
+                        starState = false;
+                    }else{
+                        for (ImageView imageView:list){
+                            imageView.setColorFilter(getResources().getColor(R.color.et_downline));
+                        }
                     }
+
                 }
             });
         }
     }
+
 
     //提交按钮点击时间实现
     private void btnSubmitOnClick(){
@@ -125,6 +143,7 @@ public class AppraiseActivity extends AppCompatActivity {
         //获取数据，也就是星星数量starCount和评价文字tvAppriseContent，还有id作为插入数据库的条件
         String content = etAppraiseContent.getText().toString();
         String id = apply.getId();
+
         //点击提交数据
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
