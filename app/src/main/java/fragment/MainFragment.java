@@ -79,6 +79,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     private List<Apply>  moreList= new ArrayList<>();
 
+    View view;
     private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -142,10 +143,13 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
-
+        if(view==null)
+        {
+            view=inflater.inflate(R.layout.fragment1, null);
+        }
         Log.d(TAG, "Main_onCreateVIew  mlist_int=" + mlist_int.size());
 
-        return inflater.inflate(R.layout.fragment1, null);
+        return view;
     }
 
     @Override
@@ -156,16 +160,18 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         /**
          * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
          */
-        if(isFirst)
-        {
+        if(isFirst){
             queryFromServer(FRIST_URL,SUCCESS);
             Log.d(TAG, "第一次载入");
         }
         else
         {
-            Log.d(TAG, "不是第一次载入，从内存或本地中读取res");
-            updateView();
+            if(res==null)
+            {
+               updateView();
+            }
         }
+
     }
 
     /**

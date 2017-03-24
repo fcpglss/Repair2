@@ -32,15 +32,15 @@ import static repari.com.adapter.MyRepairAdapter.dialogPlus;
 public class DialogAdapterPassword extends BaseAdapter {
     LayoutInflater layoutInflater;
     ImageLoader imageLoader;
-    List<Apply> apply;
+    Apply apply;
     Context context;
     int position;
     int layout;
 
-    public DialogAdapterPassword(Context context, int layout, List<Apply> apply, int position) {
+
+    public DialogAdapterPassword(Context context, int layout, Apply apply) {
         this.layout = layout;
         this.apply = apply;
-        this.position = position;
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
         imageLoader = ImageLoader.build(context);
@@ -89,11 +89,11 @@ public class DialogAdapterPassword extends BaseAdapter {
                     Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show();
                 } else {
                     //正确就跳转
-                    if (s.equals(apply.get(position).getPassword())) {
+                    if (s.equals(apply.getPassword())) {
                         dialogPlus.dismiss();
                         Intent intent = new Intent(context, AppraiseActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("apply", apply.get(position));
+                        bundle.putSerializable("apply", apply);
                         intent.putExtras(bundle);
                         context.startActivity(intent);
                     } else {

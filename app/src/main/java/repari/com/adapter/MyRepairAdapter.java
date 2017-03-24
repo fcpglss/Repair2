@@ -142,8 +142,8 @@ public class MyRepairAdapter extends BaseAdapter {
         viewHolder.tvType.setText(categoryName);
 
         //判断是否能修改和评价然后跳转
-        JumpApprise(viewHolder.tvAppraise, apply.getState(),position);
-        JumpChange(viewHolder.tvChange, apply.getState(),position);
+        JumpApprise(viewHolder.tvAppraise,position, apply.getState());
+        JumpChange(viewHolder.tvChange,position, apply.getState());
 
         return convertView;
     }
@@ -173,7 +173,7 @@ public class MyRepairAdapter extends BaseAdapter {
 
     public  static DialogPlus dialogPlus =null;
 
-    private void JumpApprise(TextView tvAppraise, final int position, int state) {
+    private void JumpApprise(TextView tvAppraise, final int position, final int state) {
         Log.d(TAG, "JumpApprise: if 判断之前");
 
 
@@ -181,10 +181,12 @@ public class MyRepairAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     //fixme  先改为true随时可以跳转
-                    if (true){
+                    Log.d(TAG, "onClick: "+state);
+                    if (state == 4){
                         Log.d(TAG, "JumpApprise  onClick: 点击事件");
+                        Log.d(TAG, "onClick: position: "+position);
                         DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context,R.layout.dialog_input_password,
-                                myRes.getApplys(),position);
+                                myRes.getApplys().get(position));
                         //点击弹出对话框输入密码
                         dialogPlus = DialogPlus.newDialog(context)
                                 .setAdapter(dialogAdapterPassword)

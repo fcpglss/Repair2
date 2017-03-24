@@ -65,13 +65,10 @@ import model.Area;
 import model.Category;
 import model.Flies;
 import model.Place;
-
 import model.Response;
 import model.ResultBean;
 import model.Room;
 import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.DialogAdapter;
@@ -79,36 +76,22 @@ import repari.com.adapter.DialogDetailAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
-import util.NetworkUtils;
-import util.ShowListApplys;
 import util.Util;
 
-import static android.R.attr.bitmap;
-import static android.R.attr.fillEnabled;
-import static android.R.attr.foreground;
-import static android.R.attr.path;
-import static android.R.attr.x;
-import static android.R.attr.y;
 import static android.content.Context.MODE_PRIVATE;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static camera.CalculateImage.getSmallBitmap;
-import static com.zhy.http.okhttp.OkHttpUtils.post;
-import static repair.com.repair.MainActivity.FRIST_URL;
 import static repair.com.repair.MainActivity.GET_JSON;
 import static repair.com.repair.MainActivity.JSON_URL;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
-import static repair.com.repair.MainActivity.arrayUri2;
 import static repair.com.repair.MainActivity.list_uri;
-import static repair.com.repair.MainActivity.photoUri;
 import static util.NetworkUtils.isNetworkConnected;
 
 
 public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "ApplyFragment";
-
 
     private EditText et_name, et_tel, et_describe, et_details;
 
@@ -119,7 +102,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     int PlaceId;//楼号ID
     int fliesId;//层号ID
     // 添加层号 房间号
-    private EditText etFloor,etRoom;
+    private EditText etFloor, etRoom;
 
 
     //滚动
@@ -127,13 +110,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private Button btn_apply;
     private ImageView image_camera, img_add, img_1, img_2, img_3;
 
-    private RelativeLayout rl1,rl2,rl3;
+    private RelativeLayout rl1, rl2, rl3;
     //打叉图片
-    private ImageView ivX1,ivX2,ivX3;
+    private ImageView ivX1, ivX2, ivX3;
     //显示大图
     private LinearLayout llBigImg;
     private ImageView ivBigImg;
-
 
     private Button btn_clear;
 
@@ -153,9 +135,21 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private List<String> listDetailArea = new ArrayList<>();
     private List<String> listFloor = new ArrayList<>();
     private List<String> listRoom = new ArrayList<>();
+    //用于存放Id的list
+    private List<Integer> listAreaID = new ArrayList<>();
+    private List<Integer> listDetailAreaID = new ArrayList<>();
+    private List<Integer> listFloorID = new ArrayList<>();
+    private List<Integer> listRoomID = new ArrayList<>();
+    private List<Integer> listApplyTypeID = new ArrayList<>();
 
     private List<String> listApplyType = new ArrayList<>();
     private List<String> listApplyDetailType = new ArrayList<>();
+
+    private int areaId = 0;
+    private int placeId = 0;
+    private int flieId = 0;
+    private int roomId = 0;
+    private int categoryId = 0;
 
     //用来比较的list
     List<Uri> list = new ArrayList<>();
@@ -170,9 +164,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             switch (msg.what) {
                 case 2:
                     Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
-                    String addressJson2=Util.loadAddressFromLocal(MyApplication.getContext());
-                    addressRes=JsonUtil.jsonToBean(addressJson2);
-                    Log.d(TAG, "handleMessage:2 本地数据addressRes"+ addressJson2);
+                    String addressJson2 = Util.loadAddressFromLocal(MyApplication.getContext());
+                    addressRes = JsonUtil.jsonToBean(addressJson2);
+                    Log.d(TAG, "handleMessage:2 本地数据addressRes" + addressJson2);
                     setDialogView(addressRes);
                     break;
                 case 3:
@@ -180,9 +174,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     break;
                 case 4:
                     Log.d(TAG, "handleMessage4: 内存没有数据，尝试从本地文件读取");
-                    String addressJson=Util.loadAddressFromLocal(MyApplication.getContext());
-                    addressRes=JsonUtil.jsonToBean(addressJson);
+                    String addressJson = Util.loadAddressFromLocal(MyApplication.getContext());
+                    addressRes = JsonUtil.jsonToBean(addressJson);
                     setDialogView(addressRes);
+                    break;
+                case 5:
+                    Toast.makeText(getActivity(), "请填写报修地址", Toast.LENGTH_SHORT).show();
+                    ;
                     break;
             }
         }
@@ -289,7 +287,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setBigImg(View v) {
-        ImageView iv= (ImageView) v;
+        ImageView iv = (ImageView) v;
         llBigImg.setVisibility(View.VISIBLE);
         ivBigImg.setImageDrawable(iv.getDrawable());
         ivBigImg.setOnClickListener(new View.OnClickListener() {
@@ -347,60 +345,58 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         apply.setTel(et_tel.getText().toString());
         apply.setEmail(etEmail.getText().toString());
         apply.setPassword(etApplyPassword.getText().toString());
-        apply.setArea(etArea.getText().toString());
-        apply.setDetailArea(etDetailArea.getText().toString());
-        apply.setFlies(etFloor.getText().toString());
-        apply.setRoom(etRoom.getText().toString());
-        apply.setClasss(etApplyType.getText().toString());
+//        apply.setArea(etArea.getText().toString());
+//        apply.setDetailArea(etDetailArea.getText().toString());
+//        apply.setFlies(etFloor.getText().toString());
+//        apply.setRoom(etRoom.getText().toString());
+//        apply.setClasss(etApplyType.getText().toString());
+        setApply();
         apply.setRepairDetails(et_describe.getText().toString());
-
     }
+
+
     public void queryFromServer(String url) {
 
-        String jsonurl=url+"?applyfragment";
-        Log.d(TAG, "queryFromServer: "+jsonurl);
+        String jsonurl = url + "?applyfragment";
+        Log.d(TAG, "queryFromServer: " + jsonurl);
         HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
             @Override
             public void onFinish(String responseString) {
                 //请求成功后获取到json
                 final String responseJson = responseString.toString();
-                Log.d(TAG, "请求成功onFinish: "+responseJson);
+                Log.d(TAG, "请求成功onFinish: " + responseJson);
                 //解析json获取到Response;
-                response=JsonUtil.jsonToResponse(responseJson);
-                if(response.getErrorType()!=0)
-                {
+                response = JsonUtil.jsonToResponse(responseJson);
+                if (response.getErrorType() != 0) {
                     //response出现错误，尝试从内存中获取数据
-                    if(addressRes!=null)
-                    {
+                    if (addressRes != null) {
                         mhandler.sendEmptyMessage(4);
                     }
                     //内存没有，尝试从本地获取数据
-                    else
-                    {
+                    else {
                         mhandler.sendEmptyMessage(2);
                     }
                 }
                 //连接成功，抛到主线程更新UI
-                else
-                {
-                    addressRes=response.getResultBean();
+                else {
+                    addressRes = response.getResultBean();
                     mhandler.sendEmptyMessage(3);
-                    Util.writeAddressToLocal(addressRes,MyApplication.getContext());
+                    Util.writeAddressToLocal(addressRes, MyApplication.getContext());
                 }
             }
+
             @Override
             public void onError(Exception e) {
-                Response rp= new Response();
+                Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
                 rp.setErrorMessage("网络异常，返回空值");
-                response=rp;
-                Log.d(TAG, "onError: "+e.getMessage()+",response错误信息:"+rp.getErrorMessage());
+                response = rp;
+                Log.d(TAG, "onError: " + e.getMessage() + ",response错误信息:" + rp.getErrorMessage());
                 mhandler.sendEmptyMessage(2);
             }
         });
     }
-
 
 
     private void setDialogView(ResultBean resultBean) {
@@ -409,9 +405,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
             DialogAdapter areaAdapter = new DialogAdapter(getActivity(), listArea, R.layout.simple_list_item);
             DialogAdapter detailAreaAdapter = new DialogAdapter(getActivity(), listDetailArea, R.layout.simple_list_item);
-            DialogAdapter floorAdapter = new DialogAdapter(getActivity(),listFloor,R.layout.simple_list_item);
-            DialogAdapter roomAdapter = new DialogAdapter(getActivity(),listRoom,R.layout.simple_list_item);
-            DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType,resultBean.getCategory(), R.layout.dialog_detail_type);
+            DialogAdapter floorAdapter = new DialogAdapter(getActivity(), listFloor, R.layout.simple_list_item);
+            DialogAdapter roomAdapter = new DialogAdapter(getActivity(), listRoom, R.layout.simple_list_item);
+            DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType, resultBean.getCategory(), R.layout.dialog_detail_type);
 
 
             //选择区域对话框
@@ -424,19 +420,17 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             setDialogRoom(roomAdapter);
             //选择类型对话框
             setDialogApplyType(applyTypeAdapter);
-            }
+        }
 
 
     }
-
-
-
 
     private void setDialogArea(final DialogAdapter dialogAdapter) {
 
         for (Area a :
                 addressRes.getAreas()) {
             listArea.add(a.getArea());
+
         }
         dialogArea = DialogPlus.newDialog(getActivity())
                 .setAdapter(dialogAdapter)
@@ -449,18 +443,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-
-                        if (position!=-1){
+                        if (position != -1) {
                             etArea.setText(listArea.get(position));
-                            AreaId = position + 1;
+                            areaId = getAreaID(listArea.get(position));
                             Log.d(TAG, "onItemClick: 区域Id " + AreaId);
-
                             dialogArea.dismiss();
                         }
-
-
                     }
-
                 })
                 .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
@@ -472,7 +461,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "onTouch: ");
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     dialogAdapter.notifyDataSetChanged();
+                    //点击区域清空 楼号 层号 房间
                     etDetailArea.setText("");
+                    etFloor.setText("");
+                    etRoom.setText("");
+                    //清空存放好的Id
+                    placeId = 0;
+                    flieId = 0;
+                    roomId = 0;
                     dialogArea.show();
                     Log.d(TAG, "onTouch: dialogDetailArea.show()");
                 }
@@ -496,9 +492,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-                        if (position!=-1){
+                        if (position != -1) {
                             etDetailArea.setText(listDetailArea.get(position));
-
+                            placeId = getDetailId(listDetailArea.get(position));
                             Log.d(TAG, "onItemClick: 区域Id " + AreaId);
                             dialogDetailArea.dismiss();
                         }
@@ -514,32 +510,35 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                etDetailArea.setText("");
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    //点击区域清空 层号 房间
+                    etFloor.setText("");
+                    etRoom.setText("");
+                    //清空存放好的Id
+                    flieId = 0;
+                    roomId = 0;
 
                     listDetailArea.clear();
 
                     for (Place p :
                             addressRes.getPlaces()) {
-                        if (etArea.getText().toString() != null && !etArea.equals(""))
-                        {
-                            int areaId=getAreaID(etArea.getText().toString());
-                            if(areaId==p.getAreaID())
+                        if (etArea.getText().toString() != null && !etArea.equals("")) {
+                            areaId = getAreaID(etArea.getText().toString());
+                            if (areaId == p.getAreaID())
                                 listDetailArea.add(p.getP_name());
-
                         }
                     }
                     dialogAdapter.notifyDataSetChanged();
 
                     // 提示先选择区域
-                    Log.d(TAG, "onTouch: etArea数据 "+etArea.getText());
-                    if (!etArea.getText().toString().equals("")){
+                    Log.d(TAG, "onTouch: etArea数据 " + etArea.getText());
+                    if (!etArea.getText().toString().equals("")) {
                         dialogDetailArea.show();
                         Log.d(TAG, "onTouch:show ");
-                    }else {
+                    } else {
                         List<String> list = new ArrayList<>();
                         list.add("请先选择报修区域");
-                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(), list, R.layout.simple_list_item);
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
@@ -563,7 +562,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
-
     private void setDialogFloor(final DialogAdapter dialogAdapter) {
 
         dialogFloor = DialogPlus.newDialog(getActivity())
@@ -577,8 +575,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-                        if (position!=-1){
+                        if (position != -1) {
                             etFloor.setText(listFloor.get(position));
+//                            flieId = getFloor(listFloor.get(position));
+                            flieId = listFloorID.get(position);
                             dialogFloor.dismiss();
                         }
 
@@ -595,21 +595,26 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "onTouch: ");
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
+                    //点击区域清空  房间
+                    etRoom.setText("");
+                    //清空存放好的Id
+                    roomId = 0;
                     listFloor.clear();
+                    listFloorID.clear();
                     Log.d(TAG, "onTouch: for之前");
 
                     //// FIXME: 2017/3/22 添加相应数据
                     for (Flies f : addressRes.getFlies()) {
-                        Log.d(TAG, "onTouch: f："+f.getFlies());
-                        if (etDetailArea.getText().toString() != null && !etDetailArea.equals(""))
-                        {
+                        Log.d(TAG, "onTouch: f：" + f.getFlies());
+                        if (etDetailArea.getText().toString() != null && !etDetailArea.equals("")) {
                             int id = getDetailId(etDetailArea.getText().toString());
-                            Log.d(TAG, "onTouch: id "+id);
-                            Log.d(TAG, "onTouch: f.getaFloor:"+f.getaFloor());
-                            Log.d(TAG, "onTouch: f.getid "+f.getId());
-                            if(id == f.getaFloor()){
+                            Log.d(TAG, "onTouch: id " + id);
+                            Log.d(TAG, "onTouch: f.getaFloor:" + f.getaFloor());
+                            Log.d(TAG, "onTouch: f.getid " + f.getId());
+                            if (id == f.getaFloor()) {
                                 listFloor.add(f.getFlies());
-                                Log.d(TAG, "onTouch: 层号 ："+f.getFlies());
+                                Log.d(TAG, "onTouch: 层号 ：" + f.getFlies());
+                                listFloorID.add(f.getId());
                             }
                         }
                     }
@@ -618,13 +623,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     dialogAdapter.notifyDataSetChanged();
 
 
-                    if (!etDetailArea.getText().toString().equals("")){
+                    if (!etDetailArea.getText().toString().equals("")) {
                         dialogFloor.show();
                         Log.d(TAG, "onTouch:show ");
-                    }else {
+                    } else {
                         List<String> list = new ArrayList<>();
                         list.add("请先选择楼号");
-                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(), list, R.layout.simple_list_item);
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
@@ -660,11 +665,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-                        if (position!=-1){
+                        if (position != -1) {
                             etRoom.setText(listRoom.get(position));
+//                            roomId = getRoom(listRoom.get(position));
+                            roomId = listRoomID.get(position);
+                            Log.d(TAG, "onItemClick: " + listRoom.get(position));
+                            Log.d(TAG, "onItemClick: " + roomId);
                             dialogRoom.dismiss();
                         }
-
                     }
 
                 })
@@ -679,27 +687,29 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
                     listRoom.clear();
+                    listRoomID.clear();
 
                     // FIXME: 2017/3/22 添加相应数据
-                    for (Room r:addressRes.getRooms()) {
-                        if (etFloor.getText().toString() != null && !etFloor.equals(""))
-                        {
-                            int Id=getFloor(etFloor.getText().toString());
-                            if(Id==r.getFlies())
+                    for (Room r : addressRes.getRooms()) {
+                        if (etFloor.getText().toString() != null && !etFloor.equals("")) {
+                            int Id = getFloor(etFloor.getText().toString());
+                            if (Id == r.getFlies()) {
                                 listRoom.add(r.getRoomNumber());
+                                listRoomID.add(r.getId());
+                            }
                         }
                     }
 
                     dialogAdapter.notifyDataSetChanged();
 
                     // 提示先选择区域
-                    if (!etFloor.getText().toString().equals("")){
+                    if (!etFloor.getText().toString().equals("")) {
                         dialogRoom.show();
                         Log.d(TAG, "onTouch:show ");
-                    }else {
+                    } else {
                         List<String> list = new ArrayList<>();
                         list.add("请先选择层号");
-                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+                        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(), list, R.layout.simple_list_item);
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
@@ -722,14 +732,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
-
     private void setDialogApplyType(DialogDetailAdapter dialogAdapter) {
-
-        for (Category c :
-                addressRes.getCategory()) {
-            listApplyType.add(c.getC_name());
-        }
-
 
         dialogApplyType = DialogPlus.newDialog(getActivity())
                 .setAdapter(dialogAdapter)
@@ -742,8 +745,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-                        if (position!=-1){
+                        if (position != -1) {
                             etApplyType.setText(listApplyType.get(position));
+//                            categoryId = getCategroy(listApplyType.get(position));
+                            categoryId = listApplyTypeID.get(position);
                             dialogApplyType.dismiss();
                         }
                     }
@@ -756,6 +761,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                    listApplyType.clear();
+                    listApplyTypeID.clear();
+                    for (Category c : addressRes.getCategory()) {
+                        listApplyType.add(c.getC_name());
+                        listApplyTypeID.add(c.getC_id());
+                    }
                     dialogApplyType.show();
                     Log.d(TAG, "onTouch: dialogDetailArea.show()");
                 }
@@ -767,9 +779,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private void setDialogApplyTypeDetails(DialogAdapter dialogAdapter) {
 
     }
-
-
-
 
 
     @Override
@@ -812,10 +821,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 }
             }
 
-            for (Uri u:list_uri){
-                int i=0;
-                arrayUri[i]=u;
-                Log.d(TAG, "onResume: "+u.toString());
+            for (Uri u : list_uri) {
+                int i = 0;
+                arrayUri[i] = u;
+                Log.d(TAG, "onResume: " + u.toString());
                 i++;
             }
 
@@ -897,7 +906,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         List<String> list = new ArrayList<>();
         list.add("打开相机");
         list.add("选择本地图片");
-        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(),list,R.layout.simple_list_item);
+        DialogAdapter dialogAdapter = new DialogAdapter(getActivity(), list, R.layout.simple_list_item);
         dialogGetImage = DialogPlus.newDialog(getActivity())
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
@@ -909,12 +918,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
                                 item + "], position = [" + position + "]");
-                        if (position==0){
-                            Log.d(TAG, "onItemClick: positon = "+position);
+                        if (position == 0) {
+                            Log.d(TAG, "onItemClick: positon = " + position);
                             startCamera();
                         }
-                        if (position ==1){
-                            Log.d(TAG, "onItemClick: positon = "+position);
+                        if (position == 1) {
+                            Log.d(TAG, "onItemClick: positon = " + position);
                             startGallery();
                         }
                         dialogGetImage.dismiss();
@@ -928,8 +937,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
     public static File fileUri;
+
     private void startCamera() {
-        fileUri= FIleUtils.createImageFile();
+        fileUri = FIleUtils.createImageFile();
 //        ContentValues values =new ContentValues();
 //        values.put(MediaStore.Images.Media.TITLE,file.getAbsolutePath());
 //        photoUri=getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
@@ -961,11 +971,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
     private int getAreaID(String areaName) {
         int areaID;
-        List<Area> categories = addressRes.getAreas();
-        for (Area area : categories) {
+        List<Area> areas = addressRes.getAreas();
+        for (Area area : areas) {
             if (area.getArea().equals(areaName)) {
                 areaID = area.getId();
                 return areaID;
@@ -973,22 +982,24 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         }
         return -1;
     }
-    private int getDetailId(String detailName){
-        int id ;
+
+    private int getDetailId(String detailName) {
+        int id;
         List<Place> list = addressRes.getPlaces();
-        for (Place p:list){
-            if (p.getP_name().equals(detailName)){
+        for (Place p : list) {
+            if (p.getP_name().equals(detailName)) {
                 PlaceId = p.getP_id();
                 return PlaceId;
             }
         }
         return -1;
     }
-    private  int getFloor(String floorName){
+
+    private int getFloor(String floorName) {
         int id = 0;
         List<Flies> list = addressRes.getFlies();
-        for(Flies f:list){
-            if (f.getFlies().equals(floorName)){
+        for (Flies f : list) {
+            if (f.getFlies().equals(floorName)) {
                 id = f.getId();
             }
             return id;
@@ -1015,12 +1026,25 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
             if (true) {
 
+                if (apply.getArea().equals("0") || apply.getDetailArea().equals("0")) {
+                    mhandler.sendEmptyMessage(5);
+                    Log.d(TAG, "setApply: AreaId" + apply.getArea());
+                    Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
+                    Log.d(TAG, "setApply: fliesId" + apply.getFlies());
+                    Log.d(TAG, "setApply: roomId" + apply.getRoom());
+                    Log.d(TAG, "setApply: categoryId" + apply.getClasss());
+                    return;
+                }
+                Log.d(TAG, "setApply: AreaId" + apply.getArea());
+                Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
+                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
+                Log.d(TAG, "setApply: roomId" + apply.getRoom());
+                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
                 String json = JsonUtil.beanToJson(apply);
                 Log.d(TAG, "upApply: json " + json);
-
                 for (Uri u :
                         list_uri) {
-                    Log.d(TAG, "upApply: "+u.toString());
+                    Log.d(TAG, "upApply: " + u.toString());
                 }
                 List<File> files = getFiles(list_uri);
 
@@ -1057,6 +1081,16 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    private void setApply() {
+        apply.setArea(String.valueOf(areaId));
+        apply.setDetailArea(String.valueOf(placeId));
+        apply.setFlies(String.valueOf(flieId));
+        apply.setRoom(String.valueOf(roomId));
+        apply.setClasss(String.valueOf(categoryId));
+
+    }
+
+
     private List<File> getFiles(List<Uri> list_uri) {
 
         String[] paths = new String[3];
@@ -1065,10 +1099,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             for (int i = 0; i < list_uri.size(); i++) {
 
 
-                if (list_uri.get(i).toString().split(":")[0].equals("file")){
+                if (list_uri.get(i).toString().split(":")[0].equals("file")) {
                     String s = list_uri.get(i).toString().split("//")[1];
                     paths[i] = s;
-                }else {
+                } else {
                     paths[i] = getPath(list_uri.get(i));
                 }
 
@@ -1137,6 +1171,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         etApplyType.setText("");
 //        etApplyTypeDetails.setText("");
         etApplyPassword.setText("");
+        etFloor.setText("");
+        etRoom.setText("");
 
 //        sp_category.setSelection(0);
 //        sp_place.setSelection(0);
