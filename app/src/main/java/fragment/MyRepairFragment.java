@@ -81,6 +81,8 @@ public class MyRepairFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadPhone();
+        lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
         if(phone==null||phone.equals(""))
         {
             Log.d(TAG, "onActivityCreated: "+phone);
@@ -102,8 +104,7 @@ public class MyRepairFragment extends Fragment {
 
     private void initView(ResultBean resultbean) {
 
-        lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
+
         adapter=new MyRepairAdapter(resultbean, getActivity());
         if(resultbean!=null)
         {

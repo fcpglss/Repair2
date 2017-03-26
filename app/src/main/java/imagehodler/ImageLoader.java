@@ -75,7 +75,7 @@ public class ImageLoader {
             if (uri.equals(result.uri)) {
                 imageView.setImageBitmap(result.bitmap);
             } else {
-                Log.w(TAG, "set image bitmap,but url has changed, ignored!");
+                Log.w(TAG, "set image bitmap,but url has changed, ignored,图片错位不绑定图片!");
             }
         };
     };
@@ -104,7 +104,7 @@ public class ImageLoader {
                 mDiskLruCache = DiskLruCache.open(diskCacheDir, 1, 1,
                         DISK_CACHE_SIZE);
                 mIsDiskLruCacheCreated = true;
-                Log.d(TAG, "diskCacheDir<Disk_Cache_size打开了open: ");
+                Log.d(TAG, "diskCacheDir<Disk_Cache_size打开了open: "+DISK_CACHE_SIZE);
             } catch (IOException e) {
                 Log.w(TAG, "DiskLruCache.open异常:"+e.getMessage().toString());
             }
@@ -126,8 +126,10 @@ public class ImageLoader {
 
     private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
+            Log.d(TAG, "addBitmapToMemoryCache: 内存中的bitmap为null,把"+key+"存入内存中");
             mMemoryCache.put(key, bitmap);
         }
+        Log.d(TAG, "addBitmapToMemoryCache: 内存中的bitmap不为null,什么都不做");
     }
 
     private Bitmap getBitmapFromMemCache(String key) {
@@ -153,13 +155,16 @@ public class ImageLoader {
             return;
         }
 
+        //内存中没用bitmap就请求开启线程，请求网络
         Runnable loadBitmapTask = new Runnable() {
 
             @Override
             public void run() {
                 Bitmap bitmap = loadBitmap(uri, reqWidth, reqHeight);
                 if (bitmap != null) {
+                    
                     LoaderResult result = new LoaderResult(imageView, uri, bitmap);
+                    Log.d(TAG, "run: 得到了bitmap抛到主线程绑定bitmap");
                     mMainHandler.obtainMessage(MESSAGE_POST_RESULT, result).sendToTarget();
                 }
             }
@@ -177,24 +182,24 @@ public class ImageLoader {
     public Bitmap loadBitmap(String uri, int reqWidth, int reqHeight) {
         Bitmap bitmap = loadBitmapFromMemCache(uri);
         if (bitmap != null) {
-            Log.d(TAG, "loadBitmapFromMemCache,url:" + uri);
+            Log.d(TAG, "loadBitmapFromMemCache,从内存中缓存url:" + uri);
             return bitmap;
         }
 
         try {
             bitmap = loadBitmapFromDiskCache(uri, reqWidth, reqHeight);
             if (bitmap != null) {
-                Log.d(TAG, "loadBitmapFromDisk,url:" + uri);
+                Log.d(TAG, "loadBitmapFromDisk,从硬盘中缓存url:" + uri);
                 return bitmap;
             }
             bitmap = loadBitmapFromHttp(uri, reqWidth, reqHeight);
-            Log.d(TAG, "loadBitmapFromHttp,url:" + uri);
+            Log.d(TAG, "loadBitmapFromHttp,从网络中下载url" + uri);
         } catch (IOException e) {
-            Log.d(TAG, "loadBitmap异常");
+            Log.d(TAG, "loadBitmap异常:"+e.getMessage());
         }
 
         if (bitmap == null && !mIsDiskLruCacheCreated) {
-            Log.w(TAG, "encounter error, DiskLruCache is not created.");
+            Log.w(TAG, "没有硬盘的时候,使用网络下载：");
             bitmap = downloadBitmapFromUrl(uri);
         }
 
@@ -213,19 +218,23 @@ public class ImageLoader {
             throw new RuntimeException("can not visit network from UI Thread.+loadBitmapHttp");
         }
         if (mDiskLruCache == null) {
+            Log.d(TAG, "loadBitmapFromHttp: mDisckLruCache为null");
             return null;
         }
         
         String key = hashKeyFormUrl(url);
         DiskLruCache.Editor editor = mDiskLruCache.edit(key);
         if (editor != null) {
+            Log.w(TAG, "从网络获取的方法：loadBitmapFromHttp: 先从DIsckLruCache中获取editor不为null"+key);
             OutputStream outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
+            Log.w(TAG, "从网络获取的方法：loadBitmapFromHttp:根据ISCK_CACHE_INDEX中开辟outputStream:index="+DISK_CACHE_INDEX);
+            //正常的时候线程到这里会卡住，执行下一个线程
             if (downloadUrlToStream(url, outputStream)) {
                 editor.commit();
-                Log.d(TAG,"Disk写入了硬盘");
+                Log.d(TAG,"Disk写入了硬盘"+url);
             } else {
                 editor.abort();
-                Log.d(TAG,"Disk没有写入了硬盘");
+                Log.d(TAG,"Disk没有写入了硬盘"+url);
             }
             mDiskLruCache.flush();
             Log.d(TAG,"Disk-flush");
@@ -236,20 +245,24 @@ public class ImageLoader {
     private Bitmap loadBitmapFromDiskCache(String url, int reqWidth,
             int reqHeight) throws IOException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Log.w(TAG, "load bitmap from UI Thread, it's not recommended!");
+            Log.w(TAG, "load bitmap from UI Thread, it's not recommended!只能在UI线程里绑定bitmap");
         }
         if (mDiskLruCache == null) {
+            Log.w(TAG, "mDisckLruCache为空，没有开辟硬盘空间");
             return null;
         }
 
         Bitmap bitmap = null;
         String key = hashKeyFormUrl(url);
         DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
+        Log.w(TAG, "从硬盘中获取：loadBitmapFromDiskCache: 根据key获取Shapshot准备往硬盘里读文件" );
         if (snapShot != null) {
             FileInputStream fileInputStream = (FileInputStream)snapShot.getInputStream(DISK_CACHE_INDEX);
+            Log.w(TAG, "从硬盘中获取：loadBitmapFromDiskCache:snapShot实例化了，根据硬盘索引获取InputStream ："+DISK_CACHE_INDEX );
             FileDescriptor fileDescriptor = fileInputStream.getFD();
             bitmap = mImageResizer.decodeSampledBitmapFromFileDescriptor(fileDescriptor,
                     reqWidth, reqHeight);
+            Log.w(TAG, "从硬盘中获取：loadBitmapFromDiskCache: 进行图片压缩" );
             if (bitmap != null) {
                 addBitmapToMemoryCache(key, bitmap);
             }
@@ -275,9 +288,10 @@ public class ImageLoader {
             while ((b = in.read()) != -1) {
                 out.write(b);
             }
+            Log.w(TAG, "downloadUrlToStream: 根据url和outStream流从网络写到本地硬盘");
             return true;
         } catch (IOException e) {
-            Log.e(TAG, "downloadBitmap failed." + e);
+            Log.e(TAG, "联网下载异常，下载失败." + e.getMessage());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -299,8 +313,9 @@ public class ImageLoader {
             in = new BufferedInputStream(urlConnection.getInputStream(),
                     IO_BUFFER_SIZE);
             bitmap = BitmapFactory.decodeStream(in);
+            Log.w(TAG, "downloadBitmapFromUrl: 根据url直接绑定到bitmap" );
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadBitmap: " + e.getMessage().toString()+"这里");
+            Log.e(TAG, "downloadBitmapFromUrl：Error in downloadBitmap: " + e.getMessage().toString());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

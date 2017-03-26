@@ -126,7 +126,10 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                     waterDropListView.stopLoadMore();
                     break;
                 case 7:
+                    moreList=moreRes.getApplys();
+                    setMoreApply(moreList);
                     updateView();
+                    waterDropListView.setSelection(end);
                     waterDropListView.stopLoadMore();
                     break;
             }
@@ -146,8 +149,9 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         if(view==null)
         {
             view=inflater.inflate(R.layout.fragment1, null);
+
         }
-        Log.d(TAG, "Main_onCreateVIew  mlist_int=" + mlist_int.size());
+        Log.d(TAG, "onCreateVIew  mlist_int=" + mlist_int.size());
 
         return view;
     }
@@ -256,26 +260,34 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
             String json=Util.loadFirstFromLocal(getActivity());
             res=JsonUtil.jsonToBean(json);
             applysAdapter=getBeanFromJson(res,viewpager_url,applysAdapter);
-            updateView();
+            if(applysAdapter==null)
+            {
+                Toast.makeText(getActivity(), "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
+                queryFromServer(FRIST_URL,SUCCESS);
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
+                setView();
+            }
         }
     }
     //设置View属性
     private void setView()
     {
-        convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-        convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-        Log.d(TAG, "setPage之前");
-        convenientBanner.setPages(
-                new CBViewHolderCreator<LocalImageHolderView>() {
-                    @Override
-                    public LocalImageHolderView createHolder() {
-                        return new LocalImageHolderView(MyApplication.getContext(),applysAdapter,res);
-                    }
-                }, viewpager_url);
-
+//        convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+//        convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+//            Log.d(TAG, "setPage之前");
+//            convenientBanner.setPages(
+//                    new CBViewHolderCreator<LocalImageHolderView>() {
+//                        @Override
+//                        public LocalImageHolderView createHolder() {
+//                            return new LocalImageHolderView(getActivity(),applysAdapter,res);
+//                        }
+//                    }, viewpager_url);
+//        Log.d(TAG, "setView: 执行了");
         applysAdapter.notifyDataSetChanged();
         waterDropListView.setAdapter(applysAdapter);
-        waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
     }
 
 
@@ -292,7 +304,6 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         }
         if (applysAdapter == null) {
             applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
-            applysAdapter.notifyDataSetChanged();
         } else {
             applysAdapter.notifyDataSetChanged();
     }
@@ -327,8 +338,6 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                     moreRes=moreResponse.getResultBean();
                     if(moreRes!=null)
                     {
-                        moreList=moreRes.getApplys();
-                        setMoreApply(moreList);
                         mhandler.sendEmptyMessage(7);
                         Util.writeJsonToLocal(res,MyApplication.getContext());
                     }
@@ -376,7 +385,8 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "Main_onPause");
+
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
@@ -390,6 +400,13 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     @Override
     public void onDestroy() {
         isFirst=true;
+        start=0;
+        end=5;
+//        if(isRefresh=true)
+//        {
+//            isRefresh=false;
+//            waterDropListView.stopRefresh();
+//        }
         super.onDestroy();
         Log.d(TAG, "Main_onDestroy");
     }
@@ -400,6 +417,8 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);
         waterDropListView.setWaterDropListViewListener(MainFragment.this);
         waterDropListView.setPullLoadEnable(true);
+
+        waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
     }
 
 

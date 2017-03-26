@@ -30,7 +30,7 @@ public class LocalImageHolderView implements Holder<String> {
     public LocalImageHolderView(Context context, ApplysAdapter applysAdapter, ResultBean resultBean)
     {
         mContext=context;
-        mImageLoader=applysAdapter.mImageLoader;
+        mImageLoader=ImageLoader.build(context);
         res=resultBean;
     }
 
@@ -57,7 +57,7 @@ public class LocalImageHolderView implements Holder<String> {
                 public void onClick(View view) {
                     Announcement announcement = res.getAnnouncements().get(position);
 
-                    Intent intent = new Intent(MyApplication.getContext(), AnnocementActivity.class);
+                    Intent intent = new Intent(mContext, AnnocementActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                     Bundle bundle = new Bundle();
@@ -72,9 +72,10 @@ public class LocalImageHolderView implements Holder<String> {
         }
         catch (Exception ee)
         {
-            Log.d("Main","UpdateUI有异常:"+ ee.getMessage().toString());
-
+            Log.d(TAG,"UpdateUI有异常:"+ ee.getMessage().toString());
         }
 
     }
+
+    private static final String TAG = "LocalImageHolderView";
 }

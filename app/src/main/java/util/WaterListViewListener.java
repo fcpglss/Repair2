@@ -42,12 +42,6 @@ public class WaterListViewListener implements AdapterView.OnItemClickListener {
 
         intent.putExtra("repairId",repairID);
 
-//        Bundle bundle = new Bundle();
-//
-//        bundle.putSerializable("apply_item",repairID);
-//
-//        intent.putExtras(bundle);
-
         mContext.startActivity(intent);
     }
 }
