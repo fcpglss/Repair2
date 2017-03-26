@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,6 +66,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     LinearLayout linearLayoutDetail;
     //对话框
     private DialogPlus dialogPlus;
+
+    private TextView tvArea;
 
     private TextView tv_email, tvName, tv_tel, tv_date, tv_category, tv_status, tv_place, tv_describe,tvFinishTime;
 
@@ -123,6 +126,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         initView();
 
         repairId=getIntent().getStringExtra("repairId");
+
         Log.d(TAG, "onCreate: 获取repairId="+repairId);
         if(apply==null)
         {
@@ -221,6 +225,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_place = (TextView) findViewById(R.id.tv_details_place);
         tv_email= (TextView) findViewById(R.id.tv_details_email);
 
+        tvArea = (TextView) findViewById(R.id.tv_details_area);
+
+
 
         // tv_employee= (TextView) findViewById(R.id.tv_details_employee);
 
@@ -293,6 +300,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tv_category.setText(category.getC_name());
         tv_place.setText(util.Util.setAddress(apply));
+
+        tvArea.setText(apply.getArea());
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -579,4 +588,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+            Log.d(TAG, "onKeyDown: 返回了main");
+            this.finish();
+        }
+
+        return super.onKeyDown(keyCode,event);
+    }
 }

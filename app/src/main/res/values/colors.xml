@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="et_downline">#bfbfbf</color>
     <color name="starColor">#d81e06</color>
+    <color name="btn_down">#bfbfbf</color>
 </resources>

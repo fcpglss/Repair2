@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         mLinearLayout.setOnClickListener(linearLayoutListener);
         mContactLayout.setOnClickListener(linearLayoutListener);
         mFriendLayout.setOnClickListener(linearLayoutListener);
-        mSeachText.setOnClickListener(linearLayoutListener);
+//        mSeachText.setOnClickListener(linearLayoutListener);
     }
 
     /**
@@ -226,29 +226,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("Apply_Activity", " resultCode=" + RESULT_OK + "  requestCode=" + requestCode);
         if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO_RAW) {
-//            Uri uri=null;
-//            if(data!=null&&data.getData()!=null) {
-//
-//                uri = data.getData();
-//                Log.d(TAG, "onActivityResult: data。getdat()的uri"+uri);
-//                list_uri.add(uri);
-//            }
-//            if(uri==null)
-//            {
-//                if(photoUri!=null)
-//                {
-//                    Log.d(TAG, "onActivityResult: photoUri："+photoUri);
-//                    uri=photoUri;
-//                    list_uri.add(uri);
-//                }
-//            }
             MainActivity.list_uri.add(Uri.fromFile(ApplyFragment.fileUri));
-
         }
         if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
             list_uri.add(data.getData());
             Log.d(TAG, "addItem");
-//            addItem(data.getData());
             Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
         }
     }

@@ -94,6 +94,7 @@ public class DialogAdapterPassword extends BaseAdapter {
                         Intent intent = new Intent(context, AppraiseActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("apply", apply);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtras(bundle);
                         context.startActivity(intent);
                     } else {

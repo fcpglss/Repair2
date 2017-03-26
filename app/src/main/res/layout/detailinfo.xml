@@ -74,7 +74,7 @@
                         android:id="@+id/tv_details_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="黄**"
+                        android:text=""
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
@@ -93,7 +93,7 @@
                         android:id="@+id/tv_details_tel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="188****1547"
+                        android:text=""
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
@@ -112,7 +112,7 @@
                     <TextView
                         android:id="@+id/tv_details_email"
                         android:layout_width="match_parent"
-                        android:text="58941257@qq.com"
+                        android:text=""
                         android:layout_height="wrap_content"
                         android:textColor="#BF383838" />
                 </LinearLayout>
@@ -146,7 +146,7 @@
                             android:id="@+id/tv_details_area"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="西区" />
+                            android:text="" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -171,7 +171,7 @@
                         android:id="@+id/tv_details_place"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="218"
+                        android:text=""
                         android:textColor="#BF383838" />
 
                 </LinearLayout>
@@ -197,14 +197,13 @@
                         <ImageView
                             android:id="@+id/img_category"
                             android:layout_width="30dp"
-                            android:src="@drawable/water"
                             android:layout_height="18dp" />
 
                         <TextView
                             android:id="@+id/tv_details_category"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="水"
+                            android:text=""
                             android:textColor="#BF383838" />
 
                     </LinearLayout>
@@ -242,7 +241,7 @@
                         android:id="@+id/tv_details_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="2017-03-01 11:34"
+                        android:text=""
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
@@ -261,7 +260,7 @@
                         android:id="@+id/tv_details_finish_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="3017-03-05 10:35"
+                        android:text=""
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
@@ -281,7 +280,7 @@
                         android:id="@+id/img_status"
                         android:layout_width="55dp"
                         android:layout_height="18dp"
-                        android:src="@drawable/finish"/>
+                        />
 
                     <TextView
                         android:id="@+id/tv_details_details"
@@ -424,7 +423,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="5"
-                        android:text="水龙头坏了"
+                        android:text=""
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
@@ -438,7 +437,7 @@
                     <ImageView
                         android:id="@+id/img_pc1"
                         android:layout_width="0dp"
-                        android:layout_height="150dp"
+                        android:layout_height="100dp"
                         android:layout_weight="1"
                         android:padding="2dp"
                         android:scaleType="fitXY"
@@ -447,7 +446,7 @@
                     <ImageView
                         android:id="@+id/img_pc2"
                         android:layout_width="0dp"
-                        android:layout_height="150dp"
+                        android:layout_height="100dp"
                         android:layout_weight="1"
                         android:padding="2dp"
                         android:scaleType="fitXY" />
@@ -456,7 +455,7 @@
 
                         android:id="@+id/img_pc3"
                         android:layout_width="0dp"
-                        android:layout_height="150dp"
+                        android:layout_height="100dp"
                         android:layout_weight="1"
                         android:padding="2dp"
                         android:scaleType="fitXY" />

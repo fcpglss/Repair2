@@ -39,6 +39,8 @@ import model.ResultBean;
 import okhttp3.Call;
 import repair.com.repair.AppraiseActivity;
 import repair.com.repair.ChangeActivity;
+import repair.com.repair.DetailsActivity;
+import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.MyRepairAdapter;
 import util.JsonUtil;
@@ -80,6 +82,8 @@ public class MyRepairFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
         loadPhone();
         lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
         llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
@@ -98,8 +102,19 @@ public class MyRepairFragment extends Fragment {
     }
 
     private void initData() {
-        upApply();
 
+
+
+//        upApply();
+
+        lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent  = new Intent(getContext(), DetailsActivity.class);
+                intent.putExtra("repairId",res.getApplys().get(position).getId());
+                startActivity(intent);
+            }
+        });
     }
 
     private void initView(ResultBean resultbean) {
@@ -108,8 +123,9 @@ public class MyRepairFragment extends Fragment {
         adapter=new MyRepairAdapter(resultbean, getActivity());
         if(resultbean!=null)
         {
-            adapter.notifyDataSetChanged();
+
             lvMyList.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
             llEmpty.setVisibility(View.GONE);
         }
         else
@@ -221,12 +237,21 @@ public class MyRepairFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        upApply();
+
         Log.d("MainFragment", "Statistics_onResume");
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        if (adapter !=null){
+            Log.d(TAG, "onResume: 更新");
+
+            adapter.notifyDataSetChanged();
+            lvMyList.setAdapter(adapter);
+
+        }
         Log.d("MainFragment", "Statistics_onStart");
     }
 

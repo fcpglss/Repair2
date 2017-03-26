@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -262,6 +263,35 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         //滚动
         svBackground = (ScrollView) getActivity().findViewById(R.id.sv_apply);
+
+
+        //设置点击颜色
+        btn_apply.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btn_apply.setBackgroundColor(Color.parseColor("#65B5FF"));
+                }else if (event.getAction() ==MotionEvent.ACTION_UP){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btn_apply.setBackgroundColor(Color.parseColor("#6699ff"));
+                }
+                return false;
+            }
+        });
+        btn_clear.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btn_clear.setBackgroundColor(Color.parseColor("#65B5FF"));
+                }else if (event.getAction() ==MotionEvent.ACTION_UP){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btn_clear.setBackgroundColor(Color.parseColor("#6699ff"));
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -820,7 +850,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     list_uri.remove(i);
                 }
             }
-
             for (Uri u : list_uri) {
                 int i = 0;
                 arrayUri[i] = u;
@@ -879,7 +908,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.btn_apply:
-
                 bindView();
                 upApply();
                 break;
@@ -901,6 +929,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         }
 
     }
+
 
     private void addPic() {
         List<String> list = new ArrayList<>();
@@ -1058,8 +1087,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     public void onResponse(String response, int id) {
                         //clearAll();
                         Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
-                        writePhoneToLocal(apply, MyApplication.getContext());
-
+                        if ("申请成功等待处理".equals(response.toString())){
+                            writePhoneToLocal(apply, MyApplication.getContext());
+                        }
                     }
                 });
 

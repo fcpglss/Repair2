@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +37,7 @@ import com.zhy.http.okhttp.request.RequestCall;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -46,6 +48,7 @@ import java.util.List;
 import application.MyApplication;
 import camera.CalculateImage;
 import camera.FIleUtils;
+import imagehodler.ImageLoader;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -68,7 +71,6 @@ import static repair.com.repair.MainActivity.JSON_URL;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
-import static repair.com.repair.MainActivity.list_uri;
 import static util.NetworkUtils.isNetworkConnected;
 
 /**
@@ -76,7 +78,7 @@ import static util.NetworkUtils.isNetworkConnected;
  */
 
 public class ChangeActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = "ApplyFragment";
+    private static final String TAG = "changeActivity";
 
     private EditText et_name, et_tel, et_describe, et_details;
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
@@ -88,6 +90,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     // 添加层号 房间号
     private EditText etFloor, etRoom;
 
+    private List<String> changeImgUrl = new ArrayList<>();
 
     //滚动
     private ScrollView svBackground;
@@ -138,7 +141,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     //用来比较的list
     List<Uri> list = new ArrayList<>();
 
-    Uri[] arrayUri = new Uri[3];
+
+    List<Uri> changeUriList = new ArrayList<>();
 
     private Response response;
     private Handler mhandler = new Handler() {
@@ -164,7 +168,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     break;
                 case 5:
                     Toast.makeText(ChangeActivity.this, "请填写报修地址", Toast.LENGTH_SHORT).show();
-                    ;
                     break;
             }
         }
@@ -180,6 +183,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     //获取点击修改获得的apply
     Apply changeApply;
 
+    ImageLoader imageLoader;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,17 +192,19 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_change2);
         changeApply = (Apply) getIntent().getSerializableExtra("apply");
         addressRes = (ResultBean) getIntent().getSerializableExtra("address");
-        if (addressRes == null)
-        {
-            String addressJson=Util.loadAddressFromLocal(ChangeActivity.this);
-            addressRes=JsonUtil.jsonToBean(addressJson);
+        if (addressRes == null) {
+            String addressJson = Util.loadAddressFromLocal(ChangeActivity.this);
+            addressRes = JsonUtil.jsonToBean(addressJson);
         }
+
+        imageLoader = ImageLoader.build(this);
+
+
         initView();
         setView();
         bindView();
         setDialogView(addressRes);
     }
-
 
     private void initView() {
 
@@ -297,7 +304,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 rl1.setVisibility(View.GONE);
                 rl2.setVisibility(View.GONE);
                 rl3.setVisibility(View.GONE);
-                list_uri.remove(0);
+                changeUriList.remove(0);
                 switchImage();
 
             }
@@ -310,7 +317,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 rl1.setVisibility(View.GONE);
                 rl2.setVisibility(View.GONE);
                 rl3.setVisibility(View.GONE);
-                list_uri.remove(1);
+                changeUriList.remove(1);
                 switchImage();
             }
         });
@@ -321,15 +328,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 rl1.setVisibility(View.GONE);
                 rl2.setVisibility(View.GONE);
                 rl3.setVisibility(View.GONE);
-                list_uri.remove(2);
+                changeUriList.remove(2);
                 switchImage();
             }
         });
     }
 
-
-    private void setView()
-    {
+    private void setView() {
         et_name.setText(changeApply.getRepair());
         et_tel.setText(changeApply.getTel());
         etEmail.setText(changeApply.getEmail());
@@ -340,6 +345,74 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etRoom.setText(changeApply.getRoom());
         etApplyType.setText(changeApply.getClasss());
         et_describe.setText(changeApply.getRepairDetails());
+        areaId = getAreaID(etArea.getText().toString());
+        placeId = getDetailId(etDetailArea.getText().toString());
+        categoryId = getCategoryID(etApplyType.getText().toString());
+        changeImgUrl = changeApply.getA_imaes();
+
+        for (String s :
+                changeImgUrl) {
+            Log.d(TAG, "setView: " + s.toString());
+        }
+
+        //  把传来的uri变为本地的uri存进list_uri
+        new AsyncTask<Void, Void, List<File>>() {
+            @Override
+            protected List<File> doInBackground(Void... params) {
+                List<File>  imgFileList = new ArrayList<File>();
+                File imgFile = null;
+                FileOutputStream out = null;
+                if (changeImgUrl != null) {
+                    for (int i = 0; i < changeImgUrl.size(); i++) {
+                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
+                        imgFile = FIleUtils.createImageFile();
+                        try {
+                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
+                            out = new FileOutputStream(imgFile);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        imgFileList.add(imgFile);
+                    }
+                }
+                return imgFileList;
+            }
+
+            @Override
+            protected void onPostExecute(List<File> imgFileList) {
+
+                for (File f : imgFileList) {
+                    changeUriList.add(Uri.fromFile(f));
+                }
+                rl1.setVisibility(View.GONE);
+                rl2.setVisibility(View.GONE);
+                rl3.setVisibility(View.GONE);
+                switchImage();
+
+            }
+        }.execute();
+//        copyBitmapToUrl();
+
+    }
+
+
+    private void copyBitmapToUrl() {
+        if (changeImgUrl != null) {
+            for (int i = 0; i < changeImgUrl.size(); i++) {
+                Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
+                File imgFile = FIleUtils.createImageFile();
+                try {
+                    FileOutputStream out = new FileOutputStream(imgFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                    changeUriList.add(Uri.fromFile(imgFile));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 
     private void bindView() {
@@ -352,8 +425,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
     }
-
-
 
     private void setDialogView(ResultBean resultBean) {
         if (resultBean != null) {
@@ -732,13 +803,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-    private void setDialogApplyTypeDetails(DialogAdapter dialogAdapter) {
-
-    }
-
-
-
-
     @Override
     public void onPause() {
         super.onPause();
@@ -752,26 +816,19 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        list_uri.clear();
+        changeUriList.clear();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (MainActivity.list_uri.size() > 0) {
+        if (changeUriList.size() > 0) {
             Log.d("Apply_Fragment", "ApplyFragment已经获得了uri");
-            if (list_uri.size() > 3) {
-                int length = list_uri.size() - 3;
+            if (changeUriList.size() > 3) {
+                int length = changeUriList.size() - 3;
                 for (int i = 0; i < length; i++) {
-                    list_uri.remove(i);
+                    changeUriList.remove(i);
                 }
-            }
-
-            for (Uri u : list_uri) {
-                int i = 0;
-                arrayUri[i] = u;
-                Log.d(TAG, "onResume: " + u.toString());
-                i++;
             }
 
             //判断和赋值
@@ -786,25 +843,25 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     private void switchImage() {
 
-        switch (list_uri.size() - 1) {
+        switch (changeUriList.size() - 1) {
             case 0:
                 rl1.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(0)), 180, 180));
                 break;
             case 1:
                 rl1.setVisibility(View.VISIBLE);
                 rl2.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(0)), 180, 180));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(1)), 180, 180));
                 break;
             case 2:
 
                 rl1.setVisibility(View.VISIBLE);
                 rl2.setVisibility(View.VISIBLE);
                 rl3.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
-                img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(2)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(0)), 180, 180));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(1)), 180, 180));
+                img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(changeUriList.get(2)), 180, 180));
                 break;
 
 
@@ -879,17 +936,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    public static File fileUri;
+    public static File cameraFile;
 
     private void startCamera() {
-        fileUri = FIleUtils.createImageFile();
-//        ContentValues values =new ContentValues();
-//        values.put(MediaStore.Images.Media.TITLE,file.getAbsolutePath());
-//        photoUri=getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-
-//        MainActivity.list_uri.add(Uri.fromFile(file));
+        cameraFile = FIleUtils.createImageFile();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileUri));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
         if (intent.resolveActivity(this.getPackageManager()) != null) {
             this.startActivityForResult(intent, TAKE_PHOTO_RAW);
         }
@@ -921,6 +973,18 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             if (area.getArea().equals(areaName)) {
                 areaID = area.getId();
                 return areaID;
+            }
+        }
+        return -1;
+    }
+
+    private int getCategoryID(String categoryName) {
+        int categoryID;
+        List<Category> categoryRes = addressRes.getCategory();
+        for (Category c : categoryRes) {
+            if (c.getC_name().equals(categoryName)) {
+                categoryID = c.getC_id();
+                return categoryID;
             }
         }
         return -1;
@@ -969,15 +1033,15 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
             if (true) {
 
-                if (apply.getArea().equals("0") || apply.getDetailArea().equals("0")) {
-                    mhandler.sendEmptyMessage(5);
-                    Log.d(TAG, "setApply: AreaId" + apply.getArea());
-                    Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-                    Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-                    Log.d(TAG, "setApply: roomId" + apply.getRoom());
-                    Log.d(TAG, "setApply: categoryId" + apply.getClasss());
-                    return;
-                }
+//                if (etArea.getText().toString().equals("") || etArea.getText().toString().equals("")) {
+//                    mhandler.sendEmptyMessage(5);
+//                    Log.d(TAG, "setApply: AreaId" + apply.getArea());
+//                    Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
+//                    Log.d(TAG, "setApply: fliesId" + apply.getFlies());
+//                    Log.d(TAG, "setApply: roomId" + apply.getRoom());
+//                    Log.d(TAG, "setApply: categoryId" + apply.getClasss());
+//                    return;
+//                }
                 Log.d(TAG, "setApply: AreaId" + apply.getArea());
                 Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
                 Log.d(TAG, "setApply: fliesId" + apply.getFlies());
@@ -986,21 +1050,28 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 String json = JsonUtil.beanToJson(apply);
                 Log.d(TAG, "upApply: json " + json);
                 for (Uri u :
-                        list_uri) {
+                        changeUriList) {
                     Log.d(TAG, "upApply: " + u.toString());
                 }
-                List<File> files = getFiles(list_uri);
+                List<File> files = getFiles(changeUriList);
 
                 submit(json, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
+
                     @Override
                     public void onResponse(String response, int id) {
                         //clearAll();
+                        Log.d(TAG, "onResponse: "+response.toString());
                         Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                         writePhoneToLocal(apply, MyApplication.getContext());
+
+                        Intent intent= new Intent(ChangeActivity.this,DetailsActivity.class);
+                        intent.putExtra("repairId",apply.getId());
+                        Log.d(TAG, "onResponse: "+apply.getId());
+                        startActivity(intent);
                     }
                 });
 
@@ -1021,13 +1092,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         editor.apply();
     }
 
-
     private void setApply() {
         apply.setArea(String.valueOf(areaId));
         apply.setDetailArea(String.valueOf(placeId));
         apply.setFlies(String.valueOf(flieId));
         apply.setRoom(String.valueOf(roomId));
         apply.setClasss(String.valueOf(categoryId));
+        apply.setId(changeApply.getId());
 
     }
 
@@ -1121,7 +1192,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         rl1.setVisibility(View.GONE);
         rl2.setVisibility(View.GONE);
         rl3.setVisibility(View.GONE);
-        list_uri.clear();
+        changeUriList.clear();
     }
 
     private RequestCall submit(String json, List<File> files) {
@@ -1132,7 +1203,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         Log.d(TAG, "submit: json添加参数");
-        postFormBuilder.addParams("apply", json);
+        postFormBuilder.addParams("update", json);
         if (files.size() > 0) {
             postFormBuilder.url(UP_APPLY);
         } else {
@@ -1142,5 +1213,19 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         return postFormBuilder.build();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("Apply_Activity", " resultCode=" + RESULT_OK + "  requestCode=" + requestCode);
+        if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO_RAW) {
+            Log.d(TAG, "onActivityResult: " + resultCode);
+            Log.d(TAG, "onActivityResult: " + cameraFile);
+            changeUriList.add(Uri.fromFile(cameraFile));
+        }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
+            changeUriList.add(data.getData());
+            Log.d(TAG, "addItem");
+            Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
+        }
+    }
 
 }

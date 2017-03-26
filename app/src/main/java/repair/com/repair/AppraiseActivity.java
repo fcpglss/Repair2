@@ -1,6 +1,7 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -141,6 +143,21 @@ public class AppraiseActivity extends AppCompatActivity {
         etAppraiseContent = (EditText) findViewById(R.id.tv_appraise_content);
         btnSubmit = (Button) findViewById(R.id.btn_appraise_submit);
 
+        //点击改变颜色
+        btnSubmit.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btnSubmit.setBackgroundColor(Color.parseColor("#65B5FF"));
+                }else if (event.getAction() ==MotionEvent.ACTION_UP){
+                    Log.d(TAG, "onTouch: "+event.getAction());
+                    btnSubmit.setBackgroundColor(Color.parseColor("#6699ff"));
+                }
+                return false;
+            }
+        });
+
     }
 
     //星星的点击事件实现
@@ -173,16 +190,19 @@ public class AppraiseActivity extends AppCompatActivity {
 
 
     }
+    //提交 并且成功 则跳转详情页面
     private void upApply(String json) {
 
                 submit(json).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
+                        Log.d(TAG, "onError: 错误返回"+e.toString());
                         Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onResponse(String response, int id) {
+                        Log.d(TAG, "onResponse: 成功返回"+response.toString());
                         Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                         Intent intent= new Intent(AppraiseActivity.this,DetailsActivity.class);
                         intent.putExtra("repairId",apply.getId());
@@ -203,8 +223,9 @@ public class AppraiseActivity extends AppCompatActivity {
     }
 
 
-    //提交按钮点击时间实现
+    //提交按钮 点击绑定数据
     private void btnSubmitOnClick(){
+
 
         //获取数据，也就是星星数量starCount和评价文字tvAppriseContent，还有id作为插入数据库的条件
 
