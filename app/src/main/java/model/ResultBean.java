@@ -122,5 +122,20 @@ public class ResultBean implements Serializable {
         this.applys = Applys;
     }
 
-  
+
+	@Override
+	public String toString() {
+		return "ResultBean{" +
+				"rooms=" + rooms +
+				", flies=" + flies +
+				", area=" + area +
+				", states=" + states +
+				", applys=" + applys +
+				", category=" + category +
+				", announcements=" + announcements +
+				", places=" + places +
+				", employee=" + employee +
+				", photos=" + photos +
+				'}';
+	}
 }

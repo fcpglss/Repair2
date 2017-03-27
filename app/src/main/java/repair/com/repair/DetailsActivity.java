@@ -98,10 +98,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            Log.d(TAG, "msg="+msg.what);
             switch (msg.what) {
                 case 2:
                     Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
                     Toast.makeText(MyApplication.getContext(),response.getErrorMessage(),Toast.LENGTH_SHORT).show();
+//                    if(apply!=null)
+//                    {
+//                        bindItem();
+//                    }
+//                    else
+//                    {
+//                        queryFromServer(URL,repairId);
+//                    }
                     break;
                 case 3:
                     if (apply.getLogisticMan() != null) {
@@ -109,7 +118,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         tv_paigong.setVisibility(View.VISIBLE);
                     }
+                    Log.d(TAG, "handleMessage3 ");
                     bindItem();
+                    break;
+                case 4:
+                    Toast.makeText(DetailsActivity.this,"连接服务器成功,但是服务器返回数据错误",Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "handleMessage4 ");
                     break;
 
             }
@@ -156,7 +170,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 response = JsonUtil.jsonToResponse(responseJson);
                 if (response.getErrorType() != 0) {
                     //连接成功，但读取数据失败
-                    mhandler.sendEmptyMessage(2);
+                    mhandler.sendEmptyMessage(4);
                 }
                 //连接成功，抛到主线程更新UI
                 else {
@@ -327,19 +341,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         //直接设置员工信息 但是默认被隐藏
        // setEmployeeInf(apply.getLogisticMan());
-        if(employee!=null)
-        {
-            Log.d(TAG, "bindItem:employee的getName "+employee.getName());
+        if (employee!=null){
             tv_details_employee1.setText(employee.getName());
+            tv_employee_company.setText("");
             tv_employee_phone.setText(employee.getE_tel());
             tv_employee_can.setText(employee.getJob());
-        }
-        else
-        {
-
-            tv_details_employee1.setText("");
-            tv_employee_phone.setText("");
-            tv_employee_can.setText("");
         }
 
 
@@ -490,6 +496,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             }
             for (int i = 0; i < list_imageView.size(); i++) {
                 mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
+                LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
+                layout.height = 300;
+                layout.width = 300;
+                imageviewList.get(i).setLayoutParams(layout);
                 Log.d(TAG, "执行了一次bindBitmap "+list_imageView.get(i));
             }
 
@@ -591,12 +601,20 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
-            Intent intent = new Intent(this,MainActivity.class);
-            startActivity(intent);
-            Log.d(TAG, "onKeyDown: 返回了main");
-            this.finish();
+
+            if (showBigImg.getVisibility() == View.VISIBLE){
+                showBigImg.setVisibility(View.GONE);
+                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+            }else{
+                Intent intent = new Intent(this,MainActivity.class);
+                startActivity(intent);
+                Log.d(TAG, "onKeyDown: 返回了main");
+                this.finish();
+            }
         }
 
-        return super.onKeyDown(keyCode,event);
+
+//        return super.onKeyDown(keyCode,event);
+        return true;
     }
 }

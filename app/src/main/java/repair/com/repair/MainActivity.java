@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static int Screen1_3;
 
+    private TextView tvHead;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         mTop2Layout = (LinearLayout) findViewById(R.id.ll_top2);
         mSeachText = (EditText) findViewById(R.id.et_seach);
 
+        tvHead = (TextView) findViewById(R.id.tv_head);
     }
 
     /**
@@ -171,6 +176,19 @@ public class MainActivity extends AppCompatActivity {
                 LayoutParams lp = (LayoutParams) miImageView.getLayoutParams();
                 lp.leftMargin = (int) ((position + offset) * Screen1_3);
                 miImageView.setLayoutParams(lp);
+
+                switch (position){
+                    case 0:
+                        tvHead.setText("首页");
+                        break;
+                    case 1:
+                        tvHead.setText("我的报修");
+                        break;
+                    case 2:
+                        tvHead.setText("报修列表");
+                        break;
+
+                }
             }
 
             @Override
@@ -205,9 +223,11 @@ public class MainActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.ll_chat:
                     mviewPager.setCurrentItem(0);
+
                     break;
                 case R.id.ll_friend:
                     mviewPager.setCurrentItem(2);
+
                     break;
                 case R.id.ll_contact:
                     mviewPager.setCurrentItem(1);

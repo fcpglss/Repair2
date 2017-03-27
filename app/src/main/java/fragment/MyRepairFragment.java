@@ -44,6 +44,7 @@ import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.MyRepairAdapter;
 import util.JsonUtil;
+import util.Util;
 
 import static repair.com.repair.MainActivity.GET_JSON;
 import static repair.com.repair.MainActivity.JSON_URL;
@@ -60,13 +61,13 @@ public class MyRepairFragment extends Fragment {
     private static final String TAG = "MyRepairFragment";
     private LinearLayout llEmpty;
 
-    private String phone="phone";
+    private String phone = "phone";
 
-    private ListView lvMyList=null;
+    private ListView lvMyList = null;
 
-    private MyRepairAdapter  adapter=null;
+    private MyRepairAdapter adapter = null;
 
-    ResultBean res = null;
+    ResultBean myRes = null;
 
 
     private Response myResponse;
@@ -82,36 +83,27 @@ public class MyRepairFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
         llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
         loadPhone();
-        lvMyList= (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
-        if(phone==null||phone.equals(""))
-        {
-            Log.d(TAG, "onActivityCreated: "+phone);
-        }
-        else
-        {
-            Log.d(TAG, "onActivityCreated: "+phone);
+        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        if (phone == null || phone.equals("")) {
+            Log.d(TAG, "onActivityCreated: " + phone);
+        } else {
+            Log.d(TAG, "onActivityCreated: " + phone);
             initData();
         }
-
 
 
     }
 
     private void initData() {
-
-
-
 //        upApply();
-
         lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent  = new Intent(getContext(), DetailsActivity.class);
-                intent.putExtra("repairId",res.getApplys().get(position).getId());
+                Intent intent = new Intent(getContext(), DetailsActivity.class);
+                intent.putExtra("repairId", myRes.getApplys().get(position).getId());
                 startActivity(intent);
             }
         });
@@ -120,55 +112,67 @@ public class MyRepairFragment extends Fragment {
     private void initView(ResultBean resultbean) {
 
 
-        adapter=new MyRepairAdapter(resultbean, getActivity());
-        if(resultbean!=null)
-        {
-
+        Log.d(TAG, "initView: "+(resultbean==null));
+        Log.d(TAG, "initView: resultbean"+resultbean.toString());
+        adapter = new MyRepairAdapter(resultbean, getActivity());
+        if (resultbean.getApplys()==null || resultbean.getApplys().size()<=0) {
+            llEmpty.setVisibility(View.VISIBLE);
+            Log.d(TAG, "initView: 没有获取到我的数据");
+        } else {
             lvMyList.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             llEmpty.setVisibility(View.GONE);
-        }
-        else
-        {
-            Log.d(TAG, "initView: 没有获取到我的数据");
+            Log.d(TAG, "initView: 不可见");
         }
 
 
     }
 
 
-    private void loadPhone()
-    {
-        SharedPreferences preferences =getActivity().getSharedPreferences("phoneData",getActivity().MODE_PRIVATE);
-        phone=preferences.getString("phone","");
+    private void loadPhone() {
+        SharedPreferences preferences = getActivity().getSharedPreferences("phoneData", getActivity().MODE_PRIVATE);
+        phone = preferences.getString("phone", "");
     }
 
     private void upApply() {
 
 
         if (!isNetworkConnected(getActivity())) {
-            Toast.makeText(getActivity(), "请连接网络", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "请连接网络,我的报修页面使用本地数据", Toast.LENGTH_SHORT).show();
+            String myjson = Util.loadMyResFromLocal(getActivity());
+            myRes = JsonUtil.jsonToBean(myjson);
+            if (myRes != null) {
+                initView(myRes);
+            }
 
         } else {
 
             if (true) {
 
-                Log.d(TAG, "upApply: phone " +phone);
+                Log.d(TAG, "upApply: phone " + phone);
 
                 List<File> files = new ArrayList<>();
 
                 submit(phone, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                     //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
+                        //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onError: ");
+                        String myjson = Util.loadMyResFromLocal(getActivity());
+                        myRes = JsonUtil.jsonToBean(myjson);
+
+                        if (myRes != null) {
+                            initView(myRes);
+                        }
                     }
+
                     @Override
                     public void onResponse(String response, int id) {
-                       myResponse=JsonUtil.jsonToResponse(response);
-                        res=myResponse.getResultBean();
-                        Log.d(TAG, "onResponse: "+response);
-                        initView(res);
+                        myResponse = JsonUtil.jsonToResponse(response);
+                        myRes = myResponse.getResultBean();
+                        Util.writeMyResToLocal(myRes, getActivity());
+                        Log.d(TAG, "onResponse: " + response);
+                        initView(myRes);
                     }
                 });
 
@@ -181,32 +185,23 @@ public class MyRepairFragment extends Fragment {
 
     }
 
-
-
-
-
-
     private RequestCall submit(String phone, List<File> files) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file"+i+".jpg", files.get(i));
-            Log.d(TAG, "submit: " +files.get(i).getPath());
+            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
+            Log.d(TAG, "submit: " + files.get(i).getPath());
         }
 
 
         postFormBuilder.addParams("phone", phone);
-        if(files.size()>0)
-        {
+        if (files.size() > 0) {
             postFormBuilder.url(UP_APPLY);
-        }
-        else
-        {
+        } else {
             postFormBuilder.url(JSON_URL);
         }
 
         return postFormBuilder.build();
     }
-
 
 
     @Override
@@ -245,7 +240,7 @@ public class MyRepairFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (adapter !=null){
+        if (adapter != null) {
             Log.d(TAG, "onResume: 更新");
 
             adapter.notifyDataSetChanged();

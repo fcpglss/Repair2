@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.svprogresshud.SVProgressHUD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,8 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     private List<Apply> moreList = new ArrayList<>();
 
+    private SVProgressHUD svProgressHUD;
+
     View view;
     private Handler mhandler = new Handler() {
         @Override
@@ -105,6 +108,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                         updateView();
                         waterDropListView.stopRefresh();
                         Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
+
                         break;
                     }
                     Toast.makeText(getActivity(), "进来第一次请求网络调用,firstRes有值", Toast.LENGTH_SHORT).show();
@@ -131,7 +135,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                     moreList = moreRes.getApplys();
                     setMoreApply(moreList);
                     updateView();
-                    waterDropListView.setSelection(end);
+                    waterDropListView.setSelection(start);
                     Log.d(TAG, "handleMessage: response"+moreResponse.isEnd());
                     moreFlag=moreResponse.isEnd();
                     Log.d(TAG, "handleMessage: "+moreFlag);
@@ -154,7 +158,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         if (view == null) {
             view = inflater.inflate(R.layout.fragment1, null);
 
-        }
+       }
         Log.d(TAG, "onCreateVIew  mlist_int=" + mlist_int.size());
 
         return view;
@@ -170,11 +174,16 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
          */
         if (isFirst) {
             queryFromServer(FRIST_URL, SUCCESS);
+//            new SVProgressHUD(getActivity()).showInfoWithStatus();
+            svProgressHUD = new SVProgressHUD(getActivity());
+            svProgressHUD.showWithStatus("加载中");
             Log.d(TAG, "第一次载入");
         } else {
             if (res == null) {
+                Log.d(TAG, "onActivityCreated: 不是第一次载入，并且res为null");
                 updateView();
             }
+            Log.d(TAG, "onActivityCreated: 不是第一次载入，并且res不为null");
         }
 
     }
@@ -190,11 +199,15 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
                 final String responseJson = responseString.toString();
                 //解析json获取到Response;
                 response = JsonUtil.jsonToResponse(responseJson);
-                res = response.getResultBean();
+                if (response != null) {
+                    res = response.getResultBean();
+                }
                 if (res != null) {
                     Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
+                    Log.d(TAG, "onFinish: "+responseJson);
                     mhandler.sendEmptyMessage(handlerType);
-                    Util.writeJsonToLocal(res, MyApplication.getContext());
+
+                    Util.writeJsonToLocal(res, MyApplication.getContext());//注意刷新和冲突
                 } else {
                     response.setErrorType(-2);
                     response.setError(false);
@@ -237,12 +250,20 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
             if (res != null && convenientBanner != null) {
                 Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁,fistRes还在内存中，直接更新Water,Conven两个View");
                 setView();
+                Log.d(TAG, "handleMessage: show");
+                if (svProgressHUD.isShowing()){
+                    svProgressHUD.dismiss();
+                }
             } else {
                 Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁，但是firstRes已经被销毁了,需从本地读取firstRes");
                 String json = Util.loadFirstFromLocal(getActivity());
                 res = JsonUtil.jsonToBean(json);
                 applysAdapter.setList_Applys(res.getApplys());
                 setView();
+                Log.d(TAG, "handleMessage: show");
+                if (svProgressHUD.isShowing()){
+                    svProgressHUD.dismiss();
+                }
             }
         }
         //内存中的applyAdapters已经被销毁，需重新创建一个
@@ -257,25 +278,30 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
             } else {
                 Toast.makeText(getActivity(), "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
                 setView();
+                Log.d(TAG, "handleMessage: show");
+                if (svProgressHUD.isShowing()){
+                    svProgressHUD.dismiss();
+                }
             }
         }
     }
 
     //设置View属性
     private void setView() {
-//        convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-//        convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-//            Log.d(TAG, "setPage之前");
-//            convenientBanner.setPages(
-//                    new CBViewHolderCreator<LocalImageHolderView>() {
-//                        @Override
-//                        public LocalImageHolderView createHolder() {
-//                            return new LocalImageHolderView(getActivity(),applysAdapter,res);
-//                        }
-//                    }, viewpager_url);
-//        Log.d(TAG, "setView: 执行了");
+        convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+        convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+            Log.d(TAG, "setPage之前");
+            convenientBanner.setPages(
+                    new CBViewHolderCreator<LocalImageHolderView>() {
+                        @Override
+                        public LocalImageHolderView createHolder() {
+                            return new LocalImageHolderView(getActivity(),applysAdapter,res);
+                        }
+                    }, viewpager_url);
+        Log.d(TAG, "setView: 执行了");
         applysAdapter.notifyDataSetChanged();
         waterDropListView.setAdapter(applysAdapter);
+        waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
     }
 
 
@@ -283,8 +309,9 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         if (res == null) {
             return null;
         }
+
         for (Announcement announce : res.getAnnouncements()) {
-            if (viewpager_url.size() > 3) {
+            if (viewpager_url.size() >= 3) {
                 viewpager_url.remove(0);
             }
             viewpager_url.add(announce.getImage_url());
@@ -386,11 +413,8 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         isFirst = true;
         start = 0;
         end = 5;
-//        if(isRefresh=true)
-//        {
-//            isRefresh=false;
-//            waterDropListView.stopRefresh();
-//        }
+        moreFlag=false;
+
         super.onDestroy();
         Log.d(TAG, "Main_onDestroy");
     }
@@ -402,7 +426,6 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
         waterDropListView.setWaterDropListViewListener(MainFragment.this);
         waterDropListView.setPullLoadEnable(true);
 
-        waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
     }
 
 

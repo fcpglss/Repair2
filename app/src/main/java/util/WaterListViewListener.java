@@ -24,6 +24,7 @@ import repair.com.repair.DetailsActivity;
 
 public class WaterListViewListener implements AdapterView.OnItemClickListener {
 
+    private static final String TAG = "WaterListViewListener";
     private ResultBean res=null;
     private Context mContext=null;
 
@@ -35,6 +36,8 @@ public class WaterListViewListener implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+        Log.d(TAG, "onItemClick: "+(res==null));
         String  repairID = res.getApplys().get(position - 1).getId();
 
         Intent intent = new Intent(MyApplication.getContext(), DetailsActivity.class);

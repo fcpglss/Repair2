@@ -344,7 +344,7 @@
                             android:id="@+id/tv_details_employee1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="张三" />
+                            android:text="" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -361,7 +361,7 @@
                             android:id="@+id/tv_employee_company"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="后勤部" />
+                            android:text="" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -378,7 +378,7 @@
                             android:id="@+id/tv_employee_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="120" />
+                            android:text="" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -395,7 +395,7 @@
                             android:id="@+id/tv_employee_can"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="水" />
+                            android:text="" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -431,32 +431,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:gravity="center_vertical"
+                    android:gravity="left"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/img_pc1"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:padding="2dp"
-                        android:scaleType="fitXY"
-                        android:src="@mipmap/ic_launcher" />
+                        android:scaleType="fitXY" />
 
                     <ImageView
                         android:id="@+id/img_pc2"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:padding="2dp"
                         android:scaleType="fitXY" />
 
                     <ImageView
 
                         android:id="@+id/img_pc3"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:padding="2dp"
                         android:scaleType="fitXY" />
                 </LinearLayout>
@@ -541,7 +537,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="5"
-                        android:text="还行吧，维修工来得挺快的，一下就修好了" />
+                        android:text="" />
                 </LinearLayout>
 
             </LinearLayout>

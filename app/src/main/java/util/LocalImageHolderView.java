@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.squareup.picasso.Picasso;
 
 import application.MyApplication;
 import imagehodler.ImageLoader;
@@ -50,24 +51,25 @@ public class LocalImageHolderView implements Holder<String> {
     public void UpdateUI(final Context context, final int position, String  data) {
         try {
 //            final  String url = data;
-            mImageLoader.bindBitmap(data,imageview,150,150);
+//            mImageLoader.bindBitmap(data,imageview,150,150);
+            Picasso.with(context).load(data).into(imageview);
 
             imageview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Announcement announcement = res.getAnnouncements().get(position);
 
-                    Intent intent = new Intent(mContext, AnnocementActivity.class);
+                Intent intent = new Intent(mContext, AnnocementActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    Bundle bundle = new Bundle();
+                Bundle bundle = new Bundle();
 
                     bundle.putSerializable("announcementitem",announcement);
 
                     intent.putExtras(bundle);
 
                     mContext.startActivity(intent);
-                }
+            }
             });
         }
         catch (Exception ee)

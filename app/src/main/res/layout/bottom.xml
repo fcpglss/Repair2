@@ -31,8 +31,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="首页"
-            android:textColor="#008000"
-            android:textSize="12dp" />
+            android:textColor="#e6008000"
+            android:textSize="12sp" />
         
     </LinearLayout>
     
@@ -52,10 +52,10 @@
             android:id="@+id/tv_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12dp"
+            android:textSize="12sp"
             
             android:gravity="center_vertical"
-            android:textColor="#000000"
+            android:textColor="#e6000000"
             android:text="申请维修"/>
         
     </LinearLayout>
@@ -77,9 +77,9 @@
               android:id="@+id/tv_friend"
               android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12dp"
+            android:textSize="12sp"
            android:gravity="center_vertical"
-             android:textColor="#000000"
+             android:textColor="#e6000000"
             android:text="我的报修"/>
         
     </LinearLayout>

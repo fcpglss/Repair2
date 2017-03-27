@@ -367,14 +367,18 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
                         imgFile = FIleUtils.createImageFile();
                         try {
-                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
+//                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
                             out = new FileOutputStream(imgFile);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            //有图片
+                            if(bitmap!=null){
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                                imgFileList.add(imgFile);
+                            }
                             out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        imgFileList.add(imgFile);
+
                     }
                 }
                 return imgFileList;

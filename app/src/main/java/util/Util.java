@@ -259,4 +259,24 @@ public class Util {
 		Log.d(TAG, "loadFirstFromLocal: 从本地文件json_data中读出json:"+json);
 		return json;
 	}
+	public  static void writeMyResToLocal(final ResultBean resultBean, final Context mContext) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				String json = JsonUtil.beanToResultBean(resultBean);
+				SharedPreferences.Editor editor = mContext.getSharedPreferences("myrepair_data", mContext.MODE_PRIVATE).edit();
+				editor.putString("myrepair", json);
+				editor.apply();
+				Log.d(TAG, "writeJsonToLocal: 成功将MyRepair的Json写入本地myrepair_data文件中，key:myrepair");
+			}
+		}).start();
+
+	}
+	public static String loadMyResFromLocal(Context context)
+	{
+		SharedPreferences preferences = context.getSharedPreferences("myrepair_data", context.MODE_PRIVATE);
+		String json = preferences.getString("myrepair", "");
+		Log.d(TAG, "loadFirstFromLocal: 从本地文件myrepair_data中读出json:"+json);
+		return json;
+	}
 }
