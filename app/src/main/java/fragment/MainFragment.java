@@ -420,6 +420,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     }
 
     private void init() {
+
         convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
         convenientBanner.startTurning(5000);
         waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);

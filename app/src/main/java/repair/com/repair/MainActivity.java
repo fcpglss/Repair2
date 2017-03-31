@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 //    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
 //    public static final String UP_APPLY="http://192.168.43.128:8888/myserver2/Upload2";//
 //    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
-
+//    public static final String SENDMORE_URL = "http://192.168.43.128:8888/myserver2/sendmore";
 
     public static final int TAKE_PHOTO_RAW = 1;
     public static final int REQUEST_IMAGE = 2;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main); 
         Log.d("Apply_Fragment", "onCreate");
         init();
         initData();
@@ -255,27 +255,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addItem(Uri uri) {
-       if (arrayUri2[0]==null){
-           arrayUri2[0]=uri;
-       }else {
-           if (arrayUri2[1]==null){
-               arrayUri2[1]=uri;
-           }else {
-               if (arrayUri2[2]==null){
-                   arrayUri2[2]=uri;
-               }else {
-                   arrayUri2[0]=arrayUri2[1];
-                   arrayUri2[1]=arrayUri2[2];
-                   arrayUri2[2]=uri;
 
-                   for (Uri u:arrayUri2){
-                       Log.d(TAG, "addItem: "+u.toString());
-                   }
-               }
-           }
-       }
-    }
 
 }
 

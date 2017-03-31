@@ -491,7 +491,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //排序
                     Collections.sort(listArea);
                     dialogAdapter.notifyDataSetChanged();
@@ -509,8 +509,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 return true;
             }
         });
-
-
     }
 
     private void setDialogDetailArea(final DialogAdapter dialogAdapter) {
@@ -544,7 +542,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //点击区域清空 层号 房间
                     etFloor.setText("");
                     etRoom.setText("");
@@ -631,7 +629,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
 
                     //点击区域清空  房间
                     etRoom.setText("");
@@ -723,20 +721,20 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
 
                     listRoom.clear();
                     listRoomID.clear();
 
                     // FIXME: 2017/3/22 添加相应数据
                     for (Room r : addressRes.getRooms()) {
-                        Log.d(TAG, "onTouch: getroom"+addressRes.getRooms().size());
+                        Log.d(TAG, "onTouch: getroom" + addressRes.getRooms().size());
                         if (etFloor.getText().toString() != null && !etFloor.equals("")) {
-                            int Id = getFloor(placeId,etFloor.getText().toString());
-                            Log.d(TAG, "onTouch: id"+Id);
+                            int Id = getFloor(placeId, etFloor.getText().toString());
+                            Log.d(TAG, "onTouch: id" + Id);
                             if (Id == r.getFlies()) {
                                 listRoom.add(r.getRoomNumber());
-                                Log.d(TAG, "onTouch: room"+listRoom.size());
+                                Log.d(TAG, "onTouch: room" + listRoom.size());
                                 listRoomID.add(r.getId());
                             }
                         }
@@ -805,7 +803,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
 
                     listApplyType.clear();
                     listApplyTypeID.clear();
@@ -1039,13 +1037,13 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         return -1;
     }
 
-    private int getFloor(int placeId,String floorName) {
+    private int getFloor(int placeId, String floorName) {
 
-        Log.d(TAG, "getFloor: floor  "+floorName);
+        Log.d(TAG, "getFloor: floor  " + floorName);
         int id = 0;
         List<Flies> list = addressRes.getFlies();
         for (Flies f : list) {
-            if (f.getaFloor() == placeId){
+            if (f.getaFloor() == placeId) {
                 if (f.getFlies().equals(floorName)) {
                     id = f.getId();
                     return id;

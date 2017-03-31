@@ -3,12 +3,16 @@ package util;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.squareup.picasso.Picasso;
+
+import java.io.Serializable;
+import java.util.List;
 
 import application.MyApplication;
 import imagehodler.ImageLoader;
@@ -24,17 +28,15 @@ import repari.com.adapter.ApplysAdapter;
  */
 public class LocalImageHolderView implements Holder<String> {
     private ImageView imageview;
-    private  Context mContext;
-    private ResultBean res=null;
-    public ImageLoader mImageLoader=null;
+    private Context mContext;
+    private ResultBean res = null;
+    public ImageLoader mImageLoader = null;
 
-    public LocalImageHolderView(Context context, ApplysAdapter applysAdapter, ResultBean resultBean)
-    {
-        mContext=context;
-        mImageLoader=ImageLoader.build(context);
-        res=resultBean;
+    public LocalImageHolderView(Context context, ApplysAdapter applysAdapter, ResultBean resultBean) {
+        mContext = context;
+        mImageLoader = ImageLoader.build(context);
+        res = resultBean;
     }
-
 
 
     @Override
@@ -45,10 +47,8 @@ public class LocalImageHolderView implements Holder<String> {
     }
 
 
-
-
     @Override
-    public void UpdateUI(final Context context, final int position, String  data) {
+    public void UpdateUI(final Context context, final int position, String data) {
         try {
 //            final  String url = data;
 //            mImageLoader.bindBitmap(data,imageview,150,150);
@@ -57,24 +57,20 @@ public class LocalImageHolderView implements Holder<String> {
             imageview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Announcement announcement = res.getAnnouncements().get(position);
+//                    Announcement announcement = res.getAnnouncements().get(position);
+                    List<Announcement> list = res.getAnnouncements();
 
-                Intent intent = new Intent(mContext, AnnocementActivity.class);
+                    Intent intent = new Intent(mContext, AnnocementActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("list", (Serializable) list);
 
-                Bundle bundle = new Bundle();
 
-                    bundle.putSerializable("announcementitem",announcement);
-
-                    intent.putExtras(bundle);
 
                     mContext.startActivity(intent);
-            }
+                }
             });
-        }
-        catch (Exception ee)
-        {
-            Log.d(TAG,"UpdateUI有异常:"+ ee.getMessage().toString());
+        } catch (Exception ee) {
+            Log.d(TAG, "UpdateUI有异常:" + ee.getMessage().toString());
         }
 
     }

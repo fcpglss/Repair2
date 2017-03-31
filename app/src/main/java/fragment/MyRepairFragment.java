@@ -124,19 +124,13 @@ public class MyRepairFragment extends Fragment {
             llEmpty.setVisibility(View.GONE);
             Log.d(TAG, "initView: 不可见");
         }
-
-
     }
-
-
     private void loadPhone() {
         SharedPreferences preferences = getActivity().getSharedPreferences("phoneData", getActivity().MODE_PRIVATE);
         phone = preferences.getString("phone", "");
     }
 
     private void upApply() {
-
-
         if (!isNetworkConnected(getActivity())) {
             Toast.makeText(getActivity(), "请连接网络,我的报修页面使用本地数据", Toast.LENGTH_SHORT).show();
             String myjson = Util.loadMyResFromLocal(getActivity());
@@ -144,11 +138,8 @@ public class MyRepairFragment extends Fragment {
             if (myRes != null) {
                 initView(myRes);
             }
-
         } else {
-
             if (true) {
-
                 Log.d(TAG, "upApply: phone " + phone);
 
                 List<File> files = new ArrayList<>();
@@ -179,8 +170,6 @@ public class MyRepairFragment extends Fragment {
             } else {
                 Toast.makeText(MyApplication.getContext(), "未知错误", Toast.LENGTH_SHORT).show();
             }
-
-
         }
 
     }

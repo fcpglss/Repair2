@@ -36,11 +36,8 @@ import repari.com.adapter.DialogAdapterImg;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
-import util.Util;
 
-import static repair.com.repair.R.id.edit_query;
 import static repair.com.repair.R.id.tv_details_category;
-import static repair.com.repair.R.id.tv_employee_company;
 //import static repair.com.repair.R.id.tv_details_employee;
 
 
@@ -53,7 +50,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private static final String TAG = "DetailsActivity";
     private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
 
-    boolean visable = false;//员工详细页面默认不可见
+    boolean visible = false;//员工详细页面默认不可见
 
     //评价星星
     private ImageView star1,star2,star3,star4,star5;
@@ -556,16 +553,16 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (apply.getLogisticMan()!=null){
 
-                    if (visable == false) {
+                    if (visible == false) {
                         ll_employee_details.setVisibility(View.VISIBLE);
-                        visable = true;
+                        visible = true;
                     } else {
                         ll_employee_details.setVisibility(View.GONE);
-                        visable = false;
+                        visible = false;
                     }
                 }
                 else {
-                    visable = false;
+                    visible = false;
                     tv_paigong.setVisibility(View.VISIBLE);
                     iv_employee_arr.setVisibility(View.GONE);
                 }
