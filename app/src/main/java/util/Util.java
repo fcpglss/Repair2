@@ -279,4 +279,18 @@ public class Util {
 		Log.d(TAG, "loadFirstFromLocal: 从本地文件myrepair_data中读出json:"+json);
 		return json;
 	}
+
+	/**
+	 * 将datetime类型的数据只精确到秒
+	 * @param datetime
+	 * @return
+	 */
+	public static  String setTime(String datetime) {
+
+		if (datetime != null && !datetime.equals(""))
+		{
+			return datetime.split(":")[0]+":"+datetime.split(":")[1];
+		}
+		return "";
+	}
 }

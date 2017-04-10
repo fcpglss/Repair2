@@ -36,6 +36,7 @@ import repari.com.adapter.DialogAdapterImg;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
+import util.Util;
 
 import static repair.com.repair.R.id.tv_details_category;
 //import static repair.com.repair.R.id.tv_details_employee;
@@ -318,9 +319,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
-        tv_date.setText(setTime(apply.getRepairTime()));
+        tv_date.setText(Util.setTime(apply.getRepairTime()));
 
-        tvFinishTime.setText(setTime(apply.getFinilTime()));
+        tvFinishTime.setText(Util.setTime(apply.getFinilTime()));
 
         tv_describe.setText(apply.getRepairDetails());
         img_category.setImageResource(getCategoryIcon());
@@ -378,14 +379,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             tv_tel.setText(tel.replace(temp,"****"));
         }
     }
-    private String setTime(String datetime) {
 
-        if (datetime != null && !datetime.equals(""))
-        {
-           return datetime.split(":")[0]+":"+datetime.split(":")[1];
-        }
-        return "";
-    }
 
 
 

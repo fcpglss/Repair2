@@ -140,7 +140,7 @@
                         <TextView
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
-                            android:text="报修区域" />
+                            android:text="故障区域" />
 
                         <TextView
                             android:id="@+id/tv_details_area"
@@ -190,9 +190,10 @@
 
 
                         <TextView
+                            android:id="@+id/textView7"
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
-                            android:text="报修类型" />
+                            android:text="故障类型" />
 
                         <ImageView
                             android:id="@+id/img_category"
@@ -274,7 +275,7 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:text="报修状态" />
+                        android:text="状态" />
 
                     <ImageView
                         android:id="@+id/img_status"
@@ -416,7 +417,7 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:text="报修描述" />
+                        android:text="故障描述" />
 
                     <TextView
                         android:id="@+id/tv_details_describe"

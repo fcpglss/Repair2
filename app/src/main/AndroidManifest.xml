@@ -35,6 +35,7 @@
         </activity>
         <activity android:name=".AppraiseActivity"/>
         <activity android:name=".ChangeActivity"/>
+        <activity android:name=".AdminListActivity"/>
     </application>
 
 </manifest>

@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvHead;
 
+    private ImageView ivMenu;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +140,17 @@ public class MainActivity extends AppCompatActivity {
         mSeachText = (EditText) findViewById(R.id.et_seach);
 
         tvHead = (TextView) findViewById(R.id.tv_head);
+
+
+        ivMenu = (ImageView) findViewById(R.id.iv_menu);
+        //菜单图片 现在先直接跳转管理页面
+        ivMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,AdminListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
