@@ -72,6 +72,8 @@ import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
 import static util.NetworkUtils.isNetworkConnected;
+import static repair.com.repair.MainActivity.windowWitch;
+import static repair.com.repair.MainActivity.windowHeigth;
 
 /**
  * Created by hsp on 2017/3/14.
@@ -467,7 +469,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head1)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -482,7 +484,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -516,7 +518,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head2)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -533,7 +535,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -573,7 +575,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -599,7 +601,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head6)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -616,7 +618,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -664,7 +666,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -689,7 +691,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head7)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -707,7 +709,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -744,7 +746,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -769,7 +771,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head3)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -785,7 +787,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         etApplyType.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -915,7 +917,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head4)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -934,7 +936,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         dialogGetImage.show();
 

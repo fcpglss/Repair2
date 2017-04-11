@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int TAKE_PHOTO_RAW = 1;
     public static final int REQUEST_IMAGE = 2;
 
+
+    public static int windowWitch;
+    public static int windowHeigth;
+
+
+
     public static Uri photoUri;
 
     public static List<Uri> list_uri = new ArrayList<>();
@@ -91,12 +99,17 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView ivMenu;
 
+    //菜单项
+    private TextView itemAdmin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main); 
         Log.d("Apply_Fragment", "onCreate");
+        //获取屏幕宽高
+        setWitchAndHeigth();
         init();
         initData();
         TabListener();
@@ -141,16 +154,21 @@ public class MainActivity extends AppCompatActivity {
 
         tvHead = (TextView) findViewById(R.id.tv_head);
 
+        //菜单选项
 
         ivMenu = (ImageView) findViewById(R.id.iv_menu);
         //菜单图片 现在先直接跳转管理页面
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AdminListActivity.class);
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
             }
         });
+
+
+
+
     }
 
     /**
@@ -266,6 +284,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "addItem");
             Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
         }
+    }
+
+    private void setWitchAndHeigth() {
+        //获取屏幕宽高dm
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        windowWitch = dm.widthPixels;
+        windowHeigth = dm.heightPixels;
     }
 
 

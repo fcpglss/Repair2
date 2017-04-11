@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="申请维修"
+                android:text="我要报修"
                 android:textColor="#e6000000"
                 android:textSize="11sp" />
 

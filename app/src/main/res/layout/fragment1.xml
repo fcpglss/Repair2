@@ -5,38 +5,51 @@
     android:layout_height="match_parent"    
     android:orientation="vertical" >
 
-    <com.bigkoo.convenientbanner.ConvenientBanner
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        app:canLoop = "true"
-        android:id="@+id/loop">
+        android:layout_height="match_parent">
 
-    </com.bigkoo.convenientbanner.ConvenientBanner>
-    
-    <LinearLayout
-        android:background="#ffffff"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_height="26dp">
+        <com.bigkoo.convenientbanner.ConvenientBanner
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:canLoop = "true"
+            android:id="@+id/loop">
 
-        <TextView
-            android:layout_width="wrap_content"
+        </com.bigkoo.convenientbanner.ConvenientBanner>
+        <LinearLayout
+            android:background="#ffffff"
+            android:id="@+id/ll1"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_height="26dp"
+            android:layout_below="@id/loop">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="报修页面"
+                android:textSize="12sp"
+                android:layout_marginLeft="4dp"
+                android:textColor="#e45534"/>
+
+        </LinearLayout>
+
+        <medusa.theone.waterdroplistview.view.WaterDropListView
+            android:id="@+id/waterdrop_w"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="报修页面"
-            android:textSize="12sp"
-            android:layout_marginLeft="4dp"
-            android:textColor="#e45534"/>
+            android:layout_below="@id/ll1">
+        </medusa.theone.waterdroplistview.view.WaterDropListView>
 
-    </LinearLayout>
-    
-    
+    </RelativeLayout>
 
-    <medusa.theone.waterdroplistview.view.WaterDropListView
-        android:id="@+id/waterdrop_w"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </medusa.theone.waterdroplistview.view.WaterDropListView>
+
+
+
+
+
+
 
 </LinearLayout>

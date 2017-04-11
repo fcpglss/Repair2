@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -90,6 +91,9 @@ import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.UP_APPLY;
 import static repair.com.repair.MainActivity.list_uri;
 import static util.NetworkUtils.isNetworkConnected;
+import static repair.com.repair.MainActivity.windowWitch;
+import static repair.com.repair.MainActivity.windowHeigth;
+
 
 
 public class ApplyFragment extends Fragment implements View.OnClickListener {
@@ -210,9 +214,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
+
+
         initView();
         queryFromServer(JSON_URL);
     }
+
+
+
 
     private void initView() {
 
@@ -464,11 +473,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             listArea.add(a.getArea());
 
         }
+        Log.d(TAG, "setDialogArea: window width " + windowWitch);
         dialogArea = DialogPlus.newDialog(getActivity())
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head1)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -483,7 +493,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -517,7 +527,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head2)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -534,7 +544,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -578,7 +588,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -604,7 +614,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head6)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -621,7 +631,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -670,7 +680,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -695,7 +705,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head7)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -713,7 +723,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
 
         //给EditText设置点击事件
@@ -756,7 +766,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                         dialogGetImage = DialogPlus.newDialog(getActivity())
                                 .setAdapter(dialogAdapter)
                                 .setGravity(Gravity.CENTER)
-                                .setContentWidth(800)
+                                .setContentWidth((int) (windowWitch / 1.5))
                                 .setOnItemClickListener(new OnItemClickListener() {
                                     @Override
                                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -781,7 +791,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head3)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -797,7 +807,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         etApplyType.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -953,7 +963,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 .setAdapter(dialogAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head4)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
 //                .setCancelable(true)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
@@ -972,7 +982,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         dialogGetImage.show();
 

@@ -25,6 +25,8 @@ import com.zhy.http.okhttp.request.RequestCall;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import application.MyApplication;
@@ -43,6 +45,8 @@ import util.Util;
 import static repair.com.repair.MainActivity.JSON_URL;
 import static repair.com.repair.MainActivity.UP_APPLY;
 import static util.NetworkUtils.isNetworkConnected;
+import static repair.com.repair.MainActivity.windowWitch;
+import static repair.com.repair.MainActivity.windowHeigth;
 
 /**
  * Created by hsp on 2017/4/8.
@@ -51,7 +55,7 @@ import static util.NetworkUtils.isNetworkConnected;
 public class AdminListAdapter extends BaseAdapter {
 
     private static final String TAG = "AdminListAdapter";
-    public static  String JSONEMPLOYEE="http://192.168.31.201:8888/myserver2/AdminServer";
+    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServer";
     private AdminListActivity context;
     private Response response;
     private ResultBean resultBean;
@@ -61,11 +65,18 @@ public class AdminListAdapter extends BaseAdapter {
     private DialogPlus dialogChoose;
     DialogAdapter dialogChooseAdapter;
 
-    List<String> emailList= new ArrayList<>();
+    List<String> emailList = new ArrayList<>();
+
+    //员工list
+    List<Employee> employeeList = new ArrayList<>();
+    //存放员工
+    List<Employee> saveEmployeeList = new ArrayList<>();
 
     List<String> list1 = new ArrayList<>();
-    List<String> employEmail=new ArrayList<>();
-    List<String> employPhone=new ArrayList<>();
+
+    List<String> employEmail = new ArrayList<>();
+
+    List<String> employPhone = new ArrayList<>();
     private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -74,7 +85,7 @@ public class AdminListAdapter extends BaseAdapter {
                 case 2:
                     break;
                 case 3:
-                    Log.d(TAG, "handleMessage: list1"+list1.toString());
+                    Log.d(TAG, "handleMessage: list1" + list1.toString());
                     dialogChooseAdapter.notifyDataSetChanged();
                     break;
             }
@@ -86,6 +97,7 @@ public class AdminListAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         this.resultBean = resultBean;
         list = resultBean.getApplys();
+        employeeList = resultBean.getEmployee();
 
     }
 
@@ -135,9 +147,9 @@ public class AdminListAdapter extends BaseAdapter {
         return view;
     }
 
-    class ViewHolder{
-        TextView tvName,tvTime,tvAdress,tvcategory,tvServerMan;
-        Button btnSend,btnChoose;
+    class ViewHolder {
+        TextView tvName, tvTime, tvAdress, tvcategory, tvServerMan;
+        Button btnSend, btnChoose;
     }
 
     private void setDialog(final AdminListAdapter.ViewHolder viewHolder) {
@@ -156,7 +168,7 @@ public class AdminListAdapter extends BaseAdapter {
                         .setAdapter(dialogAdapter)
                         .setGravity(Gravity.CENTER)
                         .setHeader(R.layout.dialog_head8)
-                        .setContentWidth(800)
+                        .setContentWidth((int) (windowWitch / 1.5))
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override
                             public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -174,12 +186,14 @@ public class AdminListAdapter extends BaseAdapter {
                             }
 
                         })
-                        .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                        .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                         .create();
-                dialogSend.show();
+                if (!viewHolder.tvServerMan.getText().toString().isEmpty()) {
+                    dialogSend.show();
+                }
+
             }
         });
-
 
 
         btnChoose.setOnClickListener(new View.OnClickListener() {
@@ -192,68 +206,84 @@ public class AdminListAdapter extends BaseAdapter {
         });
 
 
-
     }
 
     private void startEmail(ViewHolder viewHolder) {
-        if(emailList.size()<=0)
-        {
-            return ;
-        }
-        else
-        {
+
+        List<String> listTemp = new ArrayList(emailList);
+        emailList.clear();
+
+
+        if (listTemp.size() <= 0) {
+            return;
+        } else {
 
             // 必须明确使用mailto前缀来修饰邮件地址,如果使用
             // intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
-            Uri uri = Uri.parse("mailto:"+emailList.get(0));//这里
-            String[] email=new String[emailList.size()];
-            for(int i=0;i<emailList.size();i++)
-            {
 
-                email[i]=emailList.get(i);
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+
+            String[] email = new String[listTemp.size()];
+            Log.d(TAG, "startEmail: emailList:size" + listTemp.size());
+
+            for (int i = 0; i < listTemp.size(); i++) {
+                Log.d(TAG, "startEmail: " + listTemp.get(i).toString());
+//
+                email[i] = listTemp.get(i);
+                String s="mailto:"+email[i];
+                Log.d(TAG, "startEmail: "+s);
+              //  Uri uri=Uri.parse("mailto:"+email[i]);
+                Uri  uri =Uri.parse(s);
+                intent.setData(uri);
             }
-            Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-            intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
-            intent.putExtra(Intent.EXTRA_SUBJECT, "这是邮件的主题部分"); // 主题
-            intent.putExtra(Intent.EXTRA_TEXT, "这是邮件的正文部分"); // 正文
-            context.startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
 
+         //   intent.putExtra(Intent.EXTRA_EMAIL, email);
+
+            intent.putExtra(intent.EXTRA_CC,email);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("报修人： " + viewHolder.tvName.getText() + "\n");
+            sb.append("报修地点： " + viewHolder.tvAdress.getText() + "\n");
+            sb.append("报修时间： " + viewHolder.tvTime.getText() + "\n");
+            sb.append("报修类型：" + viewHolder.tvcategory.getText() + "\n");
+
+
+            intent.putExtra(Intent.EXTRA_SUBJECT, viewHolder.tvAdress.getText().toString()); // 主题
+            intent.putExtra(Intent.EXTRA_TEXT, sb.toString()); // 正文
+            context.startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
         }
-        }
+    }
 
 
     private void setChooseDialog(final ViewHolder viewHolder) {
 
         list1.clear();
-        emailList.clear();;
+//        emailList.clear();
         dialogChooseAdapter = new DialogAdapter(context, list1, R.layout.simple_list_item);
         dialogChoose = DialogPlus.newDialog(context)
                 .setAdapter(dialogChooseAdapter)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head9)
-                .setContentWidth(800)
+                .setContentWidth((int) (windowWitch / 1.5))
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         String temp = viewHolder.tvServerMan.getText().toString();
-                        boolean flag=false;
-                        if (temp!=null&&!"".equals(temp)){
-                            String temp2[]=temp.split(",");
+                        boolean flag = false;
+                        if (temp != null && !"".equals(temp)) {
+                            String temp2[] = temp.split(",");
 
-                            for(int i=0;i<temp2.length;i++)
-                            {
-                                if(list1.get(position).equals(temp2[i]))
-                                {
-                                    flag=true;
+                            for (int i = 0; i < temp2.length; i++) {
+                                if (list1.get(position).equals(temp2[i])) {
+                                    flag = true;
                                 }
                             }
-                            if(!flag)
-                            {
-                                viewHolder.tvServerMan.setText(temp+","+list1.get(position));
+                            if (!flag) {
+                                viewHolder.tvServerMan.setText(temp + "," + list1.get(position));
                                 emailList.add(employEmail.get(position).toString());
                             }
                             Log.d(TAG, "onItemClick222: 执行了");
-                        }else {
+                        } else {
                             viewHolder.tvServerMan.setText(list1.get(position).toString());
                             emailList.add(employEmail.get(position).toString());
                             Log.d(TAG, "onItemClick: 执行了");
@@ -263,14 +293,13 @@ public class AdminListAdapter extends BaseAdapter {
                     }
 
                 })
-                .setExpanded(true, 1000)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         dialogChoose.show();
     }
 
 
-
-  private void upApply(String categoryName) {
+    private void upApply(String categoryName) {
 
         if (true) {
 
@@ -286,29 +315,28 @@ public class AdminListAdapter extends BaseAdapter {
                 @Override
                 public void onResponse(String responses, int id) {
                     final String responseJson = responses.toString();
-                //解析json获取到Response;
-                response = JsonUtil.jsonToResponse(responseJson);
-                if (response != null) {
-                    resultBean = response.getResultBean();
-                }
-                if (resultBean != null) {
-                    Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
-                    Log.d(TAG, "onFinish: "+responseJson);
-                    for(Employee e:resultBean.getEmployee())
-                    {
-                        list1.add(e.getName());
-                        employEmail.add(e.getE_email());
+                    //解析json获取到Response;
+                    response = JsonUtil.jsonToResponse(responseJson);
+                    if (response != null) {
+                        resultBean = response.getResultBean();
                     }
-                    mhandler.sendEmptyMessage(3);
+                    if (resultBean != null) {
+                        Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
+                        Log.d(TAG, "onFinish: " + responseJson);
+                        for (Employee e : resultBean.getEmployee()) {
+                            list1.add(e.getName());
+                            employEmail.add(e.getE_email());
+                        }
+                        mhandler.sendEmptyMessage(3);
 
-                    //   Util.writeJsonToLocal(adminRes, MyApplication.getContext());//注意刷新和冲突
-                } else {
-                    response.setErrorType(-2);
-                    response.setError(false);
-                    response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
-                    Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-                    mhandler.sendEmptyMessage(2);
-                }
+                        //   Util.writeJsonToLocal(adminRes, MyApplication.getContext());//注意刷新和冲突
+                    } else {
+                        response.setErrorType(-2);
+                        response.setError(false);
+                        response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
+                        Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
+                        mhandler.sendEmptyMessage(2);
+                    }
                 }
             });
 
@@ -318,24 +346,24 @@ public class AdminListAdapter extends BaseAdapter {
     }
 
 
-private RequestCall submit(String phone, List<File> files) {
-    PostFormBuilder postFormBuilder = OkHttpUtils.post();
-    for (int i = 0; i < files.size(); i++) {
-        postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
-        Log.d(TAG, "submit: " + files.get(i).getPath());
+    private RequestCall submit(String phone, List<File> files) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
+        for (int i = 0; i < files.size(); i++) {
+            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
+            Log.d(TAG, "submit: " + files.get(i).getPath());
+        }
+
+
+        postFormBuilder.addParams("categoryName", phone);
+        if (files.size() > 0) {
+            postFormBuilder.url(UP_APPLY);
+        } else {
+            postFormBuilder.url(JSONEMPLOYEE);
+
+        }
+
+        return postFormBuilder.build();
     }
-
-
-    postFormBuilder.addParams("categoryName", phone);
-    if (files.size() > 0) {
-        postFormBuilder.url(UP_APPLY);
-    } else {
-        postFormBuilder.url(JSONEMPLOYEE);
-
-    }
-
-    return postFormBuilder.build();
-}
 
 
 }
