@@ -2,9 +2,15 @@ package repari.com.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,25 +24,42 @@ import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.squareup.picasso.Picasso;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.RequestCall;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.annotation.Target;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import application.MyApplication;
+import camera.FIleUtils;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import model.Apply;
 import model.Employee;
 import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
 import repair.com.repair.AdminListActivity;
+import repair.com.repair.ChangeActivity;
 import repair.com.repair.R;
+import util.FileUtils;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -66,6 +89,10 @@ public class AdminListAdapter extends BaseAdapter {
     DialogAdapter dialogChooseAdapter;
 
     List<String> emailList = new ArrayList<>();
+
+    //
+    List<Uri> listU = new ArrayList<>();
+    List<File> listFile = new ArrayList<>();
 
     //员工list
     List<Employee> employeeList = new ArrayList<>();
@@ -98,7 +125,6 @@ public class AdminListAdapter extends BaseAdapter {
         this.resultBean = resultBean;
         list = resultBean.getApplys();
         employeeList = resultBean.getEmployee();
-
     }
 
     @Override
@@ -140,11 +166,49 @@ public class AdminListAdapter extends BaseAdapter {
         viewHolder.tvTime.setText(Util.setTime(apply.getRepairTime()));
         viewHolder.tvcategory.setText(apply.getClasss());
         viewHolder.tvAdress.setText(Util.setTitle(apply));
-//        viewHolder.tvServerMan.setText(apply.getLogisticMan());
+
+        downLoadBitmap(apply);
+
+
         //设置对话框
         setDialog(viewHolder);
 
         return view;
+    }
+
+
+    private void downLoadBitmap(Apply apply) {
+        List<String> listImage = apply.getA_imaes();
+
+        new AsyncTask<List<String>, Void, List<Uri>>() {
+            @Override
+            protected void onPostExecute(List<Uri> uris) {
+                super.onPostExecute(uris);
+                listU = uris;
+            }
+
+            @Override
+            protected List<Uri> doInBackground(List<String>... params) {
+                List<Uri> listUri = new ArrayList<>();
+                for (String s :
+                        params[0]) {
+                    try {
+                        Bitmap bitmap = null;
+                        bitmap = Picasso.with(context).load(s).get();
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+                        String uri = FileUtils.saveBitMapToFile(context, timeStamp, bitmap, true, "Android/data/repair.com.repair/cache");
+                        Log.d(TAG, "subscribe: " + uri);
+                        listUri.add(Uri.parse(uri));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return listUri;
+                    }
+
+                }
+                return listUri;
+            }
+
+        }.execute(listImage);
     }
 
     class ViewHolder {
@@ -180,7 +244,8 @@ public class AdminListAdapter extends BaseAdapter {
                                 }
                                 if (position == 1) {
                                     Log.d(TAG, "onItemClick: positon = " + position);
-                                    startEmail(viewHolder);
+                                    startEmail2(viewHolder);
+
                                 }
                                 dialogSend.dismiss();
                             }
@@ -218,42 +283,137 @@ public class AdminListAdapter extends BaseAdapter {
             return;
         } else {
 
-            // 必须明确使用mailto前缀来修饰邮件地址,如果使用
-            // intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
+            String contentDetails = "";
+            String contentBrief = "";
+            String shareUrl = "";
+            Intent it = new Intent(Intent.ACTION_SEND);
+            it.setType("text/plain");
+            Intent targeted = null;
+            List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(it, 0);
+            if (!resInfo.isEmpty()) {
+                List<Intent> targetedShareIntents = new ArrayList<Intent>();
+                for (ResolveInfo info : resInfo) {
+                    targeted = new Intent(Intent.ACTION_SEND);
+                    targeted.setType("text/plain");
+                    ActivityInfo activityInfo = info.activityInfo;
 
-            Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    // judgments : activityInfo.packageName, activityInfo.name, etc.
+                    if (!activityInfo.name.contains("mail")) {
+                        continue;
+                    }
+                    int size = listTemp.size();
+                    String[] s = listTemp.toArray(new String[size]);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("报修人：  " + viewHolder.tvName.getText() + "\n");
+                    sb.append("报修地点：" + viewHolder.tvAdress.getText() + "\n");
+                    sb.append("报修时间：" + viewHolder.tvTime.getText() + "\n");
+                    sb.append("报修类型：" + viewHolder.tvcategory.getText() + "\n");
 
-            String[] email = new String[listTemp.size()];
-            Log.d(TAG, "startEmail: emailList:size" + listTemp.size());
+                    Log.d(TAG, "startEmail: " + s[0]);
+                    targeted.putExtra(Intent.EXTRA_EMAIL, new String[]{"3487394@163.com", "45435@qq.com"});
+                    Log.d(TAG, "startEmail: " + viewHolder.tvAdress.getText().toString());
+                    targeted.putExtra(Intent.EXTRA_SUBJECT, viewHolder.tvAdress.getText().toString()); // 主题
+                    Log.d(TAG, "startEmail: " + sb.toString());
+                    targeted.putExtra(Intent.EXTRA_TEXT, sb.toString()); // 正文
+                    targeted.setPackage(activityInfo.packageName);
 
-            for (int i = 0; i < listTemp.size(); i++) {
-                Log.d(TAG, "startEmail: " + listTemp.get(i).toString());
-//
-                email[i] = listTemp.get(i);
-                String s="mailto:"+email[i];
-                Log.d(TAG, "startEmail: "+s);
-              //  Uri uri=Uri.parse("mailto:"+email[i]);
-                Uri  uri =Uri.parse(s);
-                intent.setData(uri);
+
+                }
+
+                if (targeted != null) {
+                    try {
+                        context.startActivity(targeted);
+                    } catch (Exception e) {
+                        throw new RuntimeException("不能启动");
+                    }
+                }
+
             }
-
-         //   intent.putExtra(Intent.EXTRA_EMAIL, email);
-
-            intent.putExtra(intent.EXTRA_CC,email);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("报修人： " + viewHolder.tvName.getText() + "\n");
-            sb.append("报修地点： " + viewHolder.tvAdress.getText() + "\n");
-            sb.append("报修时间： " + viewHolder.tvTime.getText() + "\n");
-            sb.append("报修类型：" + viewHolder.tvcategory.getText() + "\n");
-
-
-            intent.putExtra(Intent.EXTRA_SUBJECT, viewHolder.tvAdress.getText().toString()); // 主题
-            intent.putExtra(Intent.EXTRA_TEXT, sb.toString()); // 正文
-            context.startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
         }
     }
 
+    private void startEmail1(ViewHolder viewHolder) {
+
+        List<String> listTemp = new ArrayList(emailList);
+        emailList.clear();
+
+
+        boolean found = false;
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(share, 0);
+        if (!resInfo.isEmpty()) {
+            for (ResolveInfo info : resInfo) {
+                if (info.activityInfo.packageName.toLowerCase().contains("mail")
+                        || info.activityInfo.name.toLowerCase().contains("mail")) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("报修人： " + viewHolder.tvName.getText() + "\n");
+                    sb.append("报修地点： " + viewHolder.tvAdress.getText() + "\n");
+                    sb.append("报修时间： " + viewHolder.tvTime.getText() + "\n");
+                    sb.append("报修类型：" + viewHolder.tvcategory.getText() + "\n");
+                    share.putExtra(Intent.EXTRA_EMAIL, new String[]{"1422189551@qq.com", "1422189552@qq.com"});
+                    share.putExtra(Intent.EXTRA_SUBJECT, viewHolder.tvAdress.getText().toString()); // 主题
+                    share.putExtra(Intent.EXTRA_TEXT, sb.toString()); // 正文
+                }
+            }
+            if (!found) {
+                return;
+            }
+            context.startActivity(Intent.createChooser(share, "选择"));
+        }
+    }
+
+    private void startEmail2(ViewHolder viewHolder) {
+        List<String> listTemp = new ArrayList(emailList);
+        emailList.clear();
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        intent.setType("image/*");
+        intent.setType("application/octet-stream");
+        intent.setType("message/rfc882");
+        Intent.createChooser(intent, "Choose Email Client");
+
+        String[] tos = {"way.ping.li@gmail.com"};
+        String[] ccs = {"way.ping.li@gmail.com"};
+        String[] bccs = {"way.ping.li@gmail.com"};
+
+
+        int size = listTemp.size();
+        String[] s = listTemp.toArray(new String[size]);
+        StringBuilder sb = new StringBuilder();
+        sb.append("报修人：  " + viewHolder.tvName.getText() + "\n");
+        sb.append("报修地点：" + viewHolder.tvAdress.getText() + "\n");
+        sb.append("报修时间：" + viewHolder.tvTime.getText() + "\n");
+        sb.append("报修类型：" + viewHolder.tvcategory.getText() + "\n");
+
+
+        intent.putExtra(Intent.EXTRA_EMAIL, s);
+        intent.putExtra(Intent.EXTRA_CC, s);
+//        intent.putExtra(Intent.EXTRA_BCC, bccs);
+        intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+        intent.putExtra(Intent.EXTRA_SUBJECT, viewHolder.tvAdress.getText().toString());
+
+//        Log.d(TAG, "startEmail2: "+listU.get(0));
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/yingyongbao_7022130.apk";
+//        for(int i=0;i<listU.size();i++)
+//        {
+//            File file =new File(listU.get(i).toString());
+//            Log.d(TAG, "startEmail2: "+file.getPath().toString());
+//            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+//        }
+//        String path1 = context.getExternalCacheDir()
+        String path1 = listU.get(0).toString();
+        Log.d(TAG, "startEmail2: " + path1);
+
+        File file = new File(path1);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        context.startActivity(intent);
+
+
+    }
 
     private void setChooseDialog(final ViewHolder viewHolder) {
 

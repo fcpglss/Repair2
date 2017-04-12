@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import util.Util;
 
 import static repair.com.repair.R.id.tv_details_category;
 //import static repair.com.repair.R.id.tv_details_employee;
+import static repair.com.repair.MainActivity.windowWitch;
+import static repair.com.repair.MainActivity.windowHeigth;
 
 
 /**
@@ -281,25 +285,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
-    private void imgOnClick(View v) {
-        DialogAdapterImg dialogAdapterImg = new DialogAdapterImg(this, (ImageView) v,R.layout.dialog_show_img);
-        dialogPlus = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapterImg)
-                .setGravity(Gravity.CENTER)
-                .setContentWidth(800)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        dialogPlus.dismiss();
-                    }
 
-                })
-                .setExpanded(true, 1000)
-                .create();
-        dialogPlus.show();
-    }
 
     private void bindItem() {
         getCategory();
@@ -486,10 +472,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
             for (int i = 0; i < list_imageView.size(); i++) {
-                mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
+//                mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
+                Picasso.with(this).load(list_imageView.get(i)).into(imageviewList.get(i));
+
                 LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
-                layout.height = 300;
-                layout.width = 300;
+                layout.height = windowHeigth/4;
+                layout.width = (int) (windowWitch/3.3);
                 imageviewList.get(i).setLayoutParams(layout);
                 Log.d(TAG, "执行了一次bindBitmap "+list_imageView.get(i));
             }

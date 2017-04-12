@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -294,6 +295,26 @@ public class MainActivity extends AppCompatActivity {
         windowHeigth = dm.heightPixels;
     }
 
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+
+
+            if (applyFragment.RlIsVisable()!=null&&applyFragment.RlIsVisable().getVisibility() == View.VISIBLE){
+                applyFragment.RlIsVisable().setVisibility(View.GONE);
+//                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+            }else{
+
+                Log.d(TAG, "onKeyDown: 返回了main");
+                this.finish();
+            }
+        }
+
+
+//        return super.onKeyDown(keyCode,event);
+        return true;
+    }
 
 
 }

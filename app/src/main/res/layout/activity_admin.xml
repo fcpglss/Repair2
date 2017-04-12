@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_gravity="center_vertical"
-        android:background="#33384A"
+        android:background="@color/PrimaryColor"
         android:gravity="center_vertical">
 
         <TextView
@@ -19,7 +19,7 @@
             android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:text="管理"
-            android:textColor="#e6ffffff"
+            android:textColor="#ffffff"
             android:textSize="18sp" />
 
     </LinearLayout>

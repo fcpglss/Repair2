@@ -1,13 +1,17 @@
 package repair.com.repair;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -15,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +35,7 @@ import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.squareup.picasso.Picasso;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -145,6 +151,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
 
     List<Uri> changeUriList = new ArrayList<>();
+
+
+    //图片文件路径
+    List<File> imgFileList;
 
     private Response response;
     private Handler mhandler = new Handler() {
@@ -361,18 +371,24 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         new AsyncTask<Void, Void, List<File>>() {
             @Override
             protected List<File> doInBackground(Void... params) {
-                List<File>  imgFileList = new ArrayList<File>();
+                imgFileList = new ArrayList<File>();
                 File imgFile = null;
                 FileOutputStream out = null;
                 if (changeImgUrl != null) {
                     for (int i = 0; i < changeImgUrl.size(); i++) {
-                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
+//                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
+                        Bitmap bitmap = null;
+                        try {
+                            bitmap = Picasso.with(ChangeActivity.this).load(changeImgUrl.get(i)).get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         imgFile = FIleUtils.createImageFile();
                         try {
 //                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
                             out = new FileOutputStream(imgFile);
                             //有图片
-                            if(bitmap!=null){
+                            if (bitmap != null) {
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
                                 imgFileList.add(imgFile);
                             }
@@ -389,7 +405,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             protected void onPostExecute(List<File> imgFileList) {
 
+
                 for (File f : imgFileList) {
+                    Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());
                     changeUriList.add(Uri.fromFile(f));
                 }
                 rl1.setVisibility(View.GONE);
@@ -811,12 +829,24 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onPause() {
+
+
+        for (File file : imgFileList) {
+            if (file.isFile()) {
+                file.delete();
+            }
+        }
+
+
         super.onPause();
     }
 
     @Override
     public void onStop() {
+
+
         super.onStop();
+
     }
 
     @Override
@@ -997,7 +1027,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private int getDetailId(String detailName) {
-        int id;
         List<Place> list = addressRes.getPlaces();
         for (Place p : list) {
             if (p.getP_name().equals(detailName)) {
@@ -1037,54 +1066,48 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         } else {
 
-            if (true) {
 
-//                if (etArea.getText().toString().equals("") || etArea.getText().toString().equals("")) {
-//                    mhandler.sendEmptyMessage(5);
-//                    Log.d(TAG, "setApply: AreaId" + apply.getArea());
-//                    Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-//                    Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-//                    Log.d(TAG, "setApply: roomId" + apply.getRoom());
-//                    Log.d(TAG, "setApply: categoryId" + apply.getClasss());
-//                    return;
-//                }
-                Log.d(TAG, "setApply: AreaId" + apply.getArea());
-                Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-                Log.d(TAG, "setApply: roomId" + apply.getRoom());
-                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
-                String json = JsonUtil.beanToJson(apply);
-                Log.d(TAG, "upApply: json " + json);
-                for (Uri u :
-                        changeUriList) {
-                    Log.d(TAG, "upApply: " + u.toString());
-                }
-                List<File> files = getFiles(changeUriList);
-
-                submit(json, files).execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        //clearAll();
-                        Log.d(TAG, "onResponse: "+response.toString());
-                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
-                        writePhoneToLocal(apply, MyApplication.getContext());
-
-                        Intent intent= new Intent(ChangeActivity.this,DetailsActivity.class);
-                        intent.putExtra("repairId",apply.getId());
-                        Log.d(TAG, "onResponse: "+apply.getId());
-                        startActivity(intent);
-                    }
-                });
-
-            } else {
-                Toast.makeText(MyApplication.getContext(), "请填写完整信息...", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "setApply: AreaId" + apply.getArea());
+            Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
+            Log.d(TAG, "setApply: fliesId" + apply.getFlies());
+            Log.d(TAG, "setApply: roomId" + apply.getRoom());
+            Log.d(TAG, "setApply: categoryId" + apply.getClasss());
+            String json = JsonUtil.beanToJson(apply);
+            Log.d(TAG, "upApply: json " + json);
+            for (Uri u :
+                    changeUriList) {
+                Log.d(TAG, "upApply: " + u.toString());
             }
+            List<File> files = getFiles(changeUriList);
 
+            submit(json, files).execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+                    Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onResponse(String response, int id) {
+                    //clearAll();
+                    Log.d(TAG, "onResponse: " + response.toString());
+                    Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
+                    writePhoneToLocal(apply, MyApplication.getContext());
+                    for (File file : imgFileList) {
+                        if (file.isFile()) {
+                            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                            ContentResolver mContentResolver = getContentResolver();
+                            String where = MediaStore.Images.Media.DATA + "='" + file.getAbsolutePath() + "'";
+                            //删除图片
+                            mContentResolver.delete(uri, where, null);
+                        }
+                    }
+
+                    Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
+                    intent.putExtra("repairId", apply.getId());
+                    Log.d(TAG, "onResponse: " + apply.getId());
+                    startActivity(intent);
+                }
+            });
 
         }
 
@@ -1232,6 +1255,22 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             Log.d(TAG, "addItem");
             Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
         }
+    }
+
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            if (llBigImg.getVisibility() == View.VISIBLE) {
+                llBigImg.setVisibility(View.GONE);
+            } else {
+                this.finish();
+            }
+        }
+
+
+//        return super.onKeyDown(keyCode,event);
+        return true;
     }
 
 }

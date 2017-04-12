@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -95,8 +96,7 @@ import static repair.com.repair.MainActivity.windowWitch;
 import static repair.com.repair.MainActivity.windowHeigth;
 
 
-
-public class ApplyFragment extends Fragment implements View.OnClickListener {
+public class ApplyFragment extends Fragment implements View.OnClickListener, GetFragment {
 
     private static final String TAG = "ApplyFragment";
 
@@ -219,8 +219,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         initView();
         queryFromServer(JSON_URL);
     }
-
-
 
 
     private void initView() {
@@ -1258,5 +1256,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         return postFormBuilder.build();
     }
+
+
+    public LinearLayout RlIsVisable() {
+        if (llBigImg.getVisibility() == View.VISIBLE) {
+            return  llBigImg;
+        }
+        return null;
+    }
+
 
 }

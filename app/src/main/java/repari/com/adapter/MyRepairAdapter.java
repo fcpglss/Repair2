@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.DialogPlusBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
 import util.JsonUtil;
 import util.Util;
+import static repair.com.repair.MainActivity.windowWitch;
+import static repair.com.repair.MainActivity.windowHeigth;
 
 
 /**
@@ -132,7 +135,8 @@ public class MyRepairAdapter extends BaseAdapter {
 
         if (mCanGetBitmapFromNetWork) {
             imageView.setTag(photoUrl);
-            mImageLoader.bindBitmap(photoUrl, imageView, mImageWidth, mImageHeigth);
+//            mImageLoader.bindBitmap(photoUrl, imageView, mImageWidth, mImageHeigth);
+            Picasso.with(context).load(photoUrl).into(imageView);
         }
 
         viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
@@ -217,8 +221,8 @@ public class MyRepairAdapter extends BaseAdapter {
                     dialogPlus = DialogPlus.newDialog(context)
                             .setAdapter(dialogAdapterPassword)
                             .setGravity(Gravity.CENTER)
-                            .setContentWidth(800)
-                            .setContentHeight(500)
+                            .setContentWidth((int) (windowWitch/1.5))
+                            .setContentHeight(windowHeigth/3)
                             .setHeader(R.layout.dialog_head5)
                             .create();
                     dialogPlus.show();
