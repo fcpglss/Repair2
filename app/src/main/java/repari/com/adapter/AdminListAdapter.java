@@ -167,9 +167,6 @@ public class AdminListAdapter extends BaseAdapter {
         viewHolder.tvcategory.setText(apply.getClasss());
         viewHolder.tvAdress.setText(Util.setTitle(apply));
 
-        downLoadBitmap(apply);
-
-
         //设置对话框
         setDialog(viewHolder);
 
@@ -214,6 +211,7 @@ public class AdminListAdapter extends BaseAdapter {
     class ViewHolder {
         TextView tvName, tvTime, tvAdress, tvcategory, tvServerMan;
         Button btnSend, btnChoose;
+        ImageView imgView;
     }
 
     private void setDialog(final AdminListAdapter.ViewHolder viewHolder) {

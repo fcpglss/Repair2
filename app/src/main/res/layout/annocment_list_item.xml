@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="标题"
+            android:textColor="@color/ColorPrimaryText"
             android:textSize="20sp" />
 
         <TextView
@@ -42,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:lines="2"
+            android:textColor="@color/ColorSecondaryText"
             android:text="公告内容" />
     </LinearLayout>
 

@@ -1,120 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="@dimen/dimen4"
         android:background="#ffffff"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/dimen16">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_admin_item_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="104dp"
+                android:text="2017-4-5" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp">
+                android:layout_weight="2"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="报修人"
-                    android:textSize="16sp" />
-
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="测试"
-                    android:textSize="15sp"
-                    android:id="@+id/tv_admin_item_name"/>
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <ImageView
+                        android:layout_width="@dimen/dimen24"
+                        android:layout_height="@dimen/dimen24"
+                        android:src="@drawable/record_icon_repair" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen8"
+                        android:layout_marginRight="@dimen/dimen16"
+                        android:text="故障信息"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen32"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <TextView
+                        android:id="@+id/tv_admin_item_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="电"
+                        android:textColor="@color/ColorSecondaryText"
+                        android:textSize="@dimen/text_14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen32"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <TextView
+                        android:id="@+id/tv_admin_item_address"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="宿舍楼西四栋第一层110"
+
+                        android:textColor="@color/ColorSecondaryText"
+                        android:textSize="@dimen/text_14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen32"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="滴水不止，水龙头关不上"
+                        android:textColor="@color/ColorSecondaryText"
+                        android:textSize="@dimen/text_14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/dimen4">
+                    <ImageView
+                        android:layout_width="@dimen/dimen24"
+                        android:layout_height="@dimen/dimen24"
+                        android:layout_gravity="left"
+                        android:src="@drawable/ren" />
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen8"
+                        android:layout_marginRight="@dimen/dimen16"
+                        android:text="报修人信息"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen32"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <TextView
+                        android:id="@+id/tv_admin_item_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="陈哲"
+                        android:textColor="@color/ColorSecondaryText"
+                        android:textSize="@dimen/text_14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen32"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/dimen4">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18878616954"
+                        android:textColor="@color/ColorSecondaryText"
+                        android:textSize="@dimen/text_14sp" />
+                </LinearLayout>
+
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_launcher" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/ColorDividerColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dimen4"
+            android:paddingTop="@dimen/dimen4">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp">
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen24"
+                    android:layout_height="@dimen/dimen24"
+                    android:src="@drawable/serverman" />
 
                 <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="地点"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_admin_item_address"
+                    android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="测试"
-                    android:textSize="15sp" />
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:text="维修人员"
+                    android:textColor="@color/ColorPrimaryText"
+                    android:textSize="@dimen/text_subtitle" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="报修时间"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="测试"
-                    android:id="@+id/tv_admin_item_time"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="报修类型"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="测试"
-                    android:id="@+id/tv_admin_item_category"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="维修工"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
                     android:id="@+id/tv_admin_item_server_man"
-                    android:textSize="15sp" />
-
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/ColorSecondaryText"
+                    android:textSize="@dimen/text_14sp" />
             </LinearLayout>
 
 
@@ -122,32 +231,41 @@
 
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen4"
+            android:layout_marginLeft="@dimen/dimen32"
+            android:layout_marginTop="@dimen/dimen4">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/btn_choose"
+                    android:layout_width="@dimen/dimen64"
+                    android:layout_height="@dimen/dimen24"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@drawable/button_submit_apply"
+                    android:text="添加"
+                    android:textColor="@color/ColorText_Icons" />
+                <Button
+                    android:id="@+id/btn_send"
+                    android:layout_width="@dimen/dimen64"
+                    android:layout_height="@dimen/dimen24"
+                    android:background="@drawable/button_submit_apply"
+                    android:text="派发"
+                    android:layout_marginRight="@dimen/dimen80"
+                    android:textColor="@color/ColorText_Icons" />
+            </LinearLayout>
             <Button
-                android:id="@+id/btn_choose"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:text="选择维修工"
-                android:textSize="13sp" />
-
-            <Button
-                android:id="@+id/btn_send"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:text="派工"
-                android:textSize="13sp" />
-
+                android:layout_width="@dimen/dimen64"
+                android:layout_height="@dimen/dimen24"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:background="@drawable/button_submit_apply"
+                android:text="完成"
+                android:clickable="false"
+                android:textColor="@color/ColorText_Icons" />
         </LinearLayout>
     </LinearLayout>
 

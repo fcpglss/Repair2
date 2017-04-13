@@ -63,11 +63,12 @@ public class FileUtils {
                 file.delete();
 
                 fOut = new FileOutputStream(file);
-                if (fileName.endsWith(".jpg")) {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 75, fOut);
-                } else {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-                }
+                //压图的注释掉
+//                if (fileName.endsWith(".jpg")) {
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 75, fOut);
+//                } else {
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+//                }
                 fOut.flush();
                 bitmap.recycle();
             }

@@ -5,31 +5,37 @@
     android:layout_height="match_parent"
     android:background="#d3d3d3"
     android:orientation="vertical">
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:background="#000000"
-       android:visibility="gone"
-       android:id="@+id/ll_change_big_img">
-       <ImageView
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:id="@+id/iv_change_big_img"
-           />
-   </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_change_big_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_change_big_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="39dp"
-        android:background="#ffffff"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/ColorHeadColor"
+        android:gravity="center_vertical">
 
         <TextView
+            android:id="@+id/tv_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="报修列表"
-            android:textSize="18sp" />
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:text="修改"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_appbar_text" />
+
     </LinearLayout>
 
     <ScrollView
@@ -48,7 +54,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -60,20 +66,30 @@
 
                     <TextView
                         android:id="@+id/t1"
-                        android:layout_width="60dp"
+                        android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="报修人" />
+                        android:gravity="left"
+                        android:text="报修人"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_change_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="请输入真实姓名"
-                        android:textColor="#BF383838"
+                        android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_small_word_hints" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,20 +99,30 @@
 
                     <TextView
                         android:id="@+id/t2"
-                        android:layout_width="60dp"
+                        android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="电话号码" />
+                        android:text="电话号码"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_change_tel"
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="请输入电话号码"
-                        android:textColor="#BF383838"
+                        android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_small_word_hints" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -106,19 +132,29 @@
 
                     <TextView
                         android:id="@+id/t3"
-                        android:layout_width="60dp"
+                        android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="电子邮箱" />
+                        android:text="电子邮箱"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_change_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="请输入电子邮箱"
-                        android:textColor="#BF383838"
+                        android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_small_word_hints" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -128,18 +164,21 @@
 
                     <TextView
                         android:id="@+id/t4"
-                        android:layout_width="60dp"
+                        android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="报修密码" />
+                        android:text="报修密码"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_change_apply_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="请输入4位报修密码"
-                        android:textColor="#BF383838"
+                        android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_small_word_hints" />
 
 
                 </LinearLayout>
@@ -149,7 +188,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -164,20 +203,25 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:layout_width="60dp"
+                            android:layout_width="@dimen/dimen72"
                             android:layout_height="wrap_content"
-                            android:text="报修区域" />
+                            android:text="报修区域"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
 
                         <EditText
                             android:id="@+id/et_change_area"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@null"
                             android:focusable="false"
                             android:hint="选择报修区域"
-                            android:textColor="#BF383838"
+                            android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_small_word_hints" />
                     </LinearLayout>
+
+
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -185,21 +229,30 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/dimen40"
                             android:layout_height="wrap_content"
-                            android:text="楼号" />
+                            android:text="楼号"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
 
                         <EditText
                             android:id="@+id/et_change_detail_area"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@null"
                             android:focusable="false"
                             android:hint="选择报修楼号"
-                            android:textColor="#BF383838"
+                            android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_small_word_hints" />
                     </LinearLayout>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -212,19 +265,23 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:layout_width="60dp"
+                            android:id="@+id/textView12"
+                            android:layout_width="@dimen/dimen72"
                             android:layout_height="wrap_content"
-                            android:text="报修层号" />
+                            android:text="报修层号"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
 
                         <EditText
                             android:id="@+id/et_change_floor"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@null"
                             android:focusable="false"
                             android:hint="选择层号"
-                            android:textColor="#BF383838"
+                            android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_small_word_hints" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -233,21 +290,30 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/dimen40"
                             android:layout_height="wrap_content"
-                            android:text="房间" />
+                            android:text="房间"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
 
                         <EditText
                             android:id="@+id/et_change_room"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@null"
                             android:focusable="false"
                             android:hint="选择房间号"
-                            android:textColor="#BF383838"
+                            android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_small_word_hints" />
                     </LinearLayout>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -255,20 +321,29 @@
                     android:layout_margin="8dp">
 
                     <TextView
-                        android:layout_width="60dp"
+                        android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="详细地址" />
+                        android:text="详细地址"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_change_apply_details"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="请输入详细地址"
-                        android:textColor="#BF383838"
+                        android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/text_small_word_hints" />
 
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/dimen8"
+                    android:layout_marginRight="@dimen/dimen8"
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -282,19 +357,22 @@
 
 
                         <TextView
-                            android:layout_width="60dp"
+                            android:layout_width="@dimen/dimen72"
                             android:layout_height="wrap_content"
-                            android:text="报修类型" />
+                            android:text="报修类型"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
 
                         <EditText
                             android:id="@+id/et_change_apply_type"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@null"
                             android:focusable="false"
                             android:hint="选择报修类型"
-                            android:textColor="#BF383838"
+                            android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_small_word_hints" />
                     </LinearLayout>
 
 
@@ -304,7 +382,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -345,12 +423,12 @@
                             android:src="@mipmap/ic_launcher" />
 
                         <ImageView
+                            android:id="@+id/iv_change_img_x1"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/x"
-                            android:id="@+id/iv_change_img_x1"
-                            />
+                            android:src="@drawable/x" />
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/rl_change_img2"
                         android:layout_width="wrap_content"
@@ -362,15 +440,15 @@
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="3dp"
-                            android:scaleType="fitXY"
                             android:padding="8dp"
+                            android:scaleType="fitXY"
                             android:src="@mipmap/ic_launcher" />
 
                         <ImageView
+                            android:id="@+id/iv_change_img_x2"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/x"
-                            android:id="@+id/iv_change_img_x2"/>
+                            android:src="@drawable/x" />
                     </RelativeLayout>
 
 
@@ -386,16 +464,15 @@
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="3dp"
-                            android:scaleType="fitXY"
                             android:padding="8dp"
+                            android:scaleType="fitXY"
                             android:src="@mipmap/ic_launcher" />
 
                         <ImageView
+                            android:id="@+id/iv_change_img_x3"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/x"
-                            android:id="@+id/iv_change_img_x3"
-                            />
+                            android:src="@drawable/x" />
                     </RelativeLayout>
 
 
@@ -438,8 +515,8 @@
                     android:gravity="center"
                     android:text="清空"
                     android:textColor="#ffffff"
-                    tools:ignore="ButtonStyle"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
         </LinearLayout>

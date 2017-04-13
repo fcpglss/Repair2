@@ -6,27 +6,21 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.OnItemClickListener;
+import com.suke.widget.SwitchButton;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import application.MyApplication;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import model.Response;
 import model.ResultBean;
 import repari.com.adapter.AdminListAdapter;
-import repari.com.adapter.DialogAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
-import util.Util;
 
 /**
  * Created by hsp on 2017/4/7.
@@ -36,8 +30,11 @@ public class AdminListActivity extends AppCompatActivity {
     private static final String TAG = "AdminListActivity";
 
 
-
-    private static final String JSONFIRST="http://192.168.31.201:8888/myserver2/AdminServerApply";
+    private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
+    @BindView(R.id.switch_button)
+    SwitchButton switchButton;
+    @BindView(R.id.tv_image)
+    TextView tvImage;
 
     private ResultBean adminRes;
     private Response adminResponse;
@@ -50,30 +47,43 @@ public class AdminListActivity extends AppCompatActivity {
                 case 2:
                     break;
                 case 3:
-                    Log.d(TAG, "handleMessage: "+(adminRes ==null));
-                    Log.d(TAG, "handleMessage: "+adminRes.toString());
+                    Log.d(TAG, "handleMessage: " + (adminRes == null));
+                    Log.d(TAG, "handleMessage: " + adminRes.toString());
 
-                    adminListAdapter= new AdminListAdapter(AdminListActivity.this,adminRes);
+                    adminListAdapter = new AdminListAdapter(AdminListActivity.this, adminRes);
                     lvAdmin.setAdapter(adminListAdapter);
                     adminListAdapter.notifyDataSetChanged();
-                   break;
+                    break;
             }
         }
     };
 
     Button btnChoose;
     Button btnSend;
-    ListView lvAdmin;AdminListAdapter adminListAdapter;
+    ListView lvAdmin;
+    AdminListAdapter adminListAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+        ButterKnife.bind(this);
         queryFromServer(JSONFIRST);
 
         btnSend = (Button) findViewById(R.id.btn_send);
         btnChoose = (Button) findViewById(R.id.btn_choose);
-
         lvAdmin = (ListView) findViewById(R.id.lv_admin_list);
+
+        switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                if (isChecked){
+                    tvImage.setText("有图");
+                }else {
+                    tvImage.setText("无图");
+                }
+            }
+        });
 
     }
 
@@ -91,10 +101,10 @@ public class AdminListActivity extends AppCompatActivity {
                 }
                 if (adminRes != null) {
                     Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
-                    Log.d(TAG, "onFinish: "+responseJson);
+                    Log.d(TAG, "onFinish: " + responseJson);
                     mhandler.sendEmptyMessage(3);
 
-                //   Util.writeJsonToLocal(adminRes, MyApplication.getContext());//注意刷新和冲突
+                    //   Util.writeJsonToLocal(adminRes, MyApplication.getContext());//注意刷新和冲突
                 } else {
                     adminResponse.setErrorType(-2);
                     adminResponse.setError(false);

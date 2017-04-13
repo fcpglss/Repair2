@@ -1,39 +1,31 @@
 package repair.com.repair;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import application.MyApplication;
-import camera.CalculateImage;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.MyRepairFragment;
-
 import model.Response;
 import repari.com.adapter.FragmentAdapter;
 
@@ -63,13 +55,18 @@ public class MainActivity extends AppCompatActivity {
     public static int windowHeigth;
 
 
-
     public static Uri photoUri;
 
     public static List<Uri> list_uri = new ArrayList<>();
     public static Uri[] arrayUri2 = new Uri[3];
 
     public static final boolean REQUEST = false;
+    @BindView(R.id.iv_home)
+    ImageView ivHome;
+    @BindView(R.id.iv_repair)
+    ImageView ivRepair;
+    @BindView(R.id.iv_my)
+    ImageView ivMy;
 
     private Response response;
 
@@ -100,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView ivMenu;
 
+
     //菜单项
     private TextView itemAdmin;
 
@@ -107,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main); 
+        setContentView(R.layout.main);
+        ButterKnife.bind(this);
         Log.d("Apply_Fragment", "onCreate");
         //获取屏幕宽高
         setWitchAndHeigth();
@@ -162,12 +161,10 @@ public class MainActivity extends AppCompatActivity {
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
-
-
 
 
     }
@@ -187,15 +184,23 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 // TODO Auto-generated method stub
                 resetView();
+                resetPic();
                 switch (position) {
                     case 0:
                         mchat.setTextColor(Color.parseColor("#008000"));
+                        resetPic();
+                        ivHome.setImageResource(R.drawable.home_fill_light);
                         break;
                     case 1:
+
                         mcontact.setTextColor(Color.parseColor("#008000"));
+                        resetPic();
+                        ivRepair.setImageResource(R.drawable.form_fill_light);
                         break;
                     case 2:
                         mfriend.setTextColor(Color.parseColor("#008000"));
+                        resetPic();
+                        ivMy.setImageResource(R.drawable.my_fill);
                         break;
                 }
             }
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 lp.leftMargin = (int) ((position + offset) * Screen1_3);
                 miImageView.setLayoutParams(lp);
 
-                switch (position){
+                switch (position) {
                     case 0:
                         tvHead.setText("首页");
                         break;
@@ -230,6 +235,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void resetPic() {
+        ivMy.setImageResource(R.drawable.my);
+        ivHome.setImageResource(R.drawable.home_light);
+        ivRepair.setImageResource(R.drawable.form_light);
+    }
+
     private void TabListener() {
         LinearLayoutListener linearLayoutListener = new LinearLayoutListener();
         mLinearLayout.setOnClickListener(linearLayoutListener);
@@ -246,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         mchat.setTextColor(Color.BLACK);
         mfriend.setTextColor(Color.BLACK);
         mcontact.setTextColor(Color.BLACK);
+
 
     }
 
@@ -298,13 +310,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode==KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
 
-            if (applyFragment.RlIsVisable()!=null&&applyFragment.RlIsVisable().getVisibility() == View.VISIBLE){
+            if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
                 applyFragment.RlIsVisable().setVisibility(View.GONE);
 //                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
-            }else{
+            } else {
 
                 Log.d(TAG, "onKeyDown: 返回了main");
                 this.finish();

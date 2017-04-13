@@ -19,9 +19,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/home" />
+                android:id="@+id/iv_home"
+                android:layout_gravity="center"
+                android:background="@drawable/home_light" />
 
             <TextView
                 android:id="@+id/tv_chat"
@@ -42,9 +44,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/tianxie5" />
+                android:id="@+id/iv_repair"
+                android:layout_gravity="center"
+                android:background="@drawable/form_light" />
 
             <TextView
                 android:id="@+id/tv_contact"
@@ -66,12 +70,15 @@
 
 
             <ImageView
-                android:layout_width="match_parent"
+                android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/my" />
+                android:id="@+id/iv_my"
+                android:layout_gravity="center"
+                android:background="@drawable/my" />
 
             <TextView
                 android:id="@+id/tv_friend"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
