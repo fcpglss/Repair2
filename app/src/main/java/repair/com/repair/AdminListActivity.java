@@ -36,6 +36,8 @@ public class AdminListActivity extends AppCompatActivity {
     @BindView(R.id.tv_image)
     TextView tvImage;
 
+    //private static final String JSONFIRST="http://192.168.43.128:8888/myserver2/AdminServerApply";
+
     private ResultBean adminRes;
     private Response adminResponse;
     private ListView mlistView;

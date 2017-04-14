@@ -74,7 +74,6 @@ public class ApplysAdapter extends BaseAdapter {
         ViewHolder viewHolder = null;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-
             convertView = mInflater.inflate(R.layout.item_layout, null);
             viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
@@ -102,13 +101,9 @@ public class ApplysAdapter extends BaseAdapter {
         }
 
         if (mCanGetBitmapFromNetWork) {
-
             imageView.setTag(c_url);
-//            mImageLoader.bindBitmap(c_url,imageView,mImageWidth,mImageHeigth);
             Picasso.with(context).load(c_url).into(imageView);
-
         }
-
         viewHolder.tvTitle.setText(a_details);
         viewHolder.tvContent.setText(apply.getRepairDetails());
 
@@ -127,7 +122,6 @@ public class ApplysAdapter extends BaseAdapter {
     private String getCategoryId(int position, ResultBean rs) {
         String appyly_cid = rs.getApplys().get(position).getClasss();
 
-
         String c_url = "";
 
         for (Category category : rs.getCategory()) {
@@ -139,7 +133,6 @@ public class ApplysAdapter extends BaseAdapter {
         }
         return c_url;
     }
-
     private int getRightIcon(int position, ResultBean rs) {
         int image = 0;
         int a_status = rs.getApplys().get(position).getState();
@@ -161,7 +154,6 @@ public class ApplysAdapter extends BaseAdapter {
         }
         return image;
     }
-
     private void setIcon(ViewHolder view) {
         switch (categoryProprety) {
             case "1":
@@ -170,7 +162,6 @@ public class ApplysAdapter extends BaseAdapter {
             default:
         }
     }
-
 
     public void setList_Applys(List<Apply> apply) {
         res.setApplys(apply);

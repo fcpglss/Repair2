@@ -61,7 +61,6 @@ public class FileUtils {
             if (!file.exists() || isCover) {
                 // 简单起见，先删除老文件，不管它是否存在。
                 file.delete();
-
                 fOut = new FileOutputStream(file);
                 //压图的注释掉
 //                if (fileName.endsWith(".jpg")) {

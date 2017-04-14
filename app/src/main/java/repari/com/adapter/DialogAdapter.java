@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Employee;
 import repair.com.repair.R;
 
 /**
@@ -54,20 +55,18 @@ public class DialogAdapter extends BaseAdapter {
         if (null == view) {
             view = layoutInflater.inflate(layout, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.textView = (TextView) view.findViewById(R.id.tv_dialog_detail_text);
-//            viewHolder.imageView1 = (ImageView) view.findViewById(R.id.image_view);
+            viewHolder.textView = (TextView) view.findViewById(R.id.tv_dialog_detail_text);;
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
         viewHolder.textView.setText(list.get(position));
-//        viewHolder.imageView.setImageResource(R.mipmap.ic_launcher);
         return view;
     }
 
     private static class ViewHolder {
         TextView textView;
-//        ImageView imageView1, imageView2;
     }
+
 
 }

@@ -145,11 +145,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private int flieId = 0;
     private int roomId = 0;
     private int categoryId = 0;
-
-    //用来比较的list
-    List<Uri> list = new ArrayList<>();
-
-
     List<Uri> changeUriList = new ArrayList<>();
 
 
@@ -376,7 +371,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 FileOutputStream out = null;
                 if (changeImgUrl != null) {
                     for (int i = 0; i < changeImgUrl.size(); i++) {
-//                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
                         Bitmap bitmap = null;
                         try {
                             bitmap = Picasso.with(ChangeActivity.this).load(changeImgUrl.get(i)).get();
@@ -404,7 +398,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             protected void onPostExecute(List<File> imgFileList) {
-
 
                 for (File f : imgFileList) {
                     Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());

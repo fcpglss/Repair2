@@ -52,7 +52,6 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     private static boolean moreFlag = false;
 
-
     private static final int ERROR = 2; //第一次网络不同标志
 
     private static final int SUCCESS = 3;//第一次请求网络成功标志
@@ -80,8 +79,6 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     private List<String> viewpager_url = new ArrayList<>();
 
     private Response response;
-
-    private List<Apply> firstList = new ArrayList<>();
 
     private List<Apply> moreList = new ArrayList<>();
 

@@ -293,4 +293,20 @@ public class Util {
 		}
 		return "";
 	}
+	public static String createAsterisk(int length) {
+		StringBuffer stringBuffer = new StringBuffer();
+		for (int i = 0; i < length; i++) {
+			stringBuffer.append("*");
+		}
+		return stringBuffer.toString();
+	}
+	public static String setNameXX(String name) {
+
+		if (name.length() <= 1) {
+			return name;
+		} else {
+			return name.replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "$1" + createAsterisk(name.length() - 1));
+		}
+
+	}
 }
