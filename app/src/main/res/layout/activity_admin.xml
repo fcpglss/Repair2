@@ -21,20 +21,21 @@
             android:text="管理"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_appbar_text" />
+
         <TextView
+            android:id="@+id/tv_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_image"
             android:text="无图"
             android:textColor="@color/ColorText_Icons"
-            android:textSize="@dimen/text_subtitle"/>
+            android:textSize="@dimen/text_subtitle" />
 
         <com.suke.widget.SwitchButton
             android:id="@+id/switch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginRight="@dimen/dimen16"/>
+            android:layout_marginRight="@dimen/dimen16" />
 
 
     </LinearLayout>

@@ -71,6 +71,7 @@ public class MyRepairAdapter extends BaseAdapter {
 
     public MyRepairAdapter(ResultBean res, Context context) {
         this.myRes = res;
+
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.context = context;
@@ -122,8 +123,10 @@ public class MyRepairAdapter extends BaseAdapter {
         String photoUrl = "";
         String a_details = "";
 
-        photoUrl = getPhotoUrl(position, myRes).get(0).toString();
-        Log.d(TAG, "getView: photoUrl" + photoUrl);
+        if(getPhotoUrl(position, myRes))
+        {
+            photoUrl=myRes.getApplys().get(position).getA_imaes().get(0);
+        }
 
         categoryName = apply.getClasss();
         a_details = Util.setTitle(apply);
@@ -133,7 +136,7 @@ public class MyRepairAdapter extends BaseAdapter {
             imageView.setImageDrawable(mDefaultBitmapDrawable);
         }
 
-        if (mCanGetBitmapFromNetWork) {
+        if (mCanGetBitmapFromNetWork&&!photoUrl.equals("")) {
             imageView.setTag(photoUrl);
 //            mImageLoader.bindBitmap(photoUrl, imageView, mImageWidth, mImageHeigth);
             Picasso.with(context).load(photoUrl).into(imageView);
@@ -256,17 +259,19 @@ public class MyRepairAdapter extends BaseAdapter {
     }
 
 
-    private List<String> getPhotoUrl(int position, ResultBean rs) {
+    private boolean getPhotoUrl(int position, ResultBean rs) {
         List<String> photoList = new ArrayList<>();
-        if (rs == null) {
-            photoList.add("myRes没有值");
-            return photoList;
-        }
+
         photoList = rs.getApplys().get(position).getA_imaes();
-        if (photoList.size() == 0) {
-            photoList.add("未知图片");
+        if(photoList.size()>0)
+        {
+            return true;
         }
-        return photoList;
+        else
+        {
+            return false;
+        }
+
     }
 
     private int getState(int position, ResultBean rs) {

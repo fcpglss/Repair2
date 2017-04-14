@@ -53,9 +53,9 @@ import static repair.com.repair.MainActivity.windowHeigth;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "DetailsActivity";
-    private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
+//    private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
 
-//    private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
+    private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     boolean visible = false;//员工详细页面默认不可见
 
@@ -73,7 +73,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView tv_email, tvName, tv_tel, tv_date, tv_category, tv_status, tv_place, tv_describe,tvFinishTime;
+    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvFinishTime,tvDetailCategory;
 
     private TextView tv_details_employee1;
 
@@ -107,14 +107,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 case 2:
                     Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
                     Toast.makeText(MyApplication.getContext(),response.getErrorMessage(),Toast.LENGTH_SHORT).show();
-//                    if(apply!=null)
-//                    {
-//                        bindItem();
-//                    }
-//                    else
-//                    {
-//                        queryFromServer(URL,repairId);
-//                    }
                     break;
                 case 3:
                     if (apply.getLogisticMan() != null) {
@@ -235,13 +227,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
         tvName = (TextView) findViewById(R.id.tv_details_name);
-        tv_tel = (TextView) findViewById(R.id.tv_details_tel);
+//        tv_tel = (TextView) findViewById(R.id.tv_details_tel);
         tv_category = (TextView) findViewById(tv_details_category);
+        tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
         tvFinishTime= (TextView) findViewById(R.id.tv_details_finish_date);
         tv_status = (TextView) findViewById(R.id.tv_details_details);
         tv_place = (TextView) findViewById(R.id.tv_details_place);
-        tv_email= (TextView) findViewById(R.id.tv_details_email);
+//        tv_email= (TextView) findViewById(R.id.tv_details_email);
 
         tvArea = (TextView) findViewById(R.id.tv_details_area);
 
@@ -252,7 +245,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_describe = (TextView) findViewById(R.id.tv_details_describe);
         img_category = (ImageView) findViewById(R.id.img_category);
         img_status = (ImageView) findViewById(R.id.img_status);
-        img_back = (ImageView) findViewById(R.id.img_back2);
+//        img_back = (ImageView) findViewById(R.id.img_back2);
 
         img1 = (ImageView) findViewById(R.id.img_pc1);
         img2 = (ImageView) findViewById(R.id.img_pc2);
@@ -264,7 +257,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         imageviewList.add(img1);
         imageviewList.add(img2);
         imageviewList.add(img3);
-        img_back.setOnClickListener(this);
+//        img_back.setOnClickListener(this);
 
         //员工详细信息箭头点击事件
         iv_employee_arr.setOnClickListener(this);
@@ -294,11 +287,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         Log.d(TAG, "bindItem: "+apply.getRepair());
         tvName.setText(apply.getRepair());
         setNameXXX();
-        tv_tel.setText(apply.getTel());
-        setTelXXXX();
-        tv_email.setText(apply.getEmail());
+//        tv_tel.setText(apply.getTel());
+//        setTelXXXX();
+//        tv_email.setText(apply.getEmail());
 
         tv_category.setText(category.getC_name());
+        tvDetailCategory.setText(apply.getDetailClass());
         tv_place.setText(util.Util.setAddress(apply));
 
         tvArea.setText(apply.getArea());
@@ -353,20 +347,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             tvName.setText(name);
         }
     }
-    private void setTelXXXX()
-    {
-        if(tv_tel.getText()!=null&&!tv_tel.getText().equals(" "))
-        {
-            if(tv_tel.length()!=11)
-            {
-                tv_tel.setText("***");
-                return ;
-            }
-            String tel=tv_tel.getText().toString();
-            String temp=tel.substring(3,7);
-            tv_tel.setText(tel.replace(temp,"****"));
-        }
-    }
+//
 
 
 
@@ -529,10 +510,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
         switch (view.getId()) {
-            case R.id.img_back2:
-                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                startActivity(intent);
-                break;
+//            case R.id.img_back2:
+//                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+//                startActivity(intent);
+//                break;
             case R.id.iv_employee_arr:
 
                 if (apply.getLogisticMan()!=null){

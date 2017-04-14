@@ -1,11 +1,27 @@
 package util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.builder.PostFormBuilder;
+import com.zhy.http.okhttp.request.RequestCall;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import camera.CalculateImage;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -14,6 +30,10 @@ import model.Place;
 import model.Response;
 import model.ResultBean;
 import model.Room;
+
+import static android.content.Context.MODE_PRIVATE;
+import static repair.com.repair.MainActivity.JSON_URL;
+import static repair.com.repair.MainActivity.UP_APPLY;
 
 
 public class Util {
@@ -242,6 +262,16 @@ public class Util {
 			}
 		}).start();
 	}
+
+	//将手机号写到phoneData中去
+    public static void writePhoneToLocal(Apply apply, Context mcontext) {
+        String phone = apply.getTel();
+        SharedPreferences.Editor editor = mcontext.getSharedPreferences("phoneData", MODE_PRIVATE).edit();
+        editor.putString("phone", apply.getTel());
+        editor.apply();
+    }
+
+
 	//从address_data文件中读出地点相关的字符串
 	public static String loadAddressFromLocal(Context context)
 	{
@@ -251,6 +281,9 @@ public class Util {
 		Log.d(TAG, "loadAddressFromLocal:从本地address_data文件中读出json: "+json);
 		return json;
 	}
+
+
+
 	public static String loadFirstFromLocal(Context context)
 	{
 		SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
@@ -309,4 +342,106 @@ public class Util {
 		}
 
 	}
+
+	/**
+	 * 使用okHttp框架post请求网络,若有图片文件则使用requestImgURL,
+	 * 若没有图片则使用requestURL
+	 * @param paramsKey  参数名
+	 * @param paramsValues 参数值
+	 * @param requestURL api地址
+	 * @param files 文件集合
+	 * @return 用于回调onResponse和onError方法
+	 */
+	public static  RequestCall submit(String paramsKey,String paramsValues,String requestURL,String requestImgURL, List<File> files) {
+		PostFormBuilder postFormBuilder = OkHttpUtils.post();
+		for (int i = 0; i < files.size(); i++) {
+			postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
+			Log.d(TAG, "submit: " + files.get(i).getPath());
+		}
+
+		postFormBuilder.addParams(paramsKey, paramsValues);
+		if (files.size() > 0) {
+			postFormBuilder.url(requestImgURL);
+		} else {
+			postFormBuilder.url(requestURL);
+		}
+
+		return postFormBuilder.build();
+	}
+
+
+	/**
+	 * 使用okHttp框架post请求网络
+	 *
+	 * @param paramsKey 参数名
+	 * @param paramsValues 参数值
+	 * @param requestURL api接口的URL
+	 * @return
+	 */
+	public static RequestCall submit(String paramsKey,String paramsValues,String requestURL) {
+		PostFormBuilder postFormBuilder = OkHttpUtils.post();
+
+		postFormBuilder.addParams(paramsKey, paramsValues);
+        postFormBuilder.url(requestURL);
+		return postFormBuilder.build();
+	}
+
+	public static RequestCall submit(String paramsKey,String paramsValues,String paramsKey2,String paramsValues2,String requestURL) {
+		PostFormBuilder postFormBuilder = OkHttpUtils.post();
+
+		postFormBuilder.addParams(paramsKey, paramsValues);
+		postFormBuilder.addParams(paramsKey2, paramsValues2);
+        postFormBuilder.url(requestURL);
+		return postFormBuilder.build();
+	}
+
+	/**
+	 * 将传入路径的图片，压缩
+	 * @param path 传入图片的绝对路径
+	 * @return 压缩后的图片绝对路径
+	 */
+
+	public static String compressImage(Context context,String path) {
+
+		String getNewPath = context.getExternalCacheDir()
+				+ new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+
+		String nowPath = path;
+
+		Bitmap b = CalculateImage.getSmallBitmap(path, 200, 200);
+
+		try {
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getNewPath));
+			b.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+			bos.flush();
+			bos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Log.d(TAG, "compressImage: " + getNewPath);
+
+		return getNewPath;
+	}
+
+    public static  String getPath(Activity context, Uri uri) {
+
+        String[] proj = {MediaStore.Images.Media.DATA};
+
+        //好像是Android多媒体数据库的封装接口，具体的看Android文档
+
+        Cursor cursor = context.managedQuery(uri, proj, null, null, null);
+        //按我个人理解 这个是获得用户选择的图片的索引值
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        //将光标移至开头 ，这个很重要，不小心很容易引起越界
+        cursor.moveToFirst();
+        //最后根据索引值获取图片路径
+        String path = cursor.getString(column_index);
+
+        Log.d(TAG, "getPath: "+ path);
+
+        return path;
+    }
+
+
 }

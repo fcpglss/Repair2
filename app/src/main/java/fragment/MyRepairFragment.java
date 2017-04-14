@@ -56,7 +56,7 @@ import static util.NetworkUtils.isNetworkConnected;
  * Created by hsp on 2016/11/27.
  */
 
-public class MyRepairFragment extends Fragment {
+public class MyRepairFragment extends LazyFragment {
 
     private static final String TAG = "MyRepairFragment";
     private LinearLayout llEmpty;
@@ -75,7 +75,6 @@ public class MyRepairFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
 
         return inflater.inflate(R.layout.frg_fragment_myrepair, null);
     }
@@ -83,22 +82,11 @@ public class MyRepairFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
-        loadPhone();
-        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        if (phone == null || phone.equals("")) {
-            Log.d(TAG, "onActivityCreated: " + phone);
-        } else {
-            Log.d(TAG, "onActivityCreated: " + phone);
-            initData();
-        }
-
-
+        Log.d(TAG, "onActivityCreated: ");
     }
 
     private void initData() {
-//        upApply();
+
         lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -112,8 +100,6 @@ public class MyRepairFragment extends Fragment {
     private void initView(ResultBean resultbean) {
 
 
-        Log.d(TAG, "initView: "+(resultbean==null));
-        Log.d(TAG, "initView: resultbean"+resultbean.toString());
         adapter = new MyRepairAdapter(resultbean, getActivity());
         if (resultbean.getApplys()==null || resultbean.getApplys().size()<=0) {
             llEmpty.setVisibility(View.VISIBLE);
@@ -136,15 +122,14 @@ public class MyRepairFragment extends Fragment {
             String myjson = Util.loadMyResFromLocal(getActivity());
             myRes = JsonUtil.jsonToBean(myjson);
             if (myRes != null) {
+
                 initView(myRes);
             }
         } else {
             if (true) {
                 Log.d(TAG, "upApply: phone " + phone);
 
-                List<File> files = new ArrayList<>();
-
-                submit(phone, files).execute(new StringCallback() {
+                Util.submit("phone",phone,JSON_URL).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
@@ -153,6 +138,7 @@ public class MyRepairFragment extends Fragment {
                         myRes = JsonUtil.jsonToBean(myjson);
 
                         if (myRes != null) {
+//                            Log.d(TAG, "upApply: image:"+myRes.getApplys().get(0).getA_imaes().get(0));
                             initView(myRes);
                         }
                     }
@@ -163,6 +149,7 @@ public class MyRepairFragment extends Fragment {
                         myRes = myResponse.getResultBean();
                         Util.writeMyResToLocal(myRes, getActivity());
                         Log.d(TAG, "onResponse: " + response);
+
                         initView(myRes);
                     }
                 });
@@ -174,56 +161,35 @@ public class MyRepairFragment extends Fragment {
 
     }
 
-    private RequestCall submit(String phone, List<File> files) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
-            Log.d(TAG, "submit: " + files.get(i).getPath());
-        }
-
-
-        postFormBuilder.addParams("phone", phone);
-        if (files.size() > 0) {
-            postFormBuilder.url(UP_APPLY);
-        } else {
-            postFormBuilder.url(JSON_URL);
-        }
-
-        return postFormBuilder.build();
-    }
-
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("MainFragment", "Statisc_onAttach");
+        Log.d(TAG, "onAttach: ");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("MainFragment", "Statisc_onPause");
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d("MainFragment", "Statisc_onStop");
+        Log.d(TAG, "onStop: ");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("MainFragment", "Statisc_onDestroy");
+        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        upApply();
-
-        Log.d("MainFragment", "Statistics_onResume");
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -231,13 +197,26 @@ public class MyRepairFragment extends Fragment {
         super.onStart();
         if (adapter != null) {
             Log.d(TAG, "onResume: 更新");
-
             adapter.notifyDataSetChanged();
             lvMyList.setAdapter(adapter);
-
         }
-        Log.d("MainFragment", "Statistics_onStart");
+        Log.d(TAG, "onStart: ");
     }
 
 
+    @Override
+    protected void loadData() {
+        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
+        loadPhone();
+        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
+        if (phone == null || phone.equals("")) {
+            Log.d(TAG, "loadData: "+phone);
+        } else {
+            Log.d(TAG, "loadData: "+phone);
+            upApply();
+            initData();
+        }
+
+    }
 }

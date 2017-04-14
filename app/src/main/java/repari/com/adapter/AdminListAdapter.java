@@ -62,7 +62,8 @@ public class AdminListAdapter extends BaseAdapter {
     private static final String TAG = "AdminListAdapter";
     private static boolean isLoadImages = false;
 
-    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServer";
+    //public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
+    public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
     private AdminListActivity context;
     private Response response;
     private ResultBean resultBean;

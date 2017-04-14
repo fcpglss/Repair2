@@ -5,38 +5,22 @@
     android:background="#d3d3d3"
     android:orientation="vertical"
     android:id="@+id/ll_detail_info">
-
-    <ImageView
-        android:id="@+id/iv_show_big_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="39dp"
-        android:background="#ffffff"
-        android:orientation="horizontal">
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/ColorHeadColor"
+        android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/img_back2"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/back2" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="39dp"
-            android:layout_marginRight="27dp"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="详细信息"
-                android:textSize="18sp" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_head"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:text="详细信息"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_appbar_text" />
 
     </LinearLayout>
 
@@ -48,14 +32,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:orientation="vertical">
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -68,6 +52,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="报修人" />
 
                     <TextView
@@ -78,44 +64,48 @@
                         android:textColor="#BF383838" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:orientation="horizontal">
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_margin="8dp"-->
+                    <!--android:orientation="horizontal">-->
 
-                    <TextView
-                        android:layout_width="75dp"
-                        android:layout_height="wrap_content"
-                        android:text="电话号码" />
+                    <!--<TextView-->
+                        <!--android:layout_width="75dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:textColor="@color/ColorPrimaryText"-->
+                        <!--android:textSize="@dimen/text_button_text"-->
+                        <!--android:text="电话号码" />-->
 
-                    <TextView
-                        android:id="@+id/tv_details_tel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="#BF383838" />
-                </LinearLayout>
+                    <!--<TextView-->
+                        <!--android:id="@+id/tv_details_tel"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text=""-->
+                        <!--android:textColor="#BF383838" />-->
+                <!--</LinearLayout>-->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:orientation="horizontal">
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_margin="8dp"-->
+                    <!--android:orientation="horizontal">-->
 
-                    <TextView
-                        android:id="@+id/t3"
-                        android:layout_width="75dp"
-                        android:layout_height="wrap_content"
-                        android:text="电子邮箱" />
+                    <!--<TextView-->
+                        <!--android:id="@+id/t3"-->
+                        <!--android:layout_width="75dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:textColor="@color/ColorPrimaryText"-->
+                        <!--android:textSize="@dimen/text_button_text"-->
+                        <!--android:text="电子邮箱" />-->
 
-                    <TextView
-                        android:id="@+id/tv_details_email"
-                        android:layout_width="match_parent"
-                        android:text=""
-                        android:layout_height="wrap_content"
-                        android:textColor="#BF383838" />
-                </LinearLayout>
+                    <!--<TextView-->
+                        <!--android:id="@+id/tv_details_email"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text=""-->
+                        <!--android:textColor="#BF383838" />-->
+                <!--</LinearLayout>-->
 
 
             </LinearLayout>
@@ -123,7 +113,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -140,6 +130,8 @@
                         <TextView
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text"
                             android:text="故障区域" />
 
                         <TextView
@@ -165,6 +157,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="详细地址" />
 
                     <TextView
@@ -193,6 +187,8 @@
                             android:id="@+id/textView7"
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text"
                             android:text="故障类型" />
 
                         <ImageView
@@ -202,10 +198,16 @@
 
                         <TextView
                             android:id="@+id/tv_details_category"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#BF383838" />
+                        <TextView
+                            android:id="@+id/tv_details_details_category"
+                            android:layout_marginLeft="@dimen/dimen16"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="水水水"/>
 
                     </LinearLayout>
 
@@ -236,6 +238,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="报修时间" />
 
                     <TextView
@@ -255,6 +259,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="完成时间" />
 
                     <TextView
@@ -275,13 +281,14 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="状态" />
 
                     <ImageView
                         android:id="@+id/img_status"
                         android:layout_width="55dp"
-                        android:layout_height="18dp"
-                        />
+                        android:layout_height="18dp" />
 
                     <TextView
                         android:id="@+id/tv_details_details"
@@ -301,6 +308,8 @@
                         android:id="@+id/textView3"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:layout_weight="1"
                         android:text="维修人员" />
 
@@ -405,7 +414,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -415,8 +424,11 @@
                     android:layout_margin="8dp">
 
                     <TextView
+                        android:id="@+id/textView11"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="故障描述" />
 
                     <TextView
@@ -479,6 +491,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="维修服务" />
 
                     <LinearLayout
@@ -531,6 +545,8 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_button_text"
                         android:text="用户评价" />
 
                     <TextView
@@ -547,6 +563,14 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/iv_show_big_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+
 
 
 </LinearLayout>

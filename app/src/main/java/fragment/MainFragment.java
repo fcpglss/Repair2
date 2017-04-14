@@ -43,7 +43,7 @@ import static repair.com.repair.MainActivity.SENDMORE_URL;
  */
 
 
-public class MainFragment extends Fragment implements WaterDropListView.IWaterDropListViewListener {
+public class MainFragment extends LazyFragment implements WaterDropListView.IWaterDropListViewListener {
 
     private static final String TAG = "MainFragment";
 
@@ -164,25 +164,7 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated: " + isRefresh);
-        init();
-        /**
-         * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
-         */
-        if (isFirst) {
-            queryFromServer(FRIST_URL, SUCCESS);
-//            new SVProgressHUD(getActivity()).showInfoWithStatus();
-            svProgressHUD = new SVProgressHUD(getActivity());
-            svProgressHUD.showWithStatus("加载中");
-            Log.d(TAG, "第一次载入");
-        } else {
-            if (res == null) {
-                Log.d(TAG, "onActivityCreated: 不是第一次载入，并且res为null");
-                updateView();
-            }
-            Log.d(TAG, "onActivityCreated: 不是第一次载入，并且res不为null");
-        }
-
+       // loadData();
     }
 
     /**
@@ -426,6 +408,26 @@ public class MainFragment extends Fragment implements WaterDropListView.IWaterDr
 
     }
 
+    @Override
+    protected void loadData() {
+        Log.d(TAG, "loadData: ");
+        init();
+        /**
+         * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
+         */
+        if (isFirst) {
 
+            queryFromServer(FRIST_URL, SUCCESS);
+//            new SVProgressHUD(getActivity()).showInfoWithStatus();
+            svProgressHUD = new SVProgressHUD(getActivity());
+            svProgressHUD.showWithStatus("加载中");
+            Log.d(TAG, "第一次载入");
+        } else {
+            if (res == null) {
+                updateView();
+            }
+
+        }
+    }
 }
 

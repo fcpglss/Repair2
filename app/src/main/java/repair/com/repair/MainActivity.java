@@ -35,17 +35,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static int count = 5;
-    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
-    public static final String UP_APPLY = "http://192.168.31.201:8888/myserver2/Upload2";//
-    public static final String GET_JSON = "http://192.168.31.201:8888/myserver2/ResponseClient";
-    public static final String FRIST_URL = "http://192.168.31.201:8888/myserver2/FirstRequest";
-    public static final String SENDMORE_URL = "http://192.168.31.201:8888/myserver2/sendmore";
+//    public static final String JSON_URL = "http://192.168.31.201:8888/myserver2/servlet/action";
+//    public static final String UP_APPLY = "http://192.168.31.201:8888/myserver2/Upload2";//
+//    public static final String GET_JSON = "http://192.168.31.201:8888/myserver2/ResponseClient";
+//    public static final String FRIST_URL = "http://192.168.31.201:8888/myserver2/FirstRequest";
+//    public static final String SENDMORE_URL = "http://192.168.31.201:8888/myserver2/sendmore";
 
-//    public static final String FRIST_URL="http://192.168.43.128:8888/myserver2/FirstRequest";
-//    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
-//    public static final String UP_APPLY="http://192.168.43.128:8888/myserver2/Upload2";//
-//    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
-//    public static final String SENDMORE_URL = "http://192.168.43.128:8888/myserver2/sendmore";
+    public static final String FRIST_URL="http://192.168.43.128:8888/myserver2/FirstRequest";
+    public static final String JSON_URL = "http://192.168.43.128:8888/myserver2/servlet/action";
+    public static final String UP_APPLY="http://192.168.43.128:8888/myserver2/Upload2";//
+    public static final String GET_JSON="http://192.168.43.128:8888/myserver2/ResponseClient";
+    public static final String SENDMORE_URL = "http://192.168.43.128:8888/myserver2/sendmore";
 
     public static final int TAKE_PHOTO_RAW = 1;
     public static final int REQUEST_IMAGE = 2;
@@ -187,20 +187,20 @@ public class MainActivity extends AppCompatActivity {
                 resetPic();
                 switch (position) {
                     case 0:
-                        mchat.setTextColor(Color.parseColor("#008000"));
+                        mchat.setTextColor(Color.parseColor("#1D89E5"));
                         resetPic();
-                        ivHome.setImageResource(R.drawable.home_fill_light);
+                        ivHome.setBackgroundResource(R.drawable.home_fill_light);
                         break;
                     case 1:
 
-                        mcontact.setTextColor(Color.parseColor("#008000"));
+                        mcontact.setTextColor(Color.parseColor("#1D89E5"));
                         resetPic();
-                        ivRepair.setImageResource(R.drawable.form_fill_light);
+                        ivRepair.setBackgroundResource(R.drawable.form_fill_light);
                         break;
                     case 2:
-                        mfriend.setTextColor(Color.parseColor("#008000"));
+                        mfriend.setTextColor(Color.parseColor("#1D89E5"));
                         resetPic();
-                        ivMy.setImageResource(R.drawable.my_fill);
+                        ivMy.setBackgroundResource(R.drawable.my_fill);
                         break;
                 }
             }
@@ -236,9 +236,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetPic() {
-        ivMy.setImageResource(R.drawable.my);
-        ivHome.setImageResource(R.drawable.home_light);
-        ivRepair.setImageResource(R.drawable.form_light);
+        ivMy.setBackgroundResource(R.drawable.my);
+        ivHome.setBackgroundResource(R.drawable.home_light);
+        ivRepair.setBackgroundResource(R.drawable.form_light);
     }
 
     private void TabListener() {
@@ -254,9 +254,9 @@ public class MainActivity extends AppCompatActivity {
      */
     protected void resetView() {
         // TODO Auto-generated method stub
-        mchat.setTextColor(Color.BLACK);
-        mfriend.setTextColor(Color.BLACK);
-        mcontact.setTextColor(Color.BLACK);
+        mchat.setTextColor(Color.parseColor("#757575"));
+        mfriend.setTextColor(Color.parseColor("#757575"));
+        mcontact.setTextColor(Color.parseColor("#757575"));
 
 
     }
@@ -317,7 +317,6 @@ public class MainActivity extends AppCompatActivity {
                 applyFragment.RlIsVisable().setVisibility(View.GONE);
 //                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
             } else {
-
                 Log.d(TAG, "onKeyDown: 返回了main");
                 this.finish();
             }

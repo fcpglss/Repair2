@@ -9,7 +9,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.suke.widget.SwitchButton;
 
@@ -30,7 +29,8 @@ public class AdminListActivity extends AppCompatActivity {
     private static final String TAG = "AdminListActivity";
 
 
-    private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
+   // private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
+    private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
     @BindView(R.id.switch_button)
     SwitchButton switchButton;
     @BindView(R.id.tv_image)

@@ -58,6 +58,7 @@ import imagehodler.ImageLoader;
 import model.Apply;
 import model.Area;
 import model.Category;
+import model.DetailClass;
 import model.Flies;
 import model.Place;
 import model.Response;
@@ -136,6 +137,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private List<Integer> listFloorID = new ArrayList<>();
     private List<Integer> listRoomID = new ArrayList<>();
     private List<Integer> listApplyTypeID = new ArrayList<>();
+    private List<Integer> listApplyDetailTypeID = new ArrayList<>();
 
     private List<String> listApplyType = new ArrayList<>();
     private List<String> listApplyDetailType = new ArrayList<>();
@@ -145,6 +147,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private int flieId = 0;
     private int roomId = 0;
     private int categoryId = 0;
+    private int detailTypeID = 0;
+
+    //用来比较的list
+    List<Uri> list = new ArrayList<>();
+
+
     List<Uri> changeUriList = new ArrayList<>();
 
 
@@ -185,6 +193,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     DialogPlus dialogFloor;
     DialogPlus dialogRoom;
     DialogPlus dialogApplyType;
+    DialogPlus dialogApplyDetailType;
     DialogPlus dialogGetImage;
 
     //获取点击修改获得的apply
@@ -220,6 +229,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etArea = (EditText) findViewById(R.id.et_change_area);
         etDetailArea = (EditText) findViewById(R.id.et_change_detail_area);
         etApplyType = (EditText) findViewById(R.id.et_change_apply_type);
+        etApplyTypeDetails = (EditText) findViewById(R.id.et_change_apply_detail_type);
         et_name = (EditText) findViewById(R.id.et_change_name);
 
         etFloor = (EditText) findViewById(R.id.et_change_floor);
@@ -351,16 +361,17 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etFloor.setText(changeApply.getFlies());
         etRoom.setText(changeApply.getRoom());
         etApplyType.setText(changeApply.getClasss());
+        etApplyTypeDetails.setText(changeApply.getDetailClass());
         et_describe.setText(changeApply.getRepairDetails());
         areaId = getAreaID(etArea.getText().toString());
         placeId = getDetailId(etDetailArea.getText().toString());
         categoryId = getCategoryID(etApplyType.getText().toString());
         changeImgUrl = changeApply.getA_imaes();
-
-        for (String s :
-                changeImgUrl) {
-            Log.d(TAG, "setView: " + s.toString());
-        }
+//
+//        for (String s :
+//                changeImgUrl) {
+//            Log.d(TAG, "setView: " + s.toString());
+//        }
 
         //  把传来的uri变为本地的uri存进list_uri
         new AsyncTask<Void, Void, List<File>>() {
@@ -369,8 +380,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 imgFileList = new ArrayList<File>();
                 File imgFile = null;
                 FileOutputStream out = null;
-                if (changeImgUrl != null) {
+                Log.d(TAG, "doInBackground: changeImageUrl" + changeImgUrl.size());
+                if (changeImgUrl != null && changeImgUrl.size() > 0) {
                     for (int i = 0; i < changeImgUrl.size(); i++) {
+//                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
                         Bitmap bitmap = null;
                         try {
                             bitmap = Picasso.with(ChangeActivity.this).load(changeImgUrl.get(i)).get();
@@ -398,6 +411,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             protected void onPostExecute(List<File> imgFileList) {
+
 
                 for (File f : imgFileList) {
                     Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());
@@ -452,7 +466,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             DialogAdapter floorAdapter = new DialogAdapter(this, listFloor, R.layout.simple_list_item);
             DialogAdapter roomAdapter = new DialogAdapter(this, listRoom, R.layout.simple_list_item);
             DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(this, listApplyType, resultBean.getCategory(), R.layout.dialog_detail_type);
-
+            DialogAdapter applyTypeAdapterDetail = new DialogAdapter(this, listApplyDetailType, R.layout.simple_list_item);
 
             //选择区域对话框
             setDialogArea(areaAdapter);
@@ -464,6 +478,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             setDialogRoom(roomAdapter);
             //选择类型对话框
             setDialogApplyType(applyTypeAdapter);
+            //
+            setDialogApplyDetailType(applyTypeAdapterDetail);
         }
 
 
@@ -820,6 +836,75 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+
+    private void setDialogApplyDetailType(DialogAdapter dialogAdapter) {
+        dialogApplyDetailType = DialogPlus.newDialog(this)
+                .setAdapter(dialogAdapter)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialog_head10)
+                .setContentWidth((int) (windowWitch / 1.5))
+//                .setCancelable(true)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
+                                item + "], position = [" + position + "]");
+                        if (position != -1) {
+                            etApplyTypeDetails.setText(listApplyDetailType.get(position));
+                            detailTypeID = listApplyDetailTypeID.get(position);
+                            dialogApplyDetailType.dismiss();
+                        }
+                    }
+
+                })
+                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        etApplyTypeDetails.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //获取类详
+                    String category = etApplyType.getText().toString();
+                    Log.d(TAG, "onTouch: category:" + category);
+
+                    listApplyDetailType.clear();
+                    listApplyDetailTypeID.clear();
+
+                    for (DetailClass detailType :addressRes.getDetailClasses() ) {
+                        Log.d(TAG, "onTouch: category inner:" + detailType.getCategoryName() + "  onTouch: detailTypeID:" + detailType.getClassDetail());
+                        if (detailType.getCategoryName().equals(category)) {
+                            listApplyDetailType.add(detailType.getClassDetail());
+                            listApplyDetailTypeID.add(detailType.getId());
+                        }
+                    }
+                    if (etApplyType.getText().toString().trim().equals("")) {
+                        List<String> list = new ArrayList<>();
+                        list.add("请先选择类型");
+                        DialogAdapter dialogAdapter = new DialogAdapter(ChangeActivity.this, list, R.layout.simple_list_item);
+                        dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
+                                .setAdapter(dialogAdapter)
+                                .setGravity(Gravity.CENTER)
+                                .setContentWidth((int) (windowWitch / 1.5))
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                                        dialogGetImage.dismiss();
+                                    }
+                                })
+                                .create();
+                        Log.d(TAG, "onTouch: warnning show");
+                        dialogGetImage.show();
+                    } else {
+                        dialogApplyDetailType.show();
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
     @Override
     public void onPause() {
 
@@ -1073,7 +1158,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             }
             List<File> files = getFiles(changeUriList);
 
-            submit(json, files).execute(new StringCallback() {
+            Util.submit("update", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
                 @Override
                 public void onError(Call call, Exception e, int id) {
                     Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -1120,6 +1205,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         apply.setFlies(String.valueOf(flieId));
         apply.setRoom(String.valueOf(roomId));
         apply.setClasss(String.valueOf(categoryId));
+        apply.setDetailClass(String.valueOf(detailTypeID));
         apply.setId(changeApply.getId());
 
     }
@@ -1217,23 +1303,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         changeUriList.clear();
     }
 
-    private RequestCall submit(String json, List<File> files) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
-            Log.d(TAG, "submit: " + files.get(i).getPath());
-        }
-
-        Log.d(TAG, "submit: json添加参数");
-        postFormBuilder.addParams("update", json);
-        if (files.size() > 0) {
-            postFormBuilder.url(UP_APPLY);
-        } else {
-            postFormBuilder.url(GET_JSON);
-        }
-
-        return postFormBuilder.build();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import model.Apply;
 import model.Response;
+import model.ResponseAdmin;
 import model.ResultBean;
 
 
@@ -76,5 +77,22 @@ public class JsonUtil {
 		}
 		return null;
 	}
+	public static ResponseAdmin jsonToResponseAdmin(String json)
+	{
+		try
+		{
+			if(json!=null&&json.length()>0)
+			{
+				Gson gson =new Gson();
+				ResponseAdmin response =gson.fromJson(json, ResponseAdmin.class);
 
+				return response;
+			}
+		}
+		catch (Exception e) {
+
+			Log.d(TAG, "jsonToResponseAdmin "+e.getMessage().toString());
+		}
+		return null;
+	}
 }
