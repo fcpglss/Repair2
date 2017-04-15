@@ -30,18 +30,10 @@ import util.Util;
 public class ApplysAdapter extends BaseAdapter {
     private static final String TAG = "ApplysAdapter";
     private ResultBean res = null;
-
     private LayoutInflater mInflater;
-
     private Drawable mDefaultBitmapDrawable;
 
-    public ImageLoader mImageLoader;
-
     private static String categoryProprety = "";
-
-    private static final int mImageWidth = 150;
-
-    private static final int mImageHeigth = 150;
 
     private boolean mCanGetBitmapFromNetWork = true;
     Context context;
@@ -51,7 +43,6 @@ public class ApplysAdapter extends BaseAdapter {
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.context = context;
-        mImageLoader = ImageLoader.build(context);
     }
 
     @Override

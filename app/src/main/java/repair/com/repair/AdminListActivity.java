@@ -114,7 +114,7 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
 
         switchButton= (SwitchButton) findViewById(R.id.switch_button);
         btnSend = (Button) findViewById(R.id.btn_send);
-        btnChoose = (Button) findViewById(R.id.btn_choose);
+     //   btnChoose = (Button) findViewById(R.id.btn_choose);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
         lvAdmin.setWaterDropListViewListener(this);
         lvAdmin.setPullLoadEnable(true);
@@ -211,8 +211,11 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
         lvAdmin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "onItemClick: "+i);
-                Toast.makeText(AdminListActivity.this, "ssssss", Toast.LENGTH_SHORT).show();
+                String  repairID = adminRes.getApplys().get(i - 1).getId();
+                Intent intent = new Intent(AdminListActivity.this, AdminDetailActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("repairId",repairID);
+                startActivity(intent);
             }
         });
 

@@ -206,7 +206,7 @@ public class Util {
 		}
 		else
 		{
-			address=apply.getDetailArea()+""; //没有层号的时候 可在后面加其他地址
+			address=apply.getArea()+apply.getDetailArea()+""; //没有层号的时候 可在后面加其他地址
 		}
 		return address;
 	}

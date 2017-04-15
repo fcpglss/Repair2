@@ -64,8 +64,7 @@ public class AdminListAdapter extends BaseAdapter {
     private static final String TAG = "AdminListAdapter";
     private static boolean isLoadImages = false;
 
-    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
-   // public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
+
     private Context context;
     private Response response;
     private ResultBean resultBean;
@@ -131,9 +130,9 @@ public class AdminListAdapter extends BaseAdapter {
         View view = convertView;
         Apply apply = list.get(position);
         if (null == view) {
-            view = inflater.inflate(R.layout.admin_item_list, parent, false);
+            view = inflater.inflate(R.layout.admin_item_list, null);
             viewHolder = new ViewHolder();
-            viewHolder.btnChoose = (Button) view.findViewById(R.id.btn_choose);
+            //viewHolder.btnChoose = (Button) view.findViewById(R.id.btn_choose);
             viewHolder.btnSend = (Button) view.findViewById(R.id.btn_send);
             viewHolder.tvAdress = (TextView) view.findViewById(R.id.tv_admin_item_address);
             viewHolder.tvcategory = (TextView) view.findViewById(R.id.tv_admin_item_category);
@@ -173,7 +172,7 @@ public class AdminListAdapter extends BaseAdapter {
             Picasso.with(context).load(photoUrl).into(imageView);
         }
         //设置对话框
-        setDialog(viewHolder, apply);
+      // setDialog(viewHolder, apply);
 
         return view;
     }
@@ -272,8 +271,8 @@ public class AdminListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 String s = viewHolder.tvcategory.getText().toString();
-                upApply(s);
-                setChooseDialog(viewHolder);
+              //  upApply(s);
+               // setChooseDialog(viewHolder);
             }
         });
 
@@ -397,38 +396,38 @@ public class AdminListAdapter extends BaseAdapter {
 
             List<File> files = new ArrayList<>();
 
-            submit(categoryName, files).execute(new StringCallback() {
-                @Override
-                public void onError(Call call, Exception e, int id) {
-                    //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void onResponse(String responses, int id) {
-                    final String responseJson = responses.toString();
-                    //解析json获取到Response;
-                    response = JsonUtil.jsonToResponse(responseJson);
-                    if (response != null) {
-                        resultBean = response.getResultBean();
-                    }
-                    if (resultBean != null) {
-
-                        Log.d(TAG, "onResponse: " + responseJson);
-                        if (employees.size() > 0)
-                            employees.clear();
-                        setEmployee();
-
-                        mhandler.sendEmptyMessage(3);
-                    } else {
-                        response.setErrorType(-2);
-                        response.setError(false);
-                        response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
-                        Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-                        mhandler.sendEmptyMessage(2);
-                    }
-                }
-            });
+//            /submit(categoryName, files).execute(new StringCallback() {
+//                @Override
+//                public void onError(Call call, Exception e, int id) {
+//                    //   Toast.makeText(MyApplication.getContext(), "我的报修页面请求失败", Toast.LENGTH_SHORT).show();
+//
+//                }
+//
+//                @Override
+//                public void onResponse(String responses, int id) {
+//                    final String responseJson = responses.toString();
+//                    //解析json获取到Response;
+//                    response = JsonUtil.jsonToResponse(responseJson);
+//                    if (response != null) {
+//                        resultBean = response.getResultBean();
+//                    }
+//                    if (resultBean != null) {
+//
+//                        Log.d(TAG, "onResponse: " + responseJson);
+//                        if (employees.size() > 0)
+//                            employees.clear();
+//                        setEmployee();
+//
+//                        mhandler.sendEmptyMessage(3);
+//                    } else {
+//                        response.setErrorType(-2);
+//                        response.setError(false);
+//                        response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
+//                        Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
+//                        mhandler.sendEmptyMessage(2);
+//                    }
+//                }
+//            });
 
         } else {
             Toast.makeText(MyApplication.getContext(), "未知错误", Toast.LENGTH_SHORT).show();
@@ -440,22 +439,6 @@ public class AdminListAdapter extends BaseAdapter {
             list1.add(e.getName());
             employees.add(e);
         }
-    }
-
-    private RequestCall submit(String phone, List<File> files) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
-            Log.d(TAG, "submit: " + files.get(i).getPath());
-        }
-
-        postFormBuilder.addParams("categoryName", phone);
-        if (files.size() > 0) {
-            postFormBuilder.url(UP_APPLY);
-        } else {
-            postFormBuilder.url(JSONEMPLOYEE);
-        }
-        return postFormBuilder.build();
     }
 
 

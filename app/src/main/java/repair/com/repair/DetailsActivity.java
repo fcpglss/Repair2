@@ -64,7 +64,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     //评价文字
     private TextView appraise;
     //大图片
-    private ImageView bigImg;
+
     private ImageView showBigImg;
     //背景
     LinearLayout linearLayoutDetail;
@@ -89,7 +89,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private ResultBean detailRes = null;
     private Category category = null;
-    private Place place = null;
 
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
@@ -211,7 +210,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         //评价文字
         appraise = (TextView) findViewById(R.id.tv_appraise);
         //大图片
-        bigImg = (ImageView) findViewById(R.id.detail_show_big_img);
+
         showBigImg = (ImageView) findViewById(R.id.iv_show_big_img);
 
         //背景

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
     android:orientation="vertical">
 
 
@@ -115,11 +116,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/dimen4">
+
                     <ImageView
                         android:layout_width="@dimen/dimen24"
                         android:layout_height="@dimen/dimen24"
                         android:layout_gravity="left"
                         android:src="@drawable/ren" />
+
                     <TextView
                         android:id="@+id/textView9"
                         android:layout_width="wrap_content"
@@ -175,9 +178,9 @@
 
                 <ImageView
                     android:id="@+id/img_admin_pic"
-                    android:layout_gravity="center"
                     android:layout_width="120dp"
                     android:layout_height="140dp"
+                    android:layout_gravity="center"
                     android:src="@mipmap/ic_launcher" />
             </LinearLayout>
 
@@ -247,33 +250,26 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
-                <Button
-                    android:id="@+id/btn_choose"
-                    android:layout_width="@dimen/dimen64"
-                    android:layout_height="@dimen/dimen24"
-                    android:layout_marginRight="@dimen/dimen8"
-                    android:background="@drawable/button_submit_apply"
-                    android:text="添加"
-                    android:textColor="@color/ColorText_Icons" />
+                <!--<Button-->
+                    <!--android:id="@+id/btn_choose"-->
+                    <!--android:layout_width="@dimen/dimen64"-->
+                    <!--android:layout_height="@dimen/dimen24"-->
+                    <!--android:layout_marginRight="@dimen/dimen8"-->
+                    <!--android:background="@drawable/button_submit_apply"-->
+                    <!--android:text="添加"-->
+                    <!--android:textColor="@color/ColorText_Icons" />-->
 
                 <Button
                     android:id="@+id/btn_send"
                     android:layout_width="@dimen/dimen64"
                     android:layout_height="@dimen/dimen24"
-                    android:background="@drawable/button_submit_apply"
                     android:layout_marginRight="@dimen/dimen80"
+                    android:background="@drawable/button_submit_apply"
+                    android:focusable="false"
                     android:text="派发"
                     android:textColor="@color/ColorText_Icons" />
             </LinearLayout>
 
-            <Button
-                android:layout_width="@dimen/dimen64"
-                android:layout_height="@dimen/dimen24"
-                android:layout_marginLeft="@dimen/dimen24"
-                android:background="@color/ColorDividerColor"
-                android:clickable="false"
-                android:text="完成"
-                android:textColor="@color/ColorText_Icons" />
         </LinearLayout>
     </LinearLayout>
 
