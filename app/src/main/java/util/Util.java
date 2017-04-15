@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -442,6 +443,23 @@ public class Util {
 
         return path;
     }
+	public static  boolean getPhotoUrl(int position, ResultBean rs) {
+		List<String> photoList = new ArrayList<>();
+		if(rs==null||rs.getApplys()==null||rs.getApplys().get(position).getA_imaes()==null)
+		{
+			return false;
+		}
+
+		photoList = rs.getApplys().get(position).getA_imaes();
+		if(photoList.size()>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 
 }

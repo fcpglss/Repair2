@@ -46,12 +46,14 @@
         android:layout_height="match_parent"
         android:id="@+id/ll_admin_list_background">
 
-        <ListView
+        <medusa.theone.waterdroplistview.view.WaterDropListView
+            android:id="@+id/lv_admin_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/lv_admin_list">
+            >
+        </medusa.theone.waterdroplistview.view.WaterDropListView>
 
-        </ListView>
+
     </LinearLayout>
 
 

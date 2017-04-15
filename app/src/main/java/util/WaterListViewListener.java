@@ -38,13 +38,13 @@ public class WaterListViewListener implements AdapterView.OnItemClickListener {
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
         Log.d(TAG, "onItemClick: "+(res==null));
+        Log.d(TAG, "onItemClick: "+res.getApplys().size());
+        Log.d(TAG, "onItemClick: "+(position-1));
         String  repairID = res.getApplys().get(position - 1).getId();
 
         Intent intent = new Intent(MyApplication.getContext(), DetailsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         intent.putExtra("repairId",repairID);
-
         mContext.startActivity(intent);
     }
 }

@@ -53,9 +53,9 @@ import static repair.com.repair.MainActivity.windowHeigth;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "DetailsActivity";
-//    private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
+   private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
 
-    private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
+  //  private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     boolean visible = false;//员工详细页面默认不可见
 

@@ -1,7 +1,9 @@
 package repari.com.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -62,15 +64,19 @@ public class AdminListAdapter extends BaseAdapter {
     private static final String TAG = "AdminListAdapter";
     private static boolean isLoadImages = false;
 
-    //public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
-    public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
-    private AdminListActivity context;
+    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
+   // public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
+    private Context context;
     private Response response;
     private ResultBean resultBean;
     private LayoutInflater inflater;
     private List<Apply> list = new ArrayList<>();
     private DialogPlus dialogSend;
     private DialogPlus dialogChoose;
+
+    private boolean mCanGetBitmapFromNetWork = true;
+
+    private Drawable mDefaultBitmapDrawable;
     DialogAdapter dialogChooseAdapter;
 
     List<String> listImage = new ArrayList<>();
@@ -96,12 +102,12 @@ public class AdminListAdapter extends BaseAdapter {
         }
     };
 
-    public AdminListAdapter(AdminListActivity context, ResultBean resultBean) {
+    public AdminListAdapter(Context context, ResultBean resultBean) {
         this.context = context;
         inflater = LayoutInflater.from(context);
+        mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.resultBean = resultBean;
         list = resultBean.getApplys();
-
     }
 
     @Override
@@ -137,7 +143,6 @@ public class AdminListAdapter extends BaseAdapter {
             viewHolder.tvDescribe = (TextView) view.findViewById(R.id.textView8);
             viewHolder.tvTel = (TextView) view.findViewById(R.id.tv_admin_item_tel);
             viewHolder.imgView = (ImageView) view.findViewById(R.id.img_admin_pic);
-            //  downLoadBitmap(apply);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -147,10 +152,25 @@ public class AdminListAdapter extends BaseAdapter {
         viewHolder.tvcategory.setText(apply.getClasss());
         viewHolder.tvAdress.setText(Util.setTitle(apply));
         viewHolder.tvTel.setText(apply.getTel());
+        viewHolder.tvDescribe.setText(apply.getRepairDetails());
 
-        List<String> urlList = apply.getA_imaes();
-        if (urlList != null && urlList.size() > 0) {
-            Picasso.with(context).load(urlList.get(0)).into(viewHolder.imgView);
+        ImageView imageView=viewHolder.imgView;
+        final String tag = (String)imageView.getTag();
+        String photoUrl = "";
+
+        if(Util.getPhotoUrl(position, resultBean))
+        {
+            photoUrl=resultBean.getApplys().get(position).getA_imaes().get(0);
+        }
+        final String uri = photoUrl;
+        if (!uri.equals(tag)) {
+            imageView.setImageDrawable(mDefaultBitmapDrawable);
+        }
+
+        if (mCanGetBitmapFromNetWork&&!photoUrl.equals("")) {
+            imageView.setTag(photoUrl);
+//            mImageLoader.bindBitmap(photoUrl, imageView, mImageWidth, mImageHeigth);
+            Picasso.with(context).load(photoUrl).into(imageView);
         }
         //设置对话框
         setDialog(viewHolder, apply);
@@ -338,25 +358,32 @@ public class AdminListAdapter extends BaseAdapter {
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        String temp = viewHolder.tvServerMan.getText().toString();
-                        boolean flag = false;
-                        if (temp != null && !"".equals(temp)) {
-                            String temp2[] = temp.split(",");
-                            for (int i = 0; i < temp2.length; i++) {
-                                if (list1.get(position).equals(temp2[i])) {
-                                    flag = true;
-                                }
-                            }
-                            if (!flag) {
-                                viewHolder.tvServerMan.setText(temp + "," + list1.get(position));
-                            }
-                            Log.d(TAG, "onItemClick222: 执行了");
-                        } else {
-                            viewHolder.tvServerMan.setText(list1.get(position).toString());
-                            Log.d(TAG, "onItemClick: 执行了");
-                        }
-                        dialogChoose.dismiss();
-                    }
+                       if(position==-1)
+                       {
+
+                       }else
+                       {
+                           String temp = viewHolder.tvServerMan.getText().toString();
+                           boolean flag = false;
+                           if (temp != null && !"".equals(temp)) {
+                               String temp2[] = temp.split(",");
+                               for (int i = 0; i < temp2.length; i++) {
+                                   if (list1.get(position).equals(temp2[i])) {
+                                       flag = true;
+                                   }
+                               }
+                               if (!flag) {
+                                   viewHolder.tvServerMan.setText(temp + "," + list1.get(position));
+                               }
+                               Log.d(TAG, "onItemClick222: 执行了");
+                           } else {
+                               viewHolder.tvServerMan.setText(list1.get(position).toString());
+                               Log.d(TAG, "onItemClick: 执行了");
+                           }
+                           dialogChoose.dismiss();
+                       }
+                       }
+
 
                 })
                 .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)

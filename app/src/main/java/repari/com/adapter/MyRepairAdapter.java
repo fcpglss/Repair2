@@ -123,7 +123,7 @@ public class MyRepairAdapter extends BaseAdapter {
         String photoUrl = "";
         String a_details = "";
 
-        if(getPhotoUrl(position, myRes))
+        if(Util.getPhotoUrl(position, myRes))
         {
             photoUrl=myRes.getApplys().get(position).getA_imaes().get(0);
         }
@@ -259,20 +259,7 @@ public class MyRepairAdapter extends BaseAdapter {
     }
 
 
-    private boolean getPhotoUrl(int position, ResultBean rs) {
-        List<String> photoList = new ArrayList<>();
 
-        photoList = rs.getApplys().get(position).getA_imaes();
-        if(photoList.size()>0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
 
     private int getState(int position, ResultBean rs) {
         int image = 0;

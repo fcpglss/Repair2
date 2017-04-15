@@ -39,8 +39,8 @@ import util.Util;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
-//    private static final String LOGIN="http://192.168.31.201:8888/myserver2/AdminLogin";
-      private static final String LOGIN="http://192.168.43.128:8888/myserver2/AdminLogin";
+   private static final String LOGIN="http://192.168.31.201:8888/myserver2/AdminLogin";
+    //  private static final String LOGIN="http://192.168.43.128:8888/myserver2/AdminLogin";
 
     private String account;
 

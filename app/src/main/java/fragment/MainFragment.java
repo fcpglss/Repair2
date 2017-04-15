@@ -70,6 +70,8 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
 
     public ResultBean moreRes = null;
 
+    public ResultBean firstRes=null;
+
     public Response moreResponse = null;
 
     private WaterDropListView waterDropListView;
@@ -91,21 +93,18 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
-                    if (isRefresh) {
-                        isRefresh = false;
-                        waterDropListView.stopRefresh();
-                    }
+                    stopRefrushs();
                     Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     updateView();
                     break;
                 case 3:
                     if (isRefresh) {
                         isRefresh = false;
+
+                        waterDropListView.stopRefresh();
                         applysAdapter = getBeanFromJson(res, viewpager_url, applysAdapter);
                         updateView();
-                        waterDropListView.stopRefresh();
                         Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
-
                         break;
                     }
                     Toast.makeText(getActivity(), "进来第一次请求网络调用,firstRes有值", Toast.LENGTH_SHORT).show();
@@ -113,10 +112,7 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                     updateView();
                     break;
                 case 4:
-                    if (isRefresh) {
-                        isRefresh = false;
-                        waterDropListView.stopRefresh();
-                    }
+                    stopRefrushs();
                     Toast.makeText(getActivity(), "请求网络成功但，firstRes没有值", Toast.LENGTH_SHORT).show();
                     updateView();
                     break;
@@ -142,6 +138,13 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
         }
     };
 
+    private void stopRefrushs() {
+        if (isRefresh) {
+            isRefresh = false;
+            waterDropListView.stopRefresh();
+        }
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -164,7 +167,7 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       // loadData();
+
     }
 
     /**
@@ -179,7 +182,8 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                 //解析json获取到Response;
                 response = JsonUtil.jsonToResponse(responseJson);
                 if (response != null) {
-                    res = response.getResultBean();
+                    firstRes=response.getResultBean();
+                    setFirstApply(firstRes);
                 }
                 if (res != null) {
                     Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
@@ -356,6 +360,22 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
         for (Apply apply : applyList) {
             res.getApplys().add(apply);
         }
+    }
+    private void setFirstApply(ResultBean resultBean)
+    {
+        if(res!=null&&res.getApplys().size()>0)
+        {
+            for(int i=0;i<resultBean.getApplys().size();i++)
+            {
+                res.getApplys().remove(i);
+                res.getApplys().add(i,resultBean.getApplys().get(i));
+            }
+        }
+        else
+        {
+            res=resultBean;
+        }
+
     }
 
 
