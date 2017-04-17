@@ -100,6 +100,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private EditText etFloor, etRoom;
 
     private List<String> changeImgUrl = new ArrayList<>();
+    private List<File> fileList = new ArrayList<>();
 
     //滚动
     private ScrollView svBackground;
@@ -415,6 +416,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
                 for (File f : imgFileList) {
                     Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());
+                    fileList.add(f);
                     changeUriList.add(Uri.fromFile(f));
                 }
                 rl1.setVisibility(View.GONE);
@@ -872,7 +874,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     listApplyDetailType.clear();
                     listApplyDetailTypeID.clear();
 
-                    for (DetailClass detailType :addressRes.getDetailClasses() ) {
+                    for (DetailClass detailType : addressRes.getDetailClasses()) {
                         Log.d(TAG, "onTouch: category inner:" + detailType.getCategoryName() + "  onTouch: detailTypeID:" + detailType.getClassDetail());
                         if (detailType.getCategoryName().equals(category)) {
                             listApplyDetailType.add(detailType.getClassDetail());
@@ -937,7 +939,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     public void onResume() {
         super.onResume();
         if (changeUriList.size() > 0) {
-            Log.d("Apply_Fragment", "ApplyFragment已经获得了uri");
+            Log.d(TAG, "onResume -> changeUriList="+changeUriList.size());
             if (changeUriList.size() > 3) {
                 int length = changeUriList.size() - 3;
                 for (int i = 0; i < length; i++) {
@@ -948,11 +950,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             //判断和赋值
             switchImage();
 
-
         } else {
-            Log.d("Apply_Fragment", "ApplyFragment没有获取到uri");
+            Log.d(TAG, "onResume -> 没有获取到uri ,changeUriList的size="+changeUriList.size());
         }
-        Log.d("MainFragment", "Apply_onResume");
+
     }
 
     private void switchImage() {
@@ -998,17 +999,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.btn_change_clear:
-
                 clearAll();
-
                 break;
-
-//            case R.id.img_camera:
-//                startCamera();
-//                break;
-
             case R.id.iv_change_add:
-//                startGallery();
+
                 addPic();
                 Log.d(TAG, "onClick: 点击了加号");
                 break;
@@ -1171,14 +1165,21 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                     writePhoneToLocal(apply, MyApplication.getContext());
                     for (File file : imgFileList) {
-                        if (file.isFile()) {
-                            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                            ContentResolver mContentResolver = getContentResolver();
-                            String where = MediaStore.Images.Media.DATA + "='" + file.getAbsolutePath() + "'";
-                            //删除图片
-                            mContentResolver.delete(uri, where, null);
-                        }
+
+//                        if (file.isFile()) {
+//                            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+//                            ContentResolver mContentResolver = getContentResolver();
+//                            String where = MediaStore.Images.Media.DATA + "='" + file.getAbsolutePath() + "'";
+//                            //删除图片
+//                            mContentResolver.delete(uri, where, null);
+//                            Intent intent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                            File file1=new File(file.getPath());
+//                            Uri uri2=Uri.fromFile(file1);
+//                            intent.setData(uri2);
+//                            ChangeActivity.this.sendBroadcast(intent);
+//                        }
                     }
+                    Util.deletFiles(ChangeActivity.this,fileList);
 
                     Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
                     intent.putExtra("repairId", apply.getId());
@@ -1217,10 +1218,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         List<File> files = new ArrayList<>();
         if (list_uri.size() > 0 && list_uri != null) {
             for (int i = 0; i < list_uri.size(); i++) {
-
-
+                Log.d(TAG, "getFiles: list_uri:"+list_uri.get(i).toString());
                 if (list_uri.get(i).toString().split(":")[0].equals("file")) {
                     String s = list_uri.get(i).toString().split("//")[1];
+                    Log.d(TAG, "getFiles: 修改后"+s);
                     paths[i] = s;
                 } else {
                     paths[i] = getPath(list_uri.get(i));
@@ -1311,11 +1312,19 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             Log.d(TAG, "onActivityResult: " + resultCode);
             Log.d(TAG, "onActivityResult: " + cameraFile);
             changeUriList.add(Uri.fromFile(cameraFile));
+
+            Log.d(TAG, "onActivityResult: changeUriList的长度:"+changeUriList.toString());
+
+
         }
         if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
+
             changeUriList.add(data.getData());
-            Log.d(TAG, "addItem");
-            Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
+
+            Log.d(TAG, "onActivityResult: changeUriList的长度:"+changeUriList.toString());
+
+            Log.d(TAG, "从相册返回");
+            Log.i(TAG, "GalleryUri:    " + data.getData().getPath());
         }
     }
 
@@ -1334,5 +1343,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 //        return super.onKeyDown(keyCode,event);
         return true;
     }
+
 
 }

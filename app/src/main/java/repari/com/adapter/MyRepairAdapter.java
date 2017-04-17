@@ -266,14 +266,16 @@ public class MyRepairAdapter extends BaseAdapter {
         int a_status = rs.getApplys().get(position).getState();
         switch (a_status) {
             case 1:
-                image = R.drawable.chulizhong;
+                image = R.drawable.daichuli;
                 break;
             case 2:
-                image = R.drawable.daichuli;
+
+                image = R.drawable.chulizhong1;
                 break;
             case 3:
                 image = R.drawable.yishixiao;
                 break;
+
             case 4:
                 image = R.drawable.finish;
                 break;

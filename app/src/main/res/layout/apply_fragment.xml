@@ -192,12 +192,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    >
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_area">
 
                         <TextView
                             android:layout_width="@dimen/dimen72"
@@ -221,7 +223,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_detail_area"
+                        android:visibility="invisible">
 
                         <TextView
                             android:layout_width="@dimen/dimen40"
@@ -248,17 +252,20 @@
                     android:layout_height="1px"
                     android:layout_marginLeft="@dimen/dimen8"
                     android:layout_marginRight="@dimen/dimen8"
-                    android:background="@color/ColorDividerColor"></LinearLayout>
+                    android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    android:id="@+id/ll_apply_big_floor_room"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_floor">
 
                         <TextView
                             android:layout_width="@dimen/dimen72"
@@ -282,7 +289,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_room"
+                        android:visibility="invisible">
 
                         <TextView
                             android:layout_width="@dimen/dimen40"
@@ -522,7 +531,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_margin="2dp"
-                    android:background="#e61D89E5"
+                    android:background="@drawable/button_submit"
                     android:gravity="center"
                     android:text="立即报修"
                     android:textColor="#ffffff"
@@ -533,7 +542,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_margin="2dp"
-                    android:background="#e61D89E5"
+                    android:background="@drawable/button_submit"
                     android:gravity="center"
                     android:text="清空"
                     android:textColor="#ffffff"

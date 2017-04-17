@@ -1,12 +1,14 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -41,12 +43,12 @@ import static repair.com.repair.MainActivity.FRIST_URL;
  * Created by hsp on 2017/4/7.
  */
 
-public class AdminListActivity extends AppCompatActivity implements  WaterDropListView.IWaterDropListViewListener {
+public class AdminListActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener {
     private static final String TAG = "AdminListActivity";
 
 
     private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
-   // private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
+    // private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
 
     SwitchButton switchButton;
 
@@ -60,7 +62,7 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
 
     Button btnChoose;
     Button btnSend;
-    private WaterDropListView  lvAdmin;
+    private WaterDropListView lvAdmin;
     AdminListAdapter adminListAdapter;
 
     private ResultBean refrushRes;
@@ -90,9 +92,8 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
     };
 
     private void stopRefrushs() {
-        if(isRefresh)
-        {
-            isRefresh=false;
+        if (isRefresh) {
+            isRefresh = false;
             Log.d(TAG, "handleMessage: 停止刷新按钮");
             lvAdmin.stopRefresh();
         }
@@ -112,18 +113,18 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
 
     private void init() {
 
-        switchButton= (SwitchButton) findViewById(R.id.switch_button);
-        btnSend = (Button) findViewById(R.id.btn_send);
-     //   btnChoose = (Button) findViewById(R.id.btn_choose);
+        switchButton = (SwitchButton) findViewById(R.id.switch_button);
+
+        //   btnChoose = (Button) findViewById(R.id.btn_choose);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
         lvAdmin.setWaterDropListViewListener(this);
         lvAdmin.setPullLoadEnable(true);
         switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     tvImage.setText("有图");
-                }else {
+                } else {
                     tvImage.setText("无图");
                 }
             }
@@ -167,13 +168,14 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
             }
         });
     }
+
     private void updateView() {
         //从内存中的数据更新；
         if (adminListAdapter != null) {
-            if (adminRes != null ) {
+            if (adminRes != null) {
                 Log.d(TAG, "updateView: 内存中的adminListAdapter没有被销毁,adminRes还在内存中，直接更新listView");
                 setView();
-                if (svProgressHUD.isShowing()){
+                if (svProgressHUD.isShowing()) {
                     svProgressHUD.dismiss();
                 }
             } else {
@@ -184,26 +186,23 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
         //内存中的applyAdapters已经被销毁，需重新创建一个
         else {
             Log.d(TAG, "updateView: 内存中的adminListAdapter已经被销毁,重新构造adminListAdapter");
-            if(adminRes!=null)
-            {
+            if (adminRes != null) {
                 adminListAdapter = new AdminListAdapter(AdminListActivity.this, adminRes);
-                if(adminListAdapter==null)
-                {
+                if (adminListAdapter == null) {
                     Log.d(TAG, "updateView: adminListAdapter为null");
                 }
                 Log.d(TAG, "updateView: adminListAdapter不为null");
                 setView();
-                if (svProgressHUD.isShowing()){
+                if (svProgressHUD.isShowing()) {
                     svProgressHUD.dismiss();
                 }
-            }
-            else
-            {
+            } else {
                 queryFromServer(JSONFIRST);
             }
 
-            }
+        }
     }
+
     private void setView() {
         adminListAdapter.notifyDataSetChanged();
         lvAdmin.setAdapter(adminListAdapter);
@@ -211,10 +210,11 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
         lvAdmin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String  repairID = adminRes.getApplys().get(i - 1).getId();
+                String repairID = adminRes.getApplys().get(i - 1).getId();
                 Intent intent = new Intent(AdminListActivity.this, AdminDetailActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("repairId",repairID);
+                intent.putExtra("repairId", repairID);
+                intent.putExtra("isIntent", 1);
                 startActivity(intent);
             }
         });
@@ -223,7 +223,7 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
 
     @Override
     public void onRefresh() {
-        isRefresh=true;
+        isRefresh = true;
         queryFromServer(JSONFIRST);
     }
 
@@ -231,20 +231,28 @@ public class AdminListActivity extends AppCompatActivity implements  WaterDropLi
     public void onLoadMore() {
 
     }
-    private void setFirstApply(ResultBean resultBean)
-    {
-        if(adminRes!=null&&adminRes.getApplys().size()>0)
-        {
-            for(int i=0;i<resultBean.getApplys().size();i++)
-            {
+
+    private void setFirstApply(ResultBean resultBean) {
+        if (adminRes != null && adminRes.getApplys().size() > 0) {
+            for (int i = 0; i < resultBean.getApplys().size(); i++) {
                 adminRes.getApplys().remove(i);
-                adminRes.getApplys().add(i,resultBean.getApplys().get(i));
+                adminRes.getApplys().add(i, resultBean.getApplys().get(i));
             }
-        }
-        else
-        {
-            adminRes=resultBean;
+        } else {
+            adminRes = resultBean;
         }
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            Log.d(TAG, "onKeyDown: 返回了main");
+            this.finish();
+        }
+        return true;
     }
 }

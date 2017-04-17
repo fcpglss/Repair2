@@ -28,6 +28,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 
+import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
@@ -46,6 +47,7 @@ import java.util.List;
 import application.MyApplication;
 import camera.CalculateImage;
 import camera.FIleUtils;
+import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -78,14 +80,19 @@ import static repair.com.repair.MainActivity.windowWitch;
 import static repair.com.repair.MainActivity.windowHeigth;
 
 
-public class ApplyFragment extends LazyFragment implements View.OnClickListener, GetFragment {
+public class ApplyFragment extends LazyFragment2 implements View.OnClickListener, GetFragment {
 
     private static final String TAG = "ApplyFragment";
+
+
+    private boolean isFirst=true;
 
     private EditText et_name, et_tel, et_describe, et_details;
 
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
+    //对话框点击显示下一级
+    private LinearLayout llApplyArea,llApplyDetailArea,llApplyBigFloorRoom,llApplyFloor,llApplyRoom;
     //记录区域ID
     int AreaId;
     int PlaceId;//楼号ID
@@ -142,6 +149,8 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
     private int categoryId = 0;
     private int detailTypeID = 0;
 
+    private View view;
+
     //用来比较的list
     List<Uri> list = new ArrayList<>();
 
@@ -186,13 +195,15 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
     DialogPlus dialogApplyDetailType;
     DialogPlus dialogGetImage;
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(TAG, "Apply_onCreateView");
-
-        return inflater.inflate(R.layout.apply_fragment, null);
+    protected int getLayout() {
+        return R.layout.apply_fragment;
     }
 
     @Override
@@ -201,90 +212,119 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
         super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
+    protected void onFragmentVisibleChange(boolean isVisible) {
+        super.onFragmentVisibleChange(isVisible);
+        if(isVisible)
+        {
+           loadData();
+        }
+    }
 
-    private void initView() {
+    private void loadData() {
+        if(isFirst)
+        {
+            Log.d(TAG, "第一次加载需要请求网络获取数据 ");
+            queryFromServer(JSON_URL);
+            isFirst=false;
+        }
+        else
+        {
 
-        etEmail = (EditText) getActivity().findViewById(R.id.et_email);
-        etApplyPassword = (EditText) getActivity().findViewById(R.id.et_apply_password);
-        etArea = (EditText) getActivity().findViewById(R.id.et_area);
-        etDetailArea = (EditText) getActivity().findViewById(R.id.et_detail_area);
-        etApplyType = (EditText) getActivity().findViewById(R.id.et_apply_type);
-        etApplyTypeDetails = (EditText) getActivity().findViewById(R.id.et_apply_detail_type);
-        et_name = (EditText) getActivity().findViewById(R.id.et_name);
-
-        etFloor = (EditText) getActivity().findViewById(R.id.et_floor);
-        etRoom = (EditText) getActivity().findViewById(R.id.et_room);
-
-        et_tel = (EditText) getActivity().findViewById(R.id.et_tel);
-
-        et_describe = (EditText) getActivity().findViewById(R.id.et_apply_describe);
-        et_details = (EditText) getActivity().findViewById(R.id.et_apply_details);
-
-        img_add = (ImageView) getActivity().findViewById(R.id.iv_add);
-        img_add.setOnClickListener(this);
-
-        img_1 = (ImageView) getActivity().findViewById(R.id.iv_img1);
-        img_2 = (ImageView) getActivity().findViewById(R.id.iv_img2);
-        img_3 = (ImageView) getActivity().findViewById(R.id.iv_img3);
-
-        //包裹三张图片的RelativeLayout
-        rl1 = (RelativeLayout) getActivity().findViewById(R.id.rl_img1);
-        rl2 = (RelativeLayout) getActivity().findViewById(R.id.rl_img2);
-        rl3 = (RelativeLayout) getActivity().findViewById(R.id.rl_img3);
-        //打叉图片
-        ivX1 = (ImageView) getActivity().findViewById(R.id.iv_img_x1);
-        ivX2 = (ImageView) getActivity().findViewById(R.id.iv_img_x2);
-        ivX3 = (ImageView) getActivity().findViewById(R.id.iv_img_x3);
-        //设置打叉点击事件
-        XOnclick();
-        //大图
-        llBigImg = (LinearLayout) getActivity().findViewById(R.id.ll_big_img);
-        ivBigImg = (ImageView) getActivity().findViewById(R.id.iv_big_img);
-
-        //设置图片点击事件
-        imgOnclick();
-
-        imageViewList.add(img_1);
-        imageViewList.add(img_2);
-        imageViewList.add(img_3);
-        btn_apply = (Button) getActivity().findViewById(R.id.btn_apply);
-        btn_clear = (Button) getActivity().findViewById(R.id.btn_clear);
-        btn_apply.setOnClickListener(this);
-        btn_clear.setOnClickListener(this);
-
-        //滚动
-        svBackground = (ScrollView) getActivity().findViewById(R.id.sv_apply);
-
-
-        //设置点击颜色
-        btn_apply.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_apply.setBackgroundColor(Color.parseColor("#65B5FF"));
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_apply.setBackgroundColor(Color.parseColor("#e61D89E5"));
-                }
-                return false;
-            }
-        });
-        btn_clear.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_clear.setBackgroundColor(Color.parseColor("#65B5FF"));
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_clear.setBackgroundColor(Color.parseColor("#e61D89E5"));
-                }
-                return false;
-            }
-        });
+        }
 
     }
+
+    protected void initViews(View view) {
+
+            etEmail = (EditText) view.findViewById(R.id.et_email);
+            etApplyPassword = (EditText) view.findViewById(R.id.et_apply_password);
+            etArea = (EditText) view.findViewById(R.id.et_area);
+            etDetailArea = (EditText) view.findViewById(R.id.et_detail_area);
+            etApplyType = (EditText) view.findViewById(R.id.et_apply_type);
+            etApplyTypeDetails = (EditText) view.findViewById(R.id.et_apply_detail_type);
+            et_name = (EditText) view.findViewById(R.id.et_name);
+
+            etFloor = (EditText) view.findViewById(R.id.et_floor);
+            etRoom = (EditText) view.findViewById(R.id.et_room);
+
+            et_tel = (EditText) view.findViewById(R.id.et_tel);
+
+            et_describe = (EditText) view.findViewById(R.id.et_apply_describe);
+            et_details = (EditText) view.findViewById(R.id.et_apply_details);
+
+            img_add = (ImageView) view.findViewById(R.id.iv_add);
+            img_add.setOnClickListener(this);
+
+            img_1 = (ImageView) view.findViewById(R.id.iv_img1);
+            img_2 = (ImageView) view.findViewById(R.id.iv_img2);
+            img_3 = (ImageView) view.findViewById(R.id.iv_img3);
+
+            //包裹三张图片的RelativeLayout
+            rl1 = (RelativeLayout) view.findViewById(R.id.rl_img1);
+            rl2 = (RelativeLayout) view.findViewById(R.id.rl_img2);
+            rl3 = (RelativeLayout) view.findViewById(R.id.rl_img3);
+            //打叉图片
+            ivX1 = (ImageView) view.findViewById(R.id.iv_img_x1);
+            ivX2 = (ImageView) view.findViewById(R.id.iv_img_x2);
+            ivX3 = (ImageView) view.findViewById(R.id.iv_img_x3);
+            //设置打叉点击事件
+            XOnclick();
+            //大图
+            llBigImg = (LinearLayout) view.findViewById(R.id.ll_big_img);
+            ivBigImg = (ImageView) view.findViewById(R.id.iv_big_img);
+
+            //设置图片点击事件
+            imgOnclick();
+
+            imageViewList.add(img_1);
+            imageViewList.add(img_2);
+            imageViewList.add(img_3);
+            btn_apply = (Button) view.findViewById(R.id.btn_apply);
+            btn_clear = (Button) view.findViewById(R.id.btn_clear);
+            btn_apply.setOnClickListener(this);
+            btn_clear.setOnClickListener(this);
+
+            //滚动
+            svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
+
+
+            //设置点击颜色
+            btn_apply.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        Log.d(TAG, "onTouch: " + event.getAction());
+                        btn_apply.setBackgroundColor(Color.parseColor("#65B5FF"));
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        Log.d(TAG, "onTouch: " + event.getAction());
+                        btn_apply.setBackgroundColor(Color.parseColor("#e61D89E5"));
+                    }
+                    return false;
+                }
+            });
+            btn_clear.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        Log.d(TAG, "onTouch: " + event.getAction());
+                        btn_clear.setBackgroundColor(Color.parseColor("#65B5FF"));
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        Log.d(TAG, "onTouch: " + event.getAction());
+                        btn_clear.setBackgroundColor(Color.parseColor("#e61D89E5"));
+                    }
+                    return false;
+                }
+            });
+
+            llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
+            llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
+            llApplyBigFloorRoom = (LinearLayout) view.findViewById(R.id.ll_apply_big_floor_room);
+            llApplyFloor = (LinearLayout) view.findViewById(R.id.ll_apply_floor);
+            llApplyRoom = (LinearLayout)view.findViewById(R.id.ll_apply_room);
+
+    }
+
 
     private void imgOnclick() {
         img_1.setOnClickListener(new View.OnClickListener() {
@@ -466,6 +506,10 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
                             etArea.setText(listArea.get(position));
                             areaId = getAreaID(listArea.get(position));
                             Log.d(TAG, "onItemClick: 区域Id " + AreaId);
+
+                            //重置可见性
+                            resetVisible();
+
                             dialogArea.dismiss();
                         }
                     }
@@ -486,6 +530,13 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
                     etDetailArea.setText("");
                     etFloor.setText("");
                     etRoom.setText("");
+
+                    //清空下一级可见
+                    llApplyDetailArea.setVisibility(View.INVISIBLE);
+                    llApplyBigFloorRoom.setVisibility(View.GONE);
+                    llApplyFloor.setVisibility(View.INVISIBLE);
+                    llApplyRoom.setVisibility(View.INVISIBLE);
+
                     //清空存放好的Id
                     placeId = 0;
                     flieId = 0;
@@ -515,6 +566,12 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
                             etDetailArea.setText(listDetailArea.get(position));
                             placeId = getDetailId(listDetailArea.get(position));
                             Log.d(TAG, "onItemClick: 区域Id " + AreaId);
+
+                            //重置可见性
+                            resetVisible();
+
+
+
                             dialogDetailArea.dismiss();
                         }
 
@@ -533,6 +590,10 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
                     //点击区域清空 层号 房间
                     etFloor.setText("");
                     etRoom.setText("");
+                    //清空下一级可见
+                    llApplyBigFloorRoom.setVisibility(View.GONE);
+                    llApplyFloor.setVisibility(View.INVISIBLE);
+                    llApplyRoom.setVisibility(View.INVISIBLE);
                     //清空存放好的Id
                     flieId = 0;
                     roomId = 0;
@@ -602,6 +663,9 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
                             etFloor.setText(listFloor.get(position));
 //                            flieId = getFloor(listFloor.get(position));
                             flieId = listFloorID.get(position);
+
+                            //重置可见性
+                            resetVisible();
                             dialogFloor.dismiss();
                         }
 
@@ -620,6 +684,9 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
 
                     //点击区域清空  房间
                     etRoom.setText("");
+                    //清空可见
+                    //清空下一级可见
+                    llApplyRoom.setVisibility(View.INVISIBLE);
                     //清空存放好的Id
                     roomId = 0;
                     listFloor.clear();
@@ -905,6 +972,8 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
         list_uri.clear();
         Log.d(TAG, "onDestroy: ");
     }
+
+
 
     @Override
     public void onResume() {
@@ -1219,6 +1288,7 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
         rl2.setVisibility(View.GONE);
         rl3.setVisibility(View.GONE);
         list_uri.clear();
+        resetVisableAlways();
     }
 
 
@@ -1229,11 +1299,36 @@ public class ApplyFragment extends LazyFragment implements View.OnClickListener,
         return null;
     }
 
-    @Override
-    protected void loadData() {
-        Log.d(TAG, "loadData: ");
-        initView();
-        queryFromServer(JSON_URL);
 
+    private void resetVisible(){
+        //进来就全部不可见
+        llApplyDetailArea.setVisibility(View.INVISIBLE);
+        llApplyBigFloorRoom.setVisibility(View.GONE);
+        llApplyFloor.setVisibility(View.INVISIBLE);
+        llApplyRoom.setVisibility(View.INVISIBLE);
+
+        //如果区域不为其他 楼号可见
+        if (!etArea.getText().toString().equals("其他")&&!etArea.getText().toString().equals("")){
+            Log.d(TAG, "resetVisible: "+etArea.getText());
+            llApplyDetailArea.setVisibility(View.VISIBLE);
+        }
+        if (!etDetailArea.getText().toString().equals("其他")&&!etDetailArea.getText().toString().equals("")){
+            Log.d(TAG, "resetVisible: "+etDetailArea.getText());
+            llApplyBigFloorRoom.setVisibility(View.VISIBLE);
+            llApplyFloor.setVisibility(View.VISIBLE);
+        }
+        if (!etFloor.getText().toString().equals("其他")&&!etFloor.getText().toString().equals("")){
+            Log.d(TAG, "resetVisible: "+etFloor.getText());
+            llApplyRoom.setVisibility(View.VISIBLE);
+        }
     }
+    private void resetVisableAlways(){
+        //进来就全部不可见
+        llApplyDetailArea.setVisibility(View.INVISIBLE);
+        llApplyBigFloorRoom.setVisibility(View.GONE);
+        llApplyFloor.setVisibility(View.INVISIBLE);
+        llApplyRoom.setVisibility(View.INVISIBLE);
+    }
+
+
 }

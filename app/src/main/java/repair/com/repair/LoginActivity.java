@@ -97,9 +97,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 account=etAdminName.getText().toString();
-                password=etAdminPassword.getText().toString();
-//              upply();
-                queryFromServer(LOGIN,account,password);
+                password=Util.getMD5(etAdminPassword.getText().toString());
+                upply();
             }
         });
 
@@ -118,11 +117,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-    private void EncoderByMd5(String password) throws NoSuchAlgorithmException {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-
-    }
     private void upply()
     {
         if (account.isEmpty() || password.isEmpty()) {
@@ -174,28 +168,7 @@ public class LoginActivity extends AppCompatActivity {
             mhandler.sendEmptyMessage(2);
         }
     }
-    public void queryFromServer(String url,String account,String password) {
 
-        String jsonurl = url + "?account="+account+"&&password="+password;
-        Log.d(TAG, "queryFromServer: " + jsonurl);
-        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String responseString) {
-
-                Log.d(TAG, "onFinish: "+responseString);
-                if(responseString!=null)
-                {
-                    responseAdmin= JsonUtil.jsonToResponseAdmin(responseString);
-                    checkLoginResult();
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        });
-    }
 
 
 }

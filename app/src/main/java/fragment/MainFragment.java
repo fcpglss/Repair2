@@ -43,7 +43,7 @@ import static repair.com.repair.MainActivity.SENDMORE_URL;
  */
 
 
-public class MainFragment extends LazyFragment implements WaterDropListView.IWaterDropListViewListener {
+public class MainFragment extends LazyFragment2 implements WaterDropListView.IWaterDropListViewListener {
 
     private static final String TAG = "MainFragment";
 
@@ -64,13 +64,11 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
 
     private ConvenientBanner convenientBanner = null;
 
-    private List<Integer> mlist_int = new ArrayList<>();
-
     public ResultBean res = null;
 
     public ResultBean moreRes = null;
 
-    public ResultBean firstRes=null;
+    public ResultBean firstRes = null;
 
     public Response moreResponse = null;
 
@@ -100,7 +98,6 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                 case 3:
                     if (isRefresh) {
                         isRefresh = false;
-
                         waterDropListView.stopRefresh();
                         applysAdapter = getBeanFromJson(res, viewpager_url, applysAdapter);
                         updateView();
@@ -129,9 +126,9 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                     setMoreApply(moreList);
                     updateView();
                     waterDropListView.setSelection(start);
-                    Log.d(TAG, "handleMessage: response"+moreResponse.isEnd());
-                    moreFlag=moreResponse.isEnd();
-                    Log.d(TAG, "handleMessage: "+moreFlag);
+                    Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
+                    moreFlag = moreResponse.isEnd();
+                    Log.d(TAG, "handleMessage: " + moreFlag);
                     waterDropListView.stopLoadMore();
                     break;
             }
@@ -142,6 +139,7 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
         if (isRefresh) {
             isRefresh = false;
             waterDropListView.stopRefresh();
+            svProgressHUD.dismiss();
         }
     }
 
@@ -151,23 +149,57 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
 
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        if (view == null) {
-            view = inflater.inflate(R.layout.fragment1, null);
-
-       }
-        Log.d(TAG, "onCreateVIew  mlist_int=" + mlist_int.size());
-
-        return view;
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.fragment1;
+    }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+    }
+
+    @Override
+    protected void onFragmentVisibleChange(boolean isVisible) {
+        super.onFragmentVisibleChange(isVisible);
+        if(isVisible)
+        {
+            loadData();
+        }
+    }
+
+    protected void loadData() {
+        Log.d(TAG, "loadData: ");
+        /**
+         * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
+         */
+        if(isFirst)
+        {
+            queryFromServer(FRIST_URL, SUCCESS);
+            //new SVProgressHUD(getActivity()).showInfoWithStatus();
+            svProgressHUD = new SVProgressHUD(getActivity());
+            svProgressHUD.showWithStatus("加载中");
+            Log.d(TAG, "第一次载入");
+        }
+
+    }
+
+
+    @Override
+    protected void initViews(View view) {
+        convenientBanner = (ConvenientBanner) view.findViewById(R.id.loop);
+        convenientBanner.startTurning(5000);
+        waterDropListView = (WaterDropListView) view.findViewById(R.id.waterdrop_w);
+        waterDropListView.setWaterDropListViewListener(MainFragment.this);
+        waterDropListView.setPullLoadEnable(true);
     }
 
     /**
@@ -234,9 +266,7 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                 Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁,fistRes还在内存中，直接更新Water,Conven两个View");
                 setView();
                 Log.d(TAG, "handleMessage: show");
-                if (svProgressHUD.isShowing()){
-                    svProgressHUD.dismiss();
-                }
+                closeDiag();
             } else {
                 Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁，但是firstRes已经被销毁了,需从本地读取firstRes");
                 String json = Util.loadFirstFromLocal(getActivity());
@@ -244,9 +274,7 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                 applysAdapter.setList_Applys(res.getApplys());
                 setView();
                 Log.d(TAG, "handleMessage: show");
-                if (svProgressHUD.isShowing()){
-                    svProgressHUD.dismiss();
-                }
+                closeDiag();
             }
         }
         //内存中的applyAdapters已经被销毁，需重新创建一个
@@ -262,10 +290,14 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
                 Toast.makeText(getActivity(), "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
                 setView();
                 Log.d(TAG, "handleMessage: show");
-                if (svProgressHUD.isShowing()){
-                    svProgressHUD.dismiss();
-                }
+               closeDiag();
             }
+        }
+    }
+
+    private void closeDiag() {
+        if (svProgressHUD.isShowing()){
+            svProgressHUD.dismiss();
         }
     }
 
@@ -413,41 +445,10 @@ public class MainFragment extends LazyFragment implements WaterDropListView.IWat
         start = 0;
         end = 5;
         moreFlag=false;
-
         super.onDestroy();
         Log.d(TAG, "Main_onDestroy");
     }
 
-    private void init() {
 
-        convenientBanner = (ConvenientBanner) getActivity().findViewById(R.id.loop);
-        convenientBanner.startTurning(5000);
-        waterDropListView = (WaterDropListView) getActivity().findViewById(R.id.waterdrop_w);
-        waterDropListView.setWaterDropListViewListener(MainFragment.this);
-        waterDropListView.setPullLoadEnable(true);
-
-    }
-
-    @Override
-    protected void loadData() {
-        Log.d(TAG, "loadData: ");
-        init();
-        /**
-         * 还需要判断有没有网络,有网络,do 下面的判断,没有网络就从本地获取信息;
-         */
-        if (isFirst) {
-
-            queryFromServer(FRIST_URL, SUCCESS);
-//            new SVProgressHUD(getActivity()).showInfoWithStatus();
-            svProgressHUD = new SVProgressHUD(getActivity());
-            svProgressHUD.showWithStatus("加载中");
-            Log.d(TAG, "第一次载入");
-        } else {
-            if (res == null) {
-                updateView();
-            }
-
-        }
-    }
 }
 

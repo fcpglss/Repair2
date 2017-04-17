@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import util.Util;
+
 /**
  * Created by hsp on 2016/12/16.
  */
@@ -36,7 +38,7 @@ public class FIleUtils {
     }
     public static File createImageFile2(Context context) {
         //文件路径
-        File file = new File(getDiskCachePath(context));
+        File file = new File(Util.getDiskCachePath(context));
 
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -53,14 +55,5 @@ public class FIleUtils {
         }
 
     }
-    /**
-     * 获取cache目录路径
-     */
-    public static String getDiskCachePath(Context context) {
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
-            return context.getExternalCacheDir().getPath();
-        } else {
-            return context.getCacheDir().getPath();
-        }
-    }
+
 }

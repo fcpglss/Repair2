@@ -427,16 +427,16 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         switch (apply.getState()) {
             case 1:
-                image = R.drawable.chulizhong;
-                break;
-            case 2:
                 image = R.drawable.daichuli;
                 break;
+            case 2:
+                image = R.drawable.chulizhong1;
+                break;
             case 3:
-                image = R.drawable.finish;
+                image = R.drawable.yishixiao;
                 break;
             case 4:
-                image = R.drawable.yishixiao;
+                image = R.drawable.finish;
                 break;
             default:
                 image = R.drawable.daichuli;

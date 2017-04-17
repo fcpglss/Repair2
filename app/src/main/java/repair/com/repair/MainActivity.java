@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ButterKnife.bind(this);
-        Log.d("Apply_Fragment", "onCreate");
+        Log.d(TAG, "onCreate");
         //获取屏幕宽高
         setWitchAndHeigth();
         init();
@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
      * ��ʼ������
      */
     private void initData() {
+
 
         LayoutParams params = (LayoutParams) miImageView.getLayoutParams();
         params.width = Screen1_3;

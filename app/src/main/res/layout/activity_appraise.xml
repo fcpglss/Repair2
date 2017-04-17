@@ -44,6 +44,15 @@
                 android:textColor="@color/ColorPrimaryText"
                 android:textSize="18dp" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/ColorDividerColor"
+            >
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -174,6 +183,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:layout_marginBottom="@dimen/dimen8"
             android:layout_marginTop="8dp">
 
             <TextView
@@ -183,6 +193,16 @@
                 android:text="请输入您的评价"
                 android:textColor="@color/ColorPrimaryText"
                 android:textSize="18dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+
+            android:layout_marginRight="@dimen/dimen8"
+            android:layout_marginLeft="@dimen/dimen8"
+            android:background="@color/ColorDividerColor">
+
         </LinearLayout>
 
         <LinearLayout
@@ -240,6 +260,7 @@
 
         </LinearLayout>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -281,7 +302,7 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_margin="2dp"
-            android:background="#6699ff"
+            android:background="@drawable/button_submit"
             android:gravity="center"
             android:text="提交评价"
             android:textColor="#ffffff" />

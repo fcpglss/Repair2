@@ -56,7 +56,7 @@ import static util.NetworkUtils.isNetworkConnected;
  * Created by hsp on 2016/11/27.
  */
 
-public class MyRepairFragment extends LazyFragment {
+public class MyRepairFragment extends LazyFragment2 {
 
     private static final String TAG = "MyRepairFragment";
     private LinearLayout llEmpty;
@@ -68,15 +68,18 @@ public class MyRepairFragment extends LazyFragment {
     private MyRepairAdapter adapter = null;
 
     ResultBean myRes = null;
-
-
+    private View view;
     private Response myResponse;
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
-        return inflater.inflate(R.layout.frg_fragment_myrepair, null);
+    @Override
+    protected int getLayout() {
+        return R.layout.frg_fragment_myrepair;
     }
 
     @Override
@@ -85,9 +88,34 @@ public class MyRepairFragment extends LazyFragment {
         Log.d(TAG, "onActivityCreated: ");
     }
 
+    @Override
+    protected void onFragmentVisibleChange(boolean isVisible) {
+        super.onFragmentVisibleChange(isVisible);
+        if(isVisible)
+        {
+            loadPhone();
+
+            if (phone == null || phone.equals("")) {
+                Log.d(TAG, "loadData: "+phone);
+            } else {
+                Log.d(TAG, "loadData: "+phone);
+                upApply();
+                initData();
+            }
+        }
+    }
+
+
+
+    protected void initViews(View view) {
+        lvMyList = (ListView) view.findViewById(R.id.lv_my_lv);
+        llEmpty = (LinearLayout) view.findViewById(R.id.lL_my_empty);
+    }
+
     private void initData() {
 
         lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), DetailsActivity.class);
@@ -97,7 +125,7 @@ public class MyRepairFragment extends LazyFragment {
         });
     }
 
-    private void initView(ResultBean resultbean) {
+    private void setView(ResultBean resultbean) {
 
 
         adapter = new MyRepairAdapter(resultbean, getActivity());
@@ -123,7 +151,7 @@ public class MyRepairFragment extends LazyFragment {
             myRes = JsonUtil.jsonToBean(myjson);
             if (myRes != null) {
 
-                initView(myRes);
+                setView(myRes);
             }
         } else {
             if (true) {
@@ -139,7 +167,7 @@ public class MyRepairFragment extends LazyFragment {
 
                         if (myRes != null) {
 //                            Log.d(TAG, "upApply: image:"+myRes.getApplys().get(0).getA_imaes().get(0));
-                            initView(myRes);
+                            setView(myRes);
                         }
                     }
 
@@ -150,7 +178,7 @@ public class MyRepairFragment extends LazyFragment {
                         Util.writeMyResToLocal(myRes, getActivity());
                         Log.d(TAG, "onResponse: " + response);
 
-                        initView(myRes);
+                        setView(myRes);
                     }
                 });
 
@@ -186,6 +214,7 @@ public class MyRepairFragment extends LazyFragment {
         Log.d(TAG, "onDestroy: ");
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -204,19 +233,4 @@ public class MyRepairFragment extends LazyFragment {
     }
 
 
-    @Override
-    protected void loadData() {
-        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        llEmpty = (LinearLayout) getActivity().findViewById(R.id.lL_my_empty);
-        loadPhone();
-        lvMyList = (ListView) getActivity().findViewById(R.id.lv_my_lv);
-        if (phone == null || phone.equals("")) {
-            Log.d(TAG, "loadData: "+phone);
-        } else {
-            Log.d(TAG, "loadData: "+phone);
-            upApply();
-            initData();
-        }
-
-    }
 }

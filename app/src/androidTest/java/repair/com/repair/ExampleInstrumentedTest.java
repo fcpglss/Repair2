@@ -7,6 +7,8 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import util.Util;
+
 import static org.junit.Assert.*;
 
 /**
@@ -23,4 +25,5 @@ public class ExampleInstrumentedTest {
 
         assertEquals("repair.com.repair", appContext.getPackageName());
     }
+
 }
