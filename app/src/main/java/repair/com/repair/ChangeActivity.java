@@ -214,7 +214,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             addressRes = JsonUtil.jsonToBean(addressJson);
         }
 
-        imageLoader = ImageLoader.build(this);
+
 
 
         initView();
@@ -418,6 +418,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());
                     fileList.add(f);
                     changeUriList.add(Uri.fromFile(f));
+                    Log.d(TAG, "onPostExecute:  -> changeUriList:"+changeUriList.toString());
                 }
                 rl1.setVisibility(View.GONE);
                 rl2.setVisibility(View.GONE);
@@ -909,15 +910,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onPause() {
-
-
-        for (File file : imgFileList) {
-            if (file.isFile()) {
-                file.delete();
-            }
-        }
-
-
         super.onPause();
     }
 
@@ -1068,7 +1060,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             result = cursor.getString(idx);
             cursor.close();
         }
-        Log.d("MainActivity", "getRealPathFromURI: " + result);
+        Log.d(TAG, "getRealPathFromURI: " + result);
         return result;
 
     }
