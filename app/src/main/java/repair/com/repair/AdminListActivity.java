@@ -60,8 +60,8 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     private Response adminResponse;
     private SVProgressHUD svProgressHUD;
 
-    Button btnChoose;
-    Button btnSend;
+    private boolean hasPic=true;
+
     private WaterDropListView lvAdmin;
     AdminListAdapter adminListAdapter;
 
@@ -75,30 +75,24 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
-                    stopRefrushs();
-                    Toast.makeText(AdminListActivity.this, "数据有误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminListActivity.this, adminResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 case 3:
-                    stopRefrushs();
-                    Toast.makeText(AdminListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
-                    updateView();
+                    Toast.makeText(AdminListActivity.this, "第一次加载", Toast.LENGTH_SHORT).show();
+                    updateView(0);
                     break;
                 case 4:
-                    stopRefrushs();
+                    lvAdmin.stopRefresh();
                     Toast.makeText(AdminListActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
+                    break;
+                case 5:
+                    lvAdmin.stopRefresh();
+                    Toast.makeText(AdminListActivity.this,"刷新成功",Toast.LENGTH_SHORT).show();;
+                    updateView(0);
                     break;
             }
         }
     };
-
-    private void stopRefrushs() {
-        if (isRefresh) {
-            isRefresh = false;
-            Log.d(TAG, "handleMessage: 停止刷新按钮");
-            lvAdmin.stopRefresh();
-        }
-    }
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,15 +101,13 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         init();
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("加载中");
-        queryFromServer(JSONFIRST);
+        queryFromServer(JSONFIRST,0);
 
     }
 
     private void init() {
 
         switchButton = (SwitchButton) findViewById(R.id.switch_button);
-
-        //   btnChoose = (Button) findViewById(R.id.btn_choose);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
         lvAdmin.setWaterDropListViewListener(this);
         lvAdmin.setPullLoadEnable(true);
@@ -123,8 +115,10 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                 if (isChecked) {
+                    hasPic=true;
                     tvImage.setText("有图");
                 } else {
+                    hasPic=false;
                     tvImage.setText("无图");
                 }
             }
@@ -132,27 +126,16 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     }
 
 
-    public void queryFromServer(String url) {
+    public void queryFromServer(String url, final int isRefrush) {
         HttpUtil.sendHttpRequest(url, new HttpCallbackListener() {
             @Override
             public void onFinish(String responseString) {
                 //请求成功后获取到json
                 final String responseJson = responseString.toString();
+                Log.d(TAG, "onFinish: " + responseJson);
                 //解析json获取到Response;
                 adminResponse = JsonUtil.jsonToResponse(responseJson);
-                refrushRes = adminResponse.getResultBean();
-                setFirstApply(refrushRes);
-                if (adminRes != null) {
-                    Log.d(TAG, "queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
-                    Log.d(TAG, "onFinish: " + responseJson);
-                    mhandler.sendEmptyMessage(3);
-                } else {
-                    adminResponse.setErrorType(-2);
-                    adminResponse.setError(false);
-                    adminResponse.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
-                    Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-                    mhandler.sendEmptyMessage(2);
-                }
+                postMessage(adminResponse, isRefrush);
             }
 
             @Override
@@ -163,13 +146,63 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                 rp.setErrorMessage("网络异常，返回空值");
                 adminResponse = rp;
                 Log.d(TAG, " onEnrror调用:" + e.getMessage());
-                mhandler.sendEmptyMessage(4);
+                if(isRefrush==1)
+                {
+                    mhandler.sendEmptyMessage(4);
+                }
+                else
+                {
+                    mhandler.sendEmptyMessage(2);
+                }
+
 
             }
         });
     }
 
-    private void updateView() {
+    private void postMessage(Response response, int isRefrush) {
+        if(response==null)
+        {
+            response=new Response();
+            response.setErrorType(-2);
+            response.setError(false);
+            response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
+            Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
+            mhandler.sendEmptyMessage(2);
+        }
+        else
+        {
+            refrushRes = response.getResultBean();
+            setFirstApply(refrushRes);
+            if (adminRes != null) {
+                if(isRefrush==1)
+                {
+                    Log.d(TAG, "刷新调用 queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
+                    mhandler.sendEmptyMessage(5);
+                }
+                else
+                {
+
+                    mhandler.sendEmptyMessage(3);
+                }
+            }
+            else
+            {
+                response.setErrorMessage("从服务器获取数据,出现异常");
+                if(isRefrush==1)
+                {
+
+                    mhandler.sendEmptyMessage(4);
+                }
+                else
+                {
+                    mhandler.sendEmptyMessage(2);
+                }
+            }
+        }
+    }
+
+    private void updateView(int isRefrush) {
         //从内存中的数据更新；
         if (adminListAdapter != null) {
             if (adminRes != null) {
@@ -180,7 +213,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                 }
             } else {
                 Log.d(TAG, "updateView: 内存中的adminListAdapter没有被销毁，但是adminRes已经被销毁了,需再次请求网络");
-                queryFromServer(JSONFIRST);
+                queryFromServer(JSONFIRST,isRefrush);
             }
         }
         //内存中的applyAdapters已经被销毁，需重新创建一个
@@ -197,7 +230,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                     svProgressHUD.dismiss();
                 }
             } else {
-                queryFromServer(JSONFIRST);
+                queryFromServer(JSONFIRST,isRefrush);
             }
 
         }
@@ -224,7 +257,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     @Override
     public void onRefresh() {
         isRefresh = true;
-        queryFromServer(JSONFIRST);
+        queryFromServer(JSONFIRST,1);
     }
 
     @Override
