@@ -70,6 +70,7 @@
                 android:textColorHint="#e6838383"
                 android:hint="请输入密码"
                 android:gravity="center_vertical"
+                android:password="true"
                 android:id="@+id/et_admin_password"
                 android:background="@null"/>
         </LinearLayout>
@@ -85,17 +86,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen8"
         android:layout_marginLeft="@dimen/dimen16"
-        android:layout_marginRight="@dimen/dimen16">
+        android:layout_marginRight="@dimen/dimen16"
+        android:layout_marginTop="@dimen/dimen8">
 
         <Button
+            android:id="@+id/btn_admin_login"
             android:layout_width="match_parent"
             android:layout_height="43dp"
             android:background="@drawable/button_submit"
             android:text="登陆"
-            android:id="@+id/btn_admin_login"
             android:textColor="#e6ffffff"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>

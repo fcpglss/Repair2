@@ -84,7 +84,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onResume() {
-        super.onResume();
+
         Log.d(TAG, "onResume: isSend=" + isSend);
         Log.d(TAG, "onResume: isIntent=" + isIntenet);
         if (isSend && isIntenet != 1) {
@@ -92,21 +92,28 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
             setSubmitButton();
 
         }
-        if (listFile != null)
-            Log.d(TAG, "onResume: listFile的size" + listFile.size());
-        Util.deleteFilesWhere(this, listFile);
+        Log.d(TAG, "onResume: listFile的size" + listFile.size());
+        if(listFile!=null&&listFile.size()>0)
+        {
+            for (File file : listFile) {
+                String tempFilePath=file.getAbsolutePath();
+                Util.deleteImage((MyApplication.getContext()),tempFilePath);
+            }
+        }
+        super.onResume();
 
     }
 
 
-    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
-    private static final String URL = "http://192.168.31.201:8888/myserver2/servlet/action";
-    private static final String AdMINUPDATE = "http://192.168.31.201:8888/myserver2/AdminUpdate";
+//    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
+//    private static final String URL = "http://192.168.31.201:8888/myserver2/servlet/action";
+//    private static final String AdMINUPDATE = "http://192.168.31.201:8888/myserver2/AdminUpdate";
 
 
-    // public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
+    private static final String AdMINUPDATE = "http://192.168.43.128:8888/myserver2/AdminUpdate";
+     public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
 
-    // private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
+     private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     private static boolean isFirst = true;
     private static boolean isSend = false;
@@ -179,6 +186,8 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .setConfirmText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    Intent intent =new Intent(AdminDetailActivity.this,AdminListActivity.class);
+                    startActivity(intent);
                     break;
                 case 7:
                     sDialog.setTitleText("修改失败")

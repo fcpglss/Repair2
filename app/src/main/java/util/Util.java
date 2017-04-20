@@ -2,6 +2,7 @@ package util;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -471,47 +472,26 @@ public class Util {
             return false;
         }
     }
-    public static  void deleteFilesWhere(Context context,List<File> files) {
-        if (files != null && files.size() > 0) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                    ContentResolver mContentResolver = context.getContentResolver();
-                    Log.d(TAG, "deleteFiles: file :" + file.getAbsolutePath());
-                    String where = MediaStore.Images.Media.DATA + "='" + file.getAbsolutePath() + "'";
-                    //删除图片
-                    Log.d(TAG, "deleteFiles: where :" + where);
 
-                    mContentResolver.delete(uri, where, null);
-                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    File file1 = new File(file.getPath());
-                    Uri uri2 = Uri.fromFile(file1);
-                    intent.setData(uri2);
-                    context.sendBroadcast(intent);
-                }
-            }
-        }
-    }
-
-
-
-
-
-    public static void deletFiles(Context context,List<File> fileList)
-    {
-        if(fileList!=null)
-        {
-            for (File file : fileList) {
-                Log.d(TAG, "onResponse: filepath" + file.getAbsolutePath());
-                file.delete();
-                Intent media = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri contentUri = Uri.fromFile(file);
-                media.setData(contentUri);
-                context.sendBroadcast(media);
-            }
+    public static void deleteImage(Context context,String imgPath) {
+        ContentResolver resolver = context.getContentResolver();
+        Cursor cursor = MediaStore.Images.Media.query(resolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] { MediaStore.Images.Media._ID }, MediaStore.Images.Media.DATA + "=?",
+                new String[] { imgPath }, null);
+        boolean result = false;
+        if (cursor.moveToFirst()) {
+            long id = cursor.getLong(0);
+            Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            Uri uri = ContentUris.withAppendedId(contentUri, id);
+            int count = context.getContentResolver().delete(uri, null, null);
+            result = count == 1;
+        } else {
+            File file = new File(imgPath);
+            result = file.delete();
         }
 
     }
+
+
 
 
     public static String getMD5(String mingwen){

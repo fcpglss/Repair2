@@ -47,8 +47,8 @@ import static util.NetworkUtils.isNetworkConnected;
 public class AppraiseActivity extends AppCompatActivity {
     private static final String TAG = "AppraiseActivity";
 
-   private static final String UPDATESERVER="http://192.168.31.201:8888/myserver2/updateServer";
-    //  private static final String UPDATESERVER="http://192.168.43.128:8888/myserver2/updateServer";
+  // private static final String UPDATESERVER="http://192.168.31.201:8888/myserver2/updateServer";
+      private static final String UPDATESERVER="http://192.168.43.128:8888/myserver2/updateServer";
     //报修人姓名，电话，报修地址（从区域到房间），其他信息，维修人员
     TextView tvAppraiseName,tvAppraisePhone,tvAppraiseAddress,tvAppraiseOther,tvAppraiseServerName;
     //星星

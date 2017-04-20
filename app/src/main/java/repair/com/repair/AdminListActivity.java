@@ -54,10 +54,11 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     private static final String TAG = "AdminListActivity";
 
 
-    private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
-    // private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
+    //private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
+     private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
 
-    private static final String ADMINLIST_SENDMORE = "http://192.168.31.201:8888/myserver2/SendAdminListMore";
+  //  private static final String ADMINLIST_SENDMORE = "http://192.168.31.201:8888/myserver2/SendAdminListMore";
+      private static final String ADMINLIST_SENDMORE = "http://192.168.43.128:8888/myserver2/SendAdminListMore";
 
 
     SwitchButton switchButton;

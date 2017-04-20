@@ -176,7 +176,7 @@ public class MyRepairAdapter extends BaseAdapter {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("apply", myRes.getApplys().get(position));
                     bundle.putSerializable("address", getAddressRes());
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtras(bundle);
                     context.startActivity(intent);
                 } else {

@@ -88,7 +88,8 @@ import static repair.com.repair.MainActivity.windowHeigth;
 
 public class ChangeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "changeActivity";
-
+    private static boolean startPic =false;
+    private  static boolean startCamarea=false;
     private EditText et_name, et_tel, et_describe, et_details;
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
@@ -364,7 +365,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etEmail.setText(changeApply.getEmail());
         etApplyPassword.setText(changeApply.getPassword());
         etArea.setText(changeApply.getArea());
+
         etDetailArea.setText(changeApply.getDetailArea());
+
         etFloor.setText(changeApply.getFlies());
         etRoom.setText(changeApply.getRoom());
         etApplyType.setText(changeApply.getClasss());
@@ -434,27 +437,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         }.execute();
-//        copyBitmapToUrl();
 
     }
 
 
-    private void copyBitmapToUrl() {
-        if (changeImgUrl != null) {
-            for (int i = 0; i < changeImgUrl.size(); i++) {
-                Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
-                File imgFile = FIleUtils.createImageFile();
-                try {
-                    FileOutputStream out = new FileOutputStream(imgFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                    changeUriList.add(Uri.fromFile(imgFile));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-    }
 
     private void bindView() {
 
@@ -922,6 +908,21 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onStop() {
+        if(startCamarea||startPic)
+        {
+
+        }
+        else
+        {
+            if(imgFileList!=null&&imgFileList.size()>0)
+            {
+                for (File file : imgFileList) {
+                    String tempFilePath=file.getAbsolutePath();
+                    Util.deleteImage((MyApplication.getContext()),tempFilePath);
+                }
+            }
+
+        }
 
 
         super.onStop();
@@ -937,6 +938,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onResume() {
         super.onResume();
+
+        startPic=false;
+        startCamarea=false;
+
         if (changeUriList.size() > 0) {
             Log.d(TAG, "onResume -> changeUriList="+changeUriList.size());
             if (changeUriList.size() > 3) {
@@ -1046,6 +1051,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     public static File cameraFile;
 
     private void startCamera() {
+        startCamarea=true;
         cameraFile = FIleUtils.createImageFile();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
@@ -1136,6 +1142,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void startGallery() {
+        startPic=true;
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
 
@@ -1177,22 +1184,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     Log.d(TAG, "onResponse: " + response.toString());
                     Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                     writePhoneToLocal(apply, MyApplication.getContext());
-                    for (File file : imgFileList) {
-
-//                        if (file.isFile()) {
-//                            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-//                            ContentResolver mContentResolver = getContentResolver();
-//                            String where = MediaStore.Images.Media.DATA + "='" + file.getAbsolutePath() + "'";
-//                            //删除图片
-//                            mContentResolver.delete(uri, where, null);
-//                            Intent intent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//                            File file1=new File(file.getPath());
-//                            Uri uri2=Uri.fromFile(file1);
-//                            intent.setData(uri2);
-//                            ChangeActivity.this.sendBroadcast(intent);
-//                        }
-                    }
-                    Util.deletFiles(ChangeActivity.this,fileList);
 
                     Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
                     intent.putExtra("repairId", apply.getId());
