@@ -146,7 +146,7 @@ public class MyRepairAdapter extends BaseAdapter {
         viewHolder.tvName.setText(apply.getRepair());
         viewHolder.ivState.setImageResource(getState(position, myRes));
         viewHolder.tvAddress.setText(area_name + a_details);
-        viewHolder.tvType.setText(categoryName);
+        viewHolder.tvType.setText(categoryName+" ("+apply.getDetailClass()+")");
 
 
 
@@ -189,9 +189,9 @@ public class MyRepairAdapter extends BaseAdapter {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
-                    tvChange.setBackgroundColor(Color.parseColor("#838383"));
+                    tvChange.setBackgroundResource(R.drawable.button_submit2);
                 }else {
-                    tvChange.setBackgroundColor(Color.parseColor("#ff9900"));
+                    tvChange.setBackgroundResource(R.drawable.button_submit);
                 }
                 return false;
             }
@@ -240,9 +240,9 @@ public class MyRepairAdapter extends BaseAdapter {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
-                    tvAppraise.setBackgroundColor(Color.parseColor("#838383"));
+                    tvAppraise.setBackgroundResource(R.drawable.button_submit2);
                 }else {
-                    tvAppraise.setBackgroundColor(Color.parseColor("#ff9900"));
+                    tvAppraise.setBackgroundResource(R.drawable.button_submit);
                 }
                 return false;
             }
@@ -270,7 +270,7 @@ public class MyRepairAdapter extends BaseAdapter {
                 break;
             case 2:
 
-                image = R.drawable.chulizhong1;
+                image = R.drawable.chulizhong;
                 break;
             case 3:
                 image = R.drawable.yishixiao;
@@ -293,6 +293,10 @@ public class MyRepairAdapter extends BaseAdapter {
             addressRes = JsonUtil.jsonToBean(address);
         }
         return addressRes;
+    }
+
+    public void setList_Applys(List<Apply> apply) {
+        myRes.setApplys(apply);
     }
 
     class ViewHolder {

@@ -295,10 +295,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_apply.setBackgroundColor(Color.parseColor("#65B5FF"));
+                        btn_apply.setBackgroundResource(R.drawable.button_submit2);
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_apply.setBackgroundColor(Color.parseColor("#e61D89E5"));
+                        btn_apply.setBackgroundResource(R.drawable.button_submit);
                     }
                     return false;
                 }
@@ -308,10 +308,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_clear.setBackgroundColor(Color.parseColor("#65B5FF"));
+                        btn_clear.setBackgroundResource(R.drawable.button_submit2);
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_clear.setBackgroundColor(Color.parseColor("#e61D89E5"));
+                        btn_clear.setBackgroundResource(R.drawable.button_submit);
                     }
                     return false;
                 }
@@ -911,7 +911,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                     listApplyDetailType.clear();
                     listApplyDetailTypeID.clear();
 
-                    for (DetailClass detailType : response.getResultBean().getDetailClasses()) {
+                    for (DetailClass detailType : addressRes.getDetailClasses()) {
                         Log.d(TAG, "onTouch: category inner:"+detailType.getCategoryName()+"  onTouch: detailTypeID:"+detailType.getClassDetail());
                         if (detailType.getCategoryName().equals(category)) {
                             listApplyDetailType.add(detailType.getClassDetail());

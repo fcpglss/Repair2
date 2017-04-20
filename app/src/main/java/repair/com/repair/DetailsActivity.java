@@ -73,7 +73,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvFinishTime,tvDetailCategory;
+    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvDealTime;
 
     private TextView tv_details_employee1;
 
@@ -228,9 +228,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvName = (TextView) findViewById(R.id.tv_details_name);
 //        tv_tel = (TextView) findViewById(R.id.tv_details_tel);
         tv_category = (TextView) findViewById(tv_details_category);
-        tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
+    //    tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
-        tvFinishTime= (TextView) findViewById(R.id.tv_details_finish_date);
+        tvDealTime= (TextView) findViewById(R.id.tv_details_finish_date);
         tv_status = (TextView) findViewById(R.id.tv_details_details);
         tv_place = (TextView) findViewById(R.id.tv_details_place);
 //        tv_email= (TextView) findViewById(R.id.tv_details_email);
@@ -244,7 +244,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_describe = (TextView) findViewById(R.id.tv_details_describe);
         img_category = (ImageView) findViewById(R.id.img_category);
         img_status = (ImageView) findViewById(R.id.img_status);
-//        img_back = (ImageView) findViewById(R.id.img_back2);
 
         img1 = (ImageView) findViewById(R.id.img_pc1);
         img2 = (ImageView) findViewById(R.id.img_pc2);
@@ -290,19 +289,18 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        setTelXXXX();
 //        tv_email.setText(apply.getEmail());
 
-        tv_category.setText(category.getC_name());
-        tvDetailCategory.setText(apply.getDetailClass());
-        tv_place.setText(util.Util.setAddress(apply));
+        tv_category.setText(category.getC_name()+" ("+apply.getDetailClass()+")");
+//        tvDetailCategory.setText(apply.getDetailClass());
+        tv_place.setText(apply.getDetailArea());
 
-        tvArea.setText(apply.getArea());
-
+        tvArea.setText(Util.setAddress(apply));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
-        tv_date.setText(Util.setTime(apply.getRepairTime()));
+        tv_date.setText(Util.getDealTime(apply.getRepairTime()));
 
-        tvFinishTime.setText(Util.setTime(apply.getFinilTime()));
+        tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
 
         tv_describe.setText(apply.getRepairDetails());
         img_category.setImageResource(getCategoryIcon());
@@ -430,7 +428,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 image = R.drawable.daichuli;
                 break;
             case 2:
-                image = R.drawable.chulizhong1;
+                image = R.drawable.yichuli;
                 break;
             case 3:
                 image = R.drawable.yishixiao;

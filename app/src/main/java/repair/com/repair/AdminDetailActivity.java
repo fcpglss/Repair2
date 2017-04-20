@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,7 +94,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         }
         if (listFile != null)
             Log.d(TAG, "onResume: listFile的size" + listFile.size());
-        Util.deleteFilesWhere(this,listFile);
+        Util.deleteFilesWhere(this, listFile);
 
     }
 
@@ -174,16 +175,19 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                     setChooseDialog();
                     break;
                 case 6:
-                    sDialog.setContentText("修改成功")
+                    sDialog.setTitleText("修改成功")
+                            .setConfirmText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                     break;
                 case 7:
-                    sDialog.setContentText("修改失败")
+                    sDialog.setTitleText("修改失败")
+                            .setContentText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                 case 8:
-                    sDialog.setContentText("网络错误")
+                    sDialog.setTitleText("网络错误")
+                            .setContentText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
@@ -267,6 +271,10 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         btnChoose = (Button) findViewById(R.id.btn_admin_add);
         btnSend = (Button) findViewById(R.id.btn_admin_send);
         btnSubmit = (Button) findViewById(R.id.btn_admin_subimit);
+        //设置颜色点击改变
+        Util.setOnClickBackgroundColor(btnChoose);
+        Util.setOnClickBackgroundColor(btnSend);
+        Util.setOnClickBackgroundColor(btnSubmit);
         btnSubmit.setEnabled(false);
         Log.d(TAG, "1 initView: btn设置setClickable为false");
         Log.d(TAG, "2 执行initSubmitOnClick");
@@ -318,10 +326,10 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         tvCategory.setText(apply.getClasss() + " " + ("" + apply.getDetailClass() + ""));
         tvDescribe.setText(apply.getRepairDetails());
         tvDetailAddress.setText(apply.getDetailArea());
-        tvTime.setText(Util.setTime(apply.getRepairTime()));
+        tvTime.setText(Util.getDealTime(apply.getRepairTime()));
         //设置类型图标
         imgCategory.setImageResource(getCategoryIcon());
-        getApplyImages();
+        getApplyImages(AdminListActivity.hasPic);
         if (apply.getA_imaes().size() > 0) {
             for (int i = 0; i <= apply.getA_imaes().size() - 1; i++) {
                 Log.d(TAG, "该Apply的images集合:" + apply.getA_imaes().get(i));
@@ -334,26 +342,31 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void getApplyImages() {
-        list_imageView = apply.getA_imaes();
-        if (list_imageView != null && list_imageView.size() > 0) {
-            if (list_imageView.size() > 3) {
-                int length = list_imageView.size() - 3;
-                for (int i = 0; i < length; i++) {
-                    list_imageView.remove(i);
+    private void getApplyImages(boolean hasPic) {
+        if (hasPic) {
+            list_imageView = apply.getA_imaes();
+            if (list_imageView != null && list_imageView.size() > 0) {
+                if (list_imageView.size() > 3) {
+                    int length = list_imageView.size() - 3;
+                    for (int i = 0; i < length; i++) {
+                        list_imageView.remove(i);
+                    }
                 }
-            }
-            for (int i = 0; i < list_imageView.size(); i++) {
-                Picasso.with(this).load(list_imageView.get(i)).into(imageviewList.get(i));
-                LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
-                layout.height = windowHeigth / 4;
-                layout.width = (int) (windowWitch / 3.3);
-                imageviewList.get(i).setLayoutParams(layout);
-                Log.d(TAG, "Picasso执行一次 " + list_imageView.get(i));
+                for (int i = 0; i < list_imageView.size(); i++) {
+                    Picasso.with(this).load(list_imageView.get(i)).into(imageviewList.get(i));
+                    LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
+                    layout.height = windowHeigth / 4;
+                    layout.width = (int) (windowWitch / 3.3);
+                    imageviewList.get(i).setLayoutParams(layout);
+                    Log.d(TAG, "Picasso执行一次 " + list_imageView.get(i));
+                }
+            } else {
+                Log.d(TAG, "list_imageView为0,该Apply没有图片");
             }
         } else {
-            Log.d(TAG, "list_imageView为0,该Apply没有图片");
+
         }
+
 
     }
 
@@ -603,7 +616,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void downLoadBitmap(Apply apply) {
-        listImage = apply.getA_imaes();
+        listImage = list_imageView;
         listFile.clear();
         new AsyncTask<Void, Void, List<File>>() {
             @Override
@@ -684,18 +697,18 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View view) {
                 sDialog = new SweetAlertDialog(AdminDetailActivity.this, SweetAlertDialog.WARNING_TYPE);
-                sDialog.setTitleText("Are you sure?");
-                sDialog.setContentText("Won't be able to recover this file!");
-                sDialog.setCancelText("No,cancel plx!");
-                sDialog.setConfirmText("Yes,delete it!");
+                sDialog.setTitleText("确定处理完毕？");
+//                sDialog.setContentText("");
+                sDialog.setCancelText("取消");
+                sDialog.setConfirmText("提交");
                 sDialog.showCancelButton(true);
                 sDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         // reuse previous dialog instance, keep widget user state, reset them if you need
                         Log.d(TAG, "onClick: 执行了点击事件");
-                        sDialog.setTitleText("Cancelled!")
-                                .setContentText("Your imaginary file is safe :)")
+                        sDialog.setTitleText("确认取消")
+//                                .setContentText("Your imaginary file is safe :)")
                                 .setConfirmText("OK")
                                 .showCancelButton(false)
                                 .setCancelClickListener(null)
@@ -736,7 +749,6 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
-
 
 
 }

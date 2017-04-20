@@ -20,7 +20,7 @@ public class Announcement implements Serializable {
 
     private String image_url;
     private int id;
-    private int admin_name;
+    private String admin_name;
     private String title;
     private String create_at;
     private String content;
@@ -41,16 +41,22 @@ public class Announcement implements Serializable {
         this.id = id;
     }
 
-    public int getAdmin_name() {
-        return admin_name;
-    }
 
-    public void setAdmin_name(int admin_name) {
-        this.admin_name = admin_name;
-    }
 
     public String getTitle() {
         return title;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getAdmin_name() {
+        return admin_name;
+    }
+
+    public void setAdmin_name(String admin_name) {
+        this.admin_name = admin_name;
     }
 
     public void setTitle(String title) {

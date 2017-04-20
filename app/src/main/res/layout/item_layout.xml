@@ -47,7 +47,7 @@
         <TextView
             android:layout_marginTop="2dp"
             android:id="@+id/tv_content"
-            android:maxLines="3"
+            android:maxLines="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="10sp"
@@ -71,10 +71,9 @@
 
             <ImageView
                 android:id="@+id/iv_right_down_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/chulizhong"
-                android:layout_weight="0.06" />
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:src="@drawable/chulizhong2" />
         </LinearLayout>
     </LinearLayout>
 

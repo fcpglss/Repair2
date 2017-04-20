@@ -116,16 +116,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     private Button btn_clear;
 
-    private List<String> list_place = new ArrayList<>();
-    private List<String> list_category = new ArrayList<>();
     private List<ImageView> imageViewList = new ArrayList<>();
 
     private Apply apply = new Apply();
 
     public static ResultBean addressRes = null;
 
-    ArrayAdapter categoryAdapter;
-    ArrayAdapter placeAdapter;
+
 
     //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
     private List<String> listArea = new ArrayList<>();
@@ -133,8 +130,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private List<String> listFloor = new ArrayList<>();
     private List<String> listRoom = new ArrayList<>();
     //用于存放Id的list
-    private List<Integer> listAreaID = new ArrayList<>();
-    private List<Integer> listDetailAreaID = new ArrayList<>();
+
+
     private List<Integer> listFloorID = new ArrayList<>();
     private List<Integer> listRoomID = new ArrayList<>();
     private List<Integer> listApplyTypeID = new ArrayList<>();
@@ -149,9 +146,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private int roomId = 0;
     private int categoryId = 0;
     private int detailTypeID = 0;
-
-    //用来比较的list
-    List<Uri> list = new ArrayList<>();
 
 
     List<Uri> changeUriList = new ArrayList<>();
@@ -272,6 +266,18 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         btn_clear = (Button) findViewById(R.id.btn_change_clear);
         btn_apply.setOnClickListener(this);
         btn_clear.setOnClickListener(this);
+        btn_apply.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() ==MotionEvent.ACTION_DOWN){
+                    btn_apply.setBackgroundResource(R.drawable.button_submit2);
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    btn_apply.setBackgroundResource(R.drawable.button_submit);
+                }
+                return false;
+            }
+        });
 
         //滚动
         svBackground = (ScrollView) findViewById(R.id.sv_change_apply);
@@ -367,6 +373,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         areaId = getAreaID(etArea.getText().toString());
         placeId = getDetailId(etDetailArea.getText().toString());
         categoryId = getCategoryID(etApplyType.getText().toString());
+        detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
         changeImgUrl = changeApply.getA_imaes();
 //
 //        for (String s :
@@ -1087,8 +1094,22 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 return categoryID;
             }
         }
-        return -1;
+        return 0;
     }
+
+    private int getDetailTypeID(String categoryName,String detailName) {
+        int detaiInt;
+        List<DetailClass> detailClass = addressRes.getDetailClasses();
+        for (DetailClass d : detailClass) {
+            if (categoryName.equals(d.getCategoryName())&&detailName.equals(d.getClassDetail())){
+                detaiInt = d.getId();
+                return detaiInt;
+            }
+        }
+        return 0;
+    }
+
+
 
     private int getDetailId(String detailName) {
         List<Place> list = addressRes.getPlaces();
@@ -1110,7 +1131,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             }
             return id;
         }
-        return -1;
+        return 0;
     }
 
 

@@ -133,7 +133,7 @@ public class ApplysAdapter extends BaseAdapter {
                 break;
             case 2:
 
-                image = R.drawable.chulizhong1;
+                image = R.drawable.chulizhong;
                  break;
             case 3:
                 image = R.drawable.yishixiao;

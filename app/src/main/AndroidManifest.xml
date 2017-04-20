@@ -45,6 +45,7 @@
             android:launchMode="singleTask"/>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".AdminDetailActivity"/>
+        <activity android:name=".AnnonceDetailActivity"/>
     </application>
 
 </manifest>

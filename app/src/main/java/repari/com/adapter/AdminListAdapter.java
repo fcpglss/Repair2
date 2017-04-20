@@ -62,7 +62,7 @@ import static repair.com.repair.MainActivity.windowHeigth;
 public class AdminListAdapter extends BaseAdapter {
 
     private static final String TAG = "AdminListAdapter";
-    private static boolean isLoadImages = false;
+    private static boolean isLoadImages;
 
 
     private Context context;
@@ -74,16 +74,13 @@ public class AdminListAdapter extends BaseAdapter {
 
     private Drawable mDefaultBitmapDrawable;
 
-    List<String> listImage = new ArrayList<>();
-    List<File> listFile = new ArrayList<>();
-    ;
-
-    public AdminListAdapter(Context context, ResultBean resultBean) {
+    public AdminListAdapter(Context context, ResultBean resultBean, boolean hasPic) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.resultBean = resultBean;
         list = resultBean.getApplys();
+        isLoadImages = hasPic;
     }
 
     @Override
@@ -123,7 +120,7 @@ public class AdminListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
         viewHolder.tvName.setText(apply.getRepair());
-        viewHolder.tvTime.setText(Util.setTime(apply.getRepairTime()));
+        viewHolder.tvTime.setText(Util.getDealTime(apply.getRepairTime()));
         viewHolder.tvcategory.setText(apply.getClasss());
         viewHolder.tvAdress.setText(Util.setTitle(apply));
         viewHolder.tvTel.setText(apply.getTel());
@@ -136,18 +133,36 @@ public class AdminListAdapter extends BaseAdapter {
         if (Util.getPhotoUrl(position, resultBean)) {
             photoUrl = resultBean.getApplys().get(position).getA_imaes().get(0);
         }
-        final String uri = photoUrl;
+         String uri = photoUrl;
         if (!uri.equals(tag)) {
             imageView.setImageDrawable(mDefaultBitmapDrawable);
         }
+        setViewHldImg(photoUrl,imageView);
 
-        if (mCanGetBitmapFromNetWork && !photoUrl.equals("")) {
-            imageView.setTag(photoUrl);
-
-            Picasso.with(context).load(photoUrl).into(imageView);
-        }
+//        if (mCanGetBitmapFromNetWork && !photoUrl.equals("")) {
+//            imageView.setTag(photoUrl);
+//
+//            Picasso.with(context).load(photoUrl).into(imageView);
+//        }
 
         return view;
+    }
+
+    public void setIsLoadImages(boolean hasPic) {
+        isLoadImages = hasPic;
+    }
+
+    private void setViewHldImg(String ImageString,ImageView imageView)
+    {
+        if(isLoadImages)
+        {
+
+            if (mCanGetBitmapFromNetWork && !ImageString.equals("")) {
+                imageView.setTag(ImageString);
+
+                Picasso.with(context).load(ImageString).into(imageView);
+            }
+        }
     }
 
 

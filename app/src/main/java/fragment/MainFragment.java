@@ -92,30 +92,37 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             switch (msg.what) {
                 case 2:
                     Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "handleMessage: 2");
                     updateView(0);
+
                     break;
                 case 3:
                     Toast.makeText(getActivity(), "进来第一次请求网络调用,firstRes有值", Toast.LENGTH_SHORT).show();
                     applysAdapter = getBeanFromJson(res, viewpager_url, applysAdapter);
+                    Log.d(TAG, "handleMessage: 3");
                     updateView(0);
                     break;
                 case 4:
                     waterDropListView.stopRefresh();
                     Toast.makeText(getActivity(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "handleMessage: 4");
                     updateView(0);
                     break;
                 case 5:
                     waterDropListView.stopRefresh();
                     Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "handleMessage: 5");
                     break;
                 case 6:
                     Toast.makeText(getActivity(), "下边已经没有数据了", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "handleMessage: 6");
                     waterDropListView.stopLoadMore();
                     break;
                 case 7:
                     moreList = moreRes.getApplys();
                     setMoreApply(moreList);
                     updateView(0);
+                    Util.writeJsonToLocal(res, MyApplication.getContext());
                     waterDropListView.setSelection(start);
                     Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
                     moreFlag = moreResponse.isEnd();
@@ -130,13 +137,13 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         }
     };
 
-    private void stopRefrushs() {
-        if (isRefresh) {
-            isRefresh = false;
-            waterDropListView.stopRefresh();
-            svProgressHUD.dismiss();
-        }
-    }
+//    private void stopRefrushs() {
+//        if (isRefresh) {
+//            isRefresh = false;
+//            waterDropListView.stopRefresh();
+//            svProgressHUD.dismiss();
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -179,7 +186,6 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         if(isFirst)
         {
             queryFromServer(FRIST_URL, SUCCESS,0);
-            //new SVProgressHUD(getActivity()).showInfoWithStatus();
             svProgressHUD = new SVProgressHUD(getActivity());
             svProgressHUD.showWithStatus("加载中");
             Log.d(TAG, "第一次载入");
@@ -207,7 +213,9 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             public void onFinish(String responseString) {
                 //请求成功后获取到json
                 final String responseJson = responseString.toString();
+                Log.d(TAG, "onFinish: "+responseJson);
                 //解析json获取到Response;
+
                 response = JsonUtil.jsonToResponse(responseJson);
                 postMessage(response,isRefrush);
             }
@@ -254,7 +262,9 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         {
             firstRes=response.getResultBean();
             setFirstApply(firstRes);
+
             if (res != null) {
+                Util.writeJsonToLocal(res,MyApplication.getContext());
                 if(isRefrush==1)
                 {
                     Log.d(TAG, "刷新调用 queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
@@ -394,7 +404,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                 moreRes = moreResponse.getResultBean();
                 if (moreRes != null) {
                     mhandler.sendEmptyMessage(7);
-                    Util.writeJsonToLocal(res, MyApplication.getContext());
+//                    Util.writeJsonToLocal(res, MyApplication.getContext());
                 } else {
                     response.setErrorType(-2);
                     response.setError(false);
@@ -428,7 +438,13 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         {
             for(int i=0;i<resultBean.getApplys().size();i++)
             {
-                res.getApplys().remove(i);
+                if(res.getApplys().size()>i)
+                {
+                    res.getApplys().remove(i);
+                    res.getApplys().add(i,resultBean.getApplys().get(i));
+                    continue;
+                }
+
                 res.getApplys().add(i,resultBean.getApplys().get(i));
             }
         }

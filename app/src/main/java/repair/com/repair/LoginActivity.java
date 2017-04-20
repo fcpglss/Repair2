@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,6 +64,9 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,admin.getAccount()+",欢迎回来!" , Toast.LENGTH_SHORT).show();
                     saveUser();
                     Intent intent = new Intent(LoginActivity.this, AdminListActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("admin",admin);
+                    intent.putExtras(bundle);
                     startActivity(intent);
                     break;
                 case 4:
@@ -96,11 +100,13 @@ public class LoginActivity extends AppCompatActivity {
         btnAdminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                account=etAdminName.getText().toString();
+                account=etAdminName.getText().toString().trim();
                 password=Util.getMD5(etAdminPassword.getText().toString());
+                Log.d(TAG, "onClick: password :"+password);
                 upply();
             }
         });
+        Util.setOnClickBackgroundColor(btnAdminLogin);
 
     }
 

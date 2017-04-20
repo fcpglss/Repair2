@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
@@ -22,12 +24,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.security.PublicKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import camera.CalculateImage;
+import model.Announcement;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -38,6 +42,7 @@ import model.ResultBean;
 import model.Room;
 import repair.com.repair.AdminDetailActivity;
 import repair.com.repair.ChangeActivity;
+import repair.com.repair.R;
 
 import static android.content.Context.MODE_PRIVATE;
 import static repair.com.repair.MainActivity.JSON_URL;
@@ -255,6 +260,7 @@ public class Util {
     }
 
 
+
     //从address_data文件中读出地点相关的字符串
     public static String loadAddressFromLocal(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("address_data", context.MODE_PRIVATE);
@@ -262,6 +268,25 @@ public class Util {
 
         Log.d(TAG, "loadAddressFromLocal:从本地address_data文件中读出json: " + json);
         return json;
+    }
+
+    //从
+    public static String loadAnnouceFromLocal(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences("annoucement_data", context.MODE_PRIVATE);
+        String json = preferences.getString("annoucement", "");
+
+        Log.d(TAG, "loadAnnouceFromLocal: 从本地文件annoucement_data中读出json:" + json);
+        return json;
+    }
+
+    public static void writeAnnouceToLocal(final ResultBean resultBean, final Context mContext) {
+
+
+        String json = JsonUtil.beanToResultBean(resultBean);
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("annoucement_data", mContext.MODE_PRIVATE).edit();
+        editor.putString("annoucement", json);
+        editor.apply();
+        Log.d(TAG, "writeAnnouceToLocal: 成功将Annoucement的Json写入本地annoucement_data文件中，key:myrepair");
     }
 
 
@@ -274,17 +299,13 @@ public class Util {
     }
 
     public static void writeMyResToLocal(final ResultBean resultBean, final Context mContext) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
+
                 String json = JsonUtil.beanToResultBean(resultBean);
                 SharedPreferences.Editor editor = mContext.getSharedPreferences("myrepair_data", mContext.MODE_PRIVATE).edit();
                 editor.putString("myrepair", json);
                 editor.apply();
                 Log.d(TAG, "writeJsonToLocal: 成功将MyRepair的Json写入本地myrepair_data文件中，key:myrepair");
-            }
-        }).start();
-
     }
 
     public static String loadMyResFromLocal(Context context) {
@@ -300,13 +321,23 @@ public class Util {
      * @param datetime
      * @return
      */
-    public static String setTime(String datetime) {
+    public static String getDealTime(String datetime) {
 
         if (datetime != null && !datetime.equals("")) {
             return datetime.split(":")[0] + ":" + datetime.split(":")[1];
         }
-        return "";
+        return "尚未处理";
     }
+
+    public static String getFinshTime(String datetime) {
+
+        if (datetime != null && !datetime.equals("")) {
+            return datetime.split(":")[0] + ":" + datetime.split(":")[1];
+        }
+        return "尚未完成";
+    }
+
+
 
     public static String createAsterisk(int length) {
         StringBuffer stringBuffer = new StringBuffer();
@@ -496,6 +527,23 @@ public class Util {
         } catch (Exception e) {
             throw new RuntimeException("MD5加密出现错误");
         }
+    }
+
+    public static void setOnClickBackgroundColor(final View view){
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    view.setBackgroundResource(R.drawable.button_submit2);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    view.setBackgroundResource(R.drawable.button_submit);
+                }
+                return false;
+            }
+        });
     }
 
 }

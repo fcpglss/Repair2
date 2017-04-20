@@ -28,11 +28,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/ll_annocement_con">
-            <ListView
+
+
+
+
+            <medusa.theone.waterdroplistview.view.WaterDropListView
+                android:id="@+id/lv_annocement_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/lv_annocement_list">
-            </ListView>
+                android:layout_height="wrap_content"
+              >
+            </medusa.theone.waterdroplistview.view.WaterDropListView>
+
 
         </LinearLayout>
 </LinearLayout>

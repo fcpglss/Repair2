@@ -23,7 +23,7 @@ public class AnnocmentListAdapter extends BaseAdapter {
     private static final String TAG = "AnnocmentListAdapter";
 
     LayoutInflater layoutInflater;
-    List<Announcement> list = new ArrayList<>();
+    public List<Announcement> list = new ArrayList<>();
     ViewHolder viewHolder = null;
 
     public AnnocmentListAdapter(List<Announcement> list, Context context) {
