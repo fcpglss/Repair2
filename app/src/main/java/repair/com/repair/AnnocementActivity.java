@@ -49,14 +49,14 @@ import static repair.com.repair.MainActivity.FRIST_URL;
 
 public class AnnocementActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener{
 //
-//    private final static String  ANNCOUCEMENT="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementFirst";
+    private final static String  ANNCOUCEMENT="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementFirst";
 //
-//    private final static String  ANNCOUCEMENTMORE="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementMore";
+    private final static String  ANNCOUCEMENTMORE="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementMore";
 
 
-    private final static String  ANNCOUCEMENT="http://192.168.43.128:8888/myserver2/SendAnnoucement?annoucementFirst";
+   // private final static String  ANNCOUCEMENT="http://192.168.43.128:8888/myserver2/SendAnnoucement?annoucementFirst";
 
-    private final static String  ANNCOUCEMENTMORE="http://192.43.128.201:8888/myserver2/SendAnnoucement?annoucementMore";
+   // private final static String  ANNCOUCEMENTMORE="http://192.43.128.201:8888/myserver2/SendAnnoucement?annoucementMore";
 
 
     private static boolean moreFlag = false;

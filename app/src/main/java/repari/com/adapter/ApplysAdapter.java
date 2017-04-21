@@ -115,15 +115,18 @@ public class ApplysAdapter extends BaseAdapter {
 
         String c_url = "";
 
+
         for (Category category : rs.getCategory()) {
             if (appyly_cid.equals(category.getC_name())) {
                 categoryProprety = category.getC_priority();
+
                 c_url = category.getC_imageurl();
                 break;
             }
         }
         return c_url;
     }
+
     private int getRightIcon(int position, ResultBean rs) {
         int image = 0;
         int a_status = rs.getApplys().get(position).getState();
@@ -148,6 +151,10 @@ public class ApplysAdapter extends BaseAdapter {
         return image;
     }
     private void setIcon(ViewHolder view) {
+        if(categoryProprety==null||categoryProprety.equals(""))
+        {
+            categoryProprety="0";
+        }
         switch (categoryProprety) {
             case "1":
                 view.img_emergent.setImageResource(R.drawable.emergent3);
