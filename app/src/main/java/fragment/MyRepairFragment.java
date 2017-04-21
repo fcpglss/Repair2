@@ -118,8 +118,9 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
             switch (msg.what) {
                 case 2:
                     Toast.makeText(MyApplication.getContext(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    closeDiag();;
                     Log.d(TAG, "handleMessage: 2");
-                    updateView(0);
+                  //  updateView(0);
                     break;
                 case 3:
                     Toast.makeText(getActivity(), "进来第一次请求网络调用,firstRes有值", Toast.LENGTH_SHORT).show();
@@ -154,9 +155,7 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                     break;
                case 8:
                     Toast.makeText(getActivity(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    String json =Util.loadMyResFromLocal(getActivity());
-                    myRes=JsonUtil.jsonToBean(json);
-                    updateView(0);
+                   closeDiag();
                     break;
             }
         }
@@ -240,10 +239,10 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                 if(svProgressHUD==null)
                 {
                     svProgressHUD = new SVProgressHUD(getActivity());
-                    svProgressHUD.showWithStatus("加载中");
+                    svProgressHUD.showWithStatus("搜索中");
                 }
                 else {
-                    svProgressHUD.showWithStatus("加载中");
+                    svProgressHUD.showWithStatus("搜索中");
                 }
 
                 Util.submit("phone",etPhone.getText().toString(),"name",etName.getText().toString(),QUERYMYREPAIR)
@@ -253,11 +252,10 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                                 Response rp = new Response();
                                 rp.setErrorType(-1);
                                 rp.setError(true);
-                                rp.setErrorMessage("网络异常，返回空值");
+                                rp.setErrorMessage("网络异常,请检查网络");
                                 myRespon = rp;
                                 Log.d(TAG, " onEnrror调用:" + e.getMessage());
                                 mhandler.sendEmptyMessage(8);
-
                             }
 
                             @Override
@@ -265,8 +263,13 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                                 //请求成功后获取到json
                                 final String responseJson = response.toString();
                                 Log.d(TAG, "onFinish: "+responseJson);
-                                //解析json获取到Response;
                                 myRespon = JsonUtil.jsonToResponse(responseJson);
+                                if(myRespon.getErrorType()==-1)
+                                {
+                                    myRespon.setErrorMessage("没有找到该报修记录");
+                                    mhandler.sendEmptyMessage(2);
+                                   return ;
+                                }
                                 postMessage(myRespon,0);
                             }
                         });
@@ -275,18 +278,6 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
 
     }
 
-//    private void initData() {
-//
-//        lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getContext(), DetailsActivity.class);
-//                intent.putExtra("repairId", myRes.getApplys().get(position).getId());
-//                startActivity(intent);
-//            }
-//        });
-//    }
     private void updateView(int isRefrush) {
         //从内存中的数据更新；
         if (adapter != null) {
