@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -76,10 +78,14 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
 
     private static final String TAG = "MyRepairFragment";
 
+    private static final String QUERYMYREPAIR="http://192.168.31.201:8888/myserver2/QueryRepair";
+
     private static final String SendMyRepairMore="http://192.168.31.201:8888/myserver2/SendMyRepairMore";
 
 
-    private LinearLayout llEmpty;
+    private LinearLayout llEmpty,llContain;
+    private EditText etName ,etPhone;
+    private Button btnSearch;
 
     private String phone = "phone";
 
@@ -205,17 +211,17 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
     }
 
     private void loadData() {
-        loadPhone();
-        if (phone == null || phone.equals("")) {
-            Log.d(TAG, "loadData: "+phone);
-        } else {
-            Log.d(TAG, "loadData: "+phone);
-                upApply(0);
-               // initData();
-                svProgressHUD = new SVProgressHUD(getActivity());
-                svProgressHUD.showWithStatus("加载中");
-                Log.d(TAG, "第一次载入");
-        }
+//        loadPhone();
+//        if (phone == null || phone.equals("")) {
+//            Log.d(TAG, "loadData: "+phone);
+//        } else {
+//            Log.d(TAG, "loadData: "+phone);
+//                upApply(0);
+//               // initData();
+//                svProgressHUD = new SVProgressHUD(getActivity());
+//                svProgressHUD.showWithStatus("加载中");
+//                Log.d(TAG, "第一次载入");
+//        }
     }
 
 
@@ -223,7 +229,50 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
         lvMyList = (WaterDropListView) view.findViewById(R.id.lv_my_lv);
         lvMyList.setWaterDropListViewListener(MyRepairFragment.this);
         lvMyList.setPullLoadEnable(true);
-        llEmpty = (LinearLayout) view.findViewById(R.id.lL_my_empty);
+//        llEmpty = (LinearLayout) view.findViewById(R.id.lL_my_empty);
+        llContain = (LinearLayout) view.findViewById(R.id.ll_my_contain);
+        etName = (EditText) view.findViewById(R.id.et_my_name);
+        etPhone = (EditText) view.findViewById(R.id.et_my_phone);
+        btnSearch = (Button) view.findViewById(R.id.btn_my_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(svProgressHUD==null)
+                {
+                    svProgressHUD = new SVProgressHUD(getActivity());
+                    svProgressHUD.showWithStatus("加载中");
+                }
+                else {
+                    svProgressHUD.showWithStatus("加载中");
+                }
+
+                Util.submit("phone",etPhone.getText().toString(),"name",etName.getText().toString(),QUERYMYREPAIR)
+                        .execute(new StringCallback() {
+                            @Override
+                            public void onError(Call call, Exception e, int id) {
+                                Response rp = new Response();
+                                rp.setErrorType(-1);
+                                rp.setError(true);
+                                rp.setErrorMessage("网络异常，返回空值");
+                                myRespon = rp;
+                                Log.d(TAG, " onEnrror调用:" + e.getMessage());
+                                mhandler.sendEmptyMessage(8);
+
+                            }
+
+                            @Override
+                            public void onResponse(String response, int id) {
+                                //请求成功后获取到json
+                                final String responseJson = response.toString();
+                                Log.d(TAG, "onFinish: "+responseJson);
+                                //解析json获取到Response;
+                                myRespon = JsonUtil.jsonToResponse(responseJson);
+                                postMessage(myRespon,0);
+                            }
+                        });
+            }
+        });
+
     }
 
 //    private void initData() {
@@ -245,26 +294,20 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                 Log.d(TAG, "updateView: 内存中的Adapters没有被销毁,Res还在内存中，直接更新Water两个View");
                 setView(myRes);
                 Log.d(TAG, "handleMessage: show");
-            } else {
-                Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁，但是firstRes已经被销毁了,需从本地读取firstRes");
-                String json = Util.loadFirstFromLocal(getActivity());
-                myRes = JsonUtil.jsonToBean(json);
-                adapter.setList_Applys(myRes.getApplys());
-                setView(myRes);
-                Log.d(TAG, "handleMessage: show");
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "没有该报修记录", Toast.LENGTH_SHORT).show();
             }
         }
         //内存中的applyAdapters已经被销毁，需重新创建一个
         else {
             Log.d(TAG, "updateView: 内存中的ApplyAdapters已经被销毁,重新构造ApplyAdapter,并且读本地数据更新View");
-            String json = Util.loadMyResFromLocal(getActivity());
-            myRes = JsonUtil.jsonToBean(json);
-            adapter = getBeanFromJson(myRes, adapter);
+            adapter=getBeanFromJson(myRes,adapter);
             if (adapter == null) {
-                Toast.makeText(getActivity(), "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
-                upApply(0);
+                Toast.makeText(getActivity(), "没有该报修记录", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity(), "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
+
                 setView(myRes);
             }
         }
@@ -282,7 +325,7 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
     private void setView(ResultBean resultbean) {
         closeDiag();
         if (resultbean.getApplys()==null || resultbean.getApplys().size()<=0) {
-            llEmpty.setVisibility(View.VISIBLE);
+//            llEmpty.setVisibility(View.VISIBLE);
             Log.d(TAG, "initView: 没有获取到我的数据");
         } else {
             adapter.notifyDataSetChanged();
@@ -295,7 +338,7 @@ public class MyRepairFragment extends LazyFragment2  implements WaterDropListVie
                     startActivity(intent);
                 }
             });
-            llEmpty.setVisibility(View.GONE);
+//            llEmpty.setVisibility(View.GONE);
             Log.d(TAG, "initView: 不可见");
         }
     }

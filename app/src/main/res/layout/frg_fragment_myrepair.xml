@@ -4,6 +4,90 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/ll_my_contain">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:layout_width="@dimen/dimen24"
+                    android:layout_height="@dimen/dimen24"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:src="@drawable/username"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="用户名"
+                    android:id="@+id/et_my_name"
+                    android:gravity="center_vertical"
+                    android:textColorHint="#e6838383"
+                    android:background="@null"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e6838383">
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:layout_width="@dimen/dimen24"
+                    android:layout_height="@dimen/dimen24"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:src="@drawable/phone1"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="#e6838383"
+                    android:hint="请输入手机号"
+                    android:id="@+id/et_my_phone"
+                    android:gravity="center_vertical"
+                    android:background="@null"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e6838383">
+
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen16"
+            android:layout_marginRight="@dimen/dimen16"
+            android:layout_marginTop="@dimen/dimen8">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:background="@drawable/button_submit"
+                android:text="搜索"
+                android:id="@+id/btn_my_search"
+                android:textColor="#e6ffffff"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,24 +100,7 @@
             android:layout_below="@id/ll1">
         </medusa.theone.waterdroplistview.view.WaterDropListView>
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/lL_my_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:background="#ffffff"
-        >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="没有报修记录"
-            android:layout_margin="8dp"
-            />
-    </LinearLayout>
 
 
 </LinearLayout>

@@ -95,7 +95,7 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:text="电话号码"
+                        android:text="联系电话"
                         android:textColor="@color/ColorPrimaryText" />
 
                     <TextView
@@ -115,7 +115,7 @@
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:text="维修地址"
+                        android:text="故障地点"
                         android:textColor="@color/ColorPrimaryText" />
 
                     <TextView
@@ -197,16 +197,6 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1px"
-
-            android:layout_marginRight="@dimen/dimen8"
-            android:layout_marginLeft="@dimen/dimen8"
-            android:background="@color/ColorDividerColor">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:orientation="horizontal">
@@ -257,6 +247,16 @@
                     android:layout_marginLeft="8dp"
                     android:src="@drawable/star_white" />
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+
+            android:layout_marginRight="@dimen/dimen8"
+            android:layout_marginLeft="@dimen/dimen8"
+            android:background="@color/ColorDividerColor">
 
         </LinearLayout>
 

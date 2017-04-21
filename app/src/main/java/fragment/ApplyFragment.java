@@ -85,14 +85,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private static final String TAG = "ApplyFragment";
 
 
-    private boolean isFirst=true;
+    private boolean isFirst = true;
 
     private EditText et_name, et_tel, et_describe, et_details;
 
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
     //对话框点击显示下一级
-    private LinearLayout llApplyArea,llApplyDetailArea,llApplyBigFloorRoom,llApplyFloor,llApplyRoom;
+    private LinearLayout llApplyArea, llApplyDetailArea, llApplyBigFloorRoom, llApplyFloor, llApplyRoom, llApplyType, llApplyDetailType;
     //记录区域ID
     int AreaId;
     int PlaceId;//楼号ID
@@ -215,21 +215,17 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     @Override
     protected void onFragmentVisibleChange(boolean isVisible) {
         super.onFragmentVisibleChange(isVisible);
-        if(isVisible)
-        {
-           loadData();
+        if (isVisible) {
+            loadData();
         }
     }
 
     private void loadData() {
-        if(isFirst)
-        {
+        if (isFirst) {
             Log.d(TAG, "第一次加载需要请求网络获取数据 ");
             queryFromServer(JSON_URL);
-            isFirst=false;
-        }
-        else
-        {
+            isFirst = false;
+        } else {
 
         }
 
@@ -237,91 +233,93 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     protected void initViews(View view) {
 
-            etEmail = (EditText) view.findViewById(R.id.et_email);
-            etApplyPassword = (EditText) view.findViewById(R.id.et_apply_password);
-            etArea = (EditText) view.findViewById(R.id.et_area);
-            etDetailArea = (EditText) view.findViewById(R.id.et_detail_area);
-            etApplyType = (EditText) view.findViewById(R.id.et_apply_type);
-            etApplyTypeDetails = (EditText) view.findViewById(R.id.et_apply_detail_type);
-            et_name = (EditText) view.findViewById(R.id.et_name);
+        etEmail = (EditText) view.findViewById(R.id.et_email);
+        etApplyPassword = (EditText) view.findViewById(R.id.et_apply_password);
+        etArea = (EditText) view.findViewById(R.id.et_area);
+        etDetailArea = (EditText) view.findViewById(R.id.et_detail_area);
+        etApplyType = (EditText) view.findViewById(R.id.et_apply_type);
+        etApplyTypeDetails = (EditText) view.findViewById(R.id.et_apply_detail_type);
+        et_name = (EditText) view.findViewById(R.id.et_name);
 
-            etFloor = (EditText) view.findViewById(R.id.et_floor);
-            etRoom = (EditText) view.findViewById(R.id.et_room);
+        etFloor = (EditText) view.findViewById(R.id.et_floor);
+        etRoom = (EditText) view.findViewById(R.id.et_room);
 
-            et_tel = (EditText) view.findViewById(R.id.et_tel);
+        et_tel = (EditText) view.findViewById(R.id.et_tel);
 
-            et_describe = (EditText) view.findViewById(R.id.et_apply_describe);
-            et_details = (EditText) view.findViewById(R.id.et_apply_details);
+        et_describe = (EditText) view.findViewById(R.id.et_apply_describe);
+        et_details = (EditText) view.findViewById(R.id.et_apply_details);
 
-            img_add = (ImageView) view.findViewById(R.id.iv_add);
-            img_add.setOnClickListener(this);
+        img_add = (ImageView) view.findViewById(R.id.iv_add);
+        img_add.setOnClickListener(this);
 
-            img_1 = (ImageView) view.findViewById(R.id.iv_img1);
-            img_2 = (ImageView) view.findViewById(R.id.iv_img2);
-            img_3 = (ImageView) view.findViewById(R.id.iv_img3);
+        img_1 = (ImageView) view.findViewById(R.id.iv_img1);
+        img_2 = (ImageView) view.findViewById(R.id.iv_img2);
+        img_3 = (ImageView) view.findViewById(R.id.iv_img3);
 
-            //包裹三张图片的RelativeLayout
-            rl1 = (RelativeLayout) view.findViewById(R.id.rl_img1);
-            rl2 = (RelativeLayout) view.findViewById(R.id.rl_img2);
-            rl3 = (RelativeLayout) view.findViewById(R.id.rl_img3);
-            //打叉图片
-            ivX1 = (ImageView) view.findViewById(R.id.iv_img_x1);
-            ivX2 = (ImageView) view.findViewById(R.id.iv_img_x2);
-            ivX3 = (ImageView) view.findViewById(R.id.iv_img_x3);
-            //设置打叉点击事件
-            XOnclick();
-            //大图
-            llBigImg = (LinearLayout) view.findViewById(R.id.ll_big_img);
-            ivBigImg = (ImageView) view.findViewById(R.id.iv_big_img);
+        //包裹三张图片的RelativeLayout
+        rl1 = (RelativeLayout) view.findViewById(R.id.rl_img1);
+        rl2 = (RelativeLayout) view.findViewById(R.id.rl_img2);
+        rl3 = (RelativeLayout) view.findViewById(R.id.rl_img3);
+        //打叉图片
+        ivX1 = (ImageView) view.findViewById(R.id.iv_img_x1);
+        ivX2 = (ImageView) view.findViewById(R.id.iv_img_x2);
+        ivX3 = (ImageView) view.findViewById(R.id.iv_img_x3);
+        //设置打叉点击事件
+        XOnclick();
+        //大图
+        llBigImg = (LinearLayout) view.findViewById(R.id.ll_big_img);
+        ivBigImg = (ImageView) view.findViewById(R.id.iv_big_img);
 
-            //设置图片点击事件
-            imgOnclick();
+        //设置图片点击事件
+        imgOnclick();
 
-            imageViewList.add(img_1);
-            imageViewList.add(img_2);
-            imageViewList.add(img_3);
-            btn_apply = (Button) view.findViewById(R.id.btn_apply);
-            btn_clear = (Button) view.findViewById(R.id.btn_clear);
-            btn_apply.setOnClickListener(this);
-            btn_clear.setOnClickListener(this);
+        imageViewList.add(img_1);
+        imageViewList.add(img_2);
+        imageViewList.add(img_3);
+        btn_apply = (Button) view.findViewById(R.id.btn_apply);
+        btn_clear = (Button) view.findViewById(R.id.btn_clear);
+        btn_apply.setOnClickListener(this);
+        btn_clear.setOnClickListener(this);
 
-            //滚动
-            svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
+        //滚动
+        svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
 
 
-            //设置点击颜色
-            btn_apply.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_apply.setBackgroundResource(R.drawable.button_submit2);
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_apply.setBackgroundResource(R.drawable.button_submit);
-                    }
-                    return false;
+        //设置点击颜色
+        btn_apply.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    btn_apply.setBackgroundResource(R.drawable.button_submit2);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    btn_apply.setBackgroundResource(R.drawable.button_submit);
                 }
-            });
-            btn_clear.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_clear.setBackgroundResource(R.drawable.button_submit2);
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        Log.d(TAG, "onTouch: " + event.getAction());
-                        btn_clear.setBackgroundResource(R.drawable.button_submit);
-                    }
-                    return false;
+                return false;
+            }
+        });
+        btn_clear.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    btn_clear.setBackgroundResource(R.drawable.button_submit2);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
+                    btn_clear.setBackgroundResource(R.drawable.button_submit);
                 }
-            });
+                return false;
+            }
+        });
 
-            llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
-            llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
-            llApplyBigFloorRoom = (LinearLayout) view.findViewById(R.id.ll_apply_big_floor_room);
-            llApplyFloor = (LinearLayout) view.findViewById(R.id.ll_apply_floor);
-            llApplyRoom = (LinearLayout)view.findViewById(R.id.ll_apply_room);
+        llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
+        llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
+        llApplyBigFloorRoom = (LinearLayout) view.findViewById(R.id.ll_apply_big_floor_room);
+        llApplyFloor = (LinearLayout) view.findViewById(R.id.ll_apply_floor);
+        llApplyRoom = (LinearLayout) view.findViewById(R.id.ll_apply_room);
+        llApplyType = (LinearLayout) view.findViewById(R.id.ll_apply_type);
+        llApplyDetailType = (LinearLayout) view.findViewById(R.id.ll_apply_detail_type);
 
     }
 
@@ -464,7 +462,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             DialogAdapter floorAdapter = new DialogAdapter(getActivity(), listFloor, R.layout.simple_list_item);
             DialogAdapter roomAdapter = new DialogAdapter(getActivity(), listRoom, R.layout.simple_list_item);
             DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(getActivity(), listApplyType, resultBean.getCategory(), R.layout.dialog_detail_type);
-            DialogAdapter applyTypeDetailAdapter = new DialogAdapter(getActivity(),listApplyDetailType,R.layout.simple_list_item);
+            DialogAdapter applyTypeDetailAdapter = new DialogAdapter(getActivity(), listApplyDetailType, R.layout.simple_list_item);
 
             //选择区域对话框
             setDialogArea(areaAdapter);
@@ -569,7 +567,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
                             //重置可见性
                             resetVisible();
-
 
 
                             dialogDetailArea.dismiss();
@@ -846,6 +843,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             etApplyType.setText(listApplyType.get(position));
 //                            categoryId = getCategroy(listApplyType.get(position));
                             categoryId = listApplyTypeID.get(position);
+                            resetVisible();
                             dialogApplyType.dismiss();
                         }
                     }
@@ -861,6 +859,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
                     listApplyType.clear();
                     listApplyTypeID.clear();
+                    //清空下一级可见
+                    llApplyDetailType.setVisibility(View.INVISIBLE);
                     for (Category c : addressRes.getCategory()) {
                         listApplyType.add(c.getC_name());
                         listApplyTypeID.add(c.getC_id());
@@ -874,7 +874,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
     private void setDialogApplyTypeDetails(DialogAdapter dialogAdapter) {
-
 
 
         dialogApplyDetailType = DialogPlus.newDialog(getActivity())
@@ -906,19 +905,19 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     //获取类详
                     String category = etApplyType.getText().toString();
-                    Log.d(TAG, "onTouch: category:"+category);
+                    Log.d(TAG, "onTouch: category:" + category);
 
                     listApplyDetailType.clear();
                     listApplyDetailTypeID.clear();
 
                     for (DetailClass detailType : addressRes.getDetailClasses()) {
-                        Log.d(TAG, "onTouch: category inner:"+detailType.getCategoryName()+"  onTouch: detailTypeID:"+detailType.getClassDetail());
+                        Log.d(TAG, "onTouch: category inner:" + detailType.getCategoryName() + "  onTouch: detailTypeID:" + detailType.getClassDetail());
                         if (detailType.getCategoryName().equals(category)) {
                             listApplyDetailType.add(detailType.getClassDetail());
                             listApplyDetailTypeID.add(detailType.getId());
                         }
                     }
-                    if (etApplyType.getText().toString().trim().equals("")){
+                    if (etApplyType.getText().toString().trim().equals("")) {
                         List<String> list = new ArrayList<>();
                         list.add("请先选择类型");
                         DialogAdapter dialogAdapter = new DialogAdapter(getActivity(), list, R.layout.simple_list_item);
@@ -935,7 +934,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                                 .create();
                         Log.d(TAG, "onTouch: warnning show");
                         dialogGetImage.show();
-                    }else {
+                    } else {
                         dialogApplyDetailType.show();
                     }
                 }
@@ -974,12 +973,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
 
-
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-        if (MainActivity.list_uri!=null&&MainActivity.list_uri.size() > 0) {
+        if (MainActivity.list_uri != null && MainActivity.list_uri.size() > 0) {
 
             if (list_uri.size() > 3) {
                 int length = list_uri.size() - 3;
@@ -996,10 +994,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
             //判断和赋值
             switchImage();
-            
+
         } else {
 
-            Log.d(TAG, "onResume: "+"ApplyFragment没有获取到uri");
+            Log.d(TAG, "onResume: " + "ApplyFragment没有获取到uri");
         }
 
     }
@@ -1207,7 +1205,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 }
                 List<File> files = getFiles(list_uri);
 
-               Util.submit("apply",json,GET_JSON,UP_APPLY,files).execute(new StringCallback() {
+                Util.submit("apply", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -1233,7 +1231,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
 
-
     private void setApply() {
         apply.setArea(String.valueOf(areaId));
         apply.setDetailArea(String.valueOf(placeId));
@@ -1255,11 +1252,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                     String s = list_uri.get(i).toString().split("//")[1];
                     paths[i] = s;
                 } else {
-                    paths[i] = Util.getPath(getActivity(),list_uri.get(i));
+                    paths[i] = Util.getPath(getActivity(), list_uri.get(i));
                 }
 
                 Log.d(TAG, "getFiles: " + paths[i]);
-                String newPath = Util.compressImage(getActivity(),paths[i]);
+                String newPath = Util.compressImage(getActivity(), paths[i]);
                 // Log.d(TAG, "getFiles: "+newPath);
                 files.add(new File(newPath));
             }
@@ -1293,41 +1290,49 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
 
     public LinearLayout RlIsVisable() {
-        if (llBigImg!=null&&llBigImg.getVisibility() == View.VISIBLE) {
-            return  llBigImg;
+        if (llBigImg != null && llBigImg.getVisibility() == View.VISIBLE) {
+            return llBigImg;
         }
         return null;
     }
 
 
-    private void resetVisible(){
+    private void resetVisible() {
         //进来就全部不可见
         llApplyDetailArea.setVisibility(View.INVISIBLE);
         llApplyBigFloorRoom.setVisibility(View.GONE);
         llApplyFloor.setVisibility(View.INVISIBLE);
         llApplyRoom.setVisibility(View.INVISIBLE);
+        llApplyDetailType.setVisibility(View.INVISIBLE);
+
 
         //如果区域不为其他 楼号可见
-        if (!etArea.getText().toString().equals("其他")&&!etArea.getText().toString().equals("")){
-            Log.d(TAG, "resetVisible: "+etArea.getText());
+        if (!etArea.getText().toString().equals("其它") && !etArea.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etArea.getText());
             llApplyDetailArea.setVisibility(View.VISIBLE);
         }
-        if (!etDetailArea.getText().toString().equals("其他")&&!etDetailArea.getText().toString().equals("")){
-            Log.d(TAG, "resetVisible: "+etDetailArea.getText());
+        if (!etDetailArea.getText().toString().equals("其它") && !etDetailArea.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etDetailArea.getText());
             llApplyBigFloorRoom.setVisibility(View.VISIBLE);
             llApplyFloor.setVisibility(View.VISIBLE);
         }
-        if (!etFloor.getText().toString().equals("其他")&&!etFloor.getText().toString().equals("")){
-            Log.d(TAG, "resetVisible: "+etFloor.getText());
+        if (!etFloor.getText().toString().equals("其它") && !etFloor.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etFloor.getText());
             llApplyRoom.setVisibility(View.VISIBLE);
         }
+        if (!etApplyType.getText().toString().equals("其它")&&!etApplyType.getText().toString().equals("")){
+            Log.d(TAG, "resetVisible: "+etApplyType.getText());
+            llApplyDetailType.setVisibility(View.VISIBLE);
+        }
     }
-    private void resetVisableAlways(){
+
+    private void resetVisableAlways() {
         //进来就全部不可见
         llApplyDetailArea.setVisibility(View.INVISIBLE);
         llApplyBigFloorRoom.setVisibility(View.GONE);
         llApplyFloor.setVisibility(View.INVISIBLE);
         llApplyRoom.setVisibility(View.INVISIBLE);
+        llApplyDetailType.setVisibility(View.INVISIBLE);
     }
 
 

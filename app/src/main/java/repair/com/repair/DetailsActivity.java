@@ -73,13 +73,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvDealTime;
+    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
 
     private TextView tv_details_employee1;
 
     private TextView tv_employee_company, tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details;
+    private LinearLayout ll_employee_details,llFinishiTime,llNedd,llCompensation,llAdmin;
 
     private ImageView img_category, img_status, img_back;
     private ImageView img1, img2, img3;
@@ -195,6 +195,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_employee_can = (TextView) findViewById(R.id.tv_employee_can);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
+        llFinishiTime= (LinearLayout) findViewById(R.id.ll_finish_time);
 
         //星星
         star1 = (ImageView) findViewById(R.id.iv_star1);
@@ -230,9 +231,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_category = (TextView) findViewById(tv_details_category);
     //    tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
-        tvDealTime= (TextView) findViewById(R.id.tv_details_finish_date);
+        tvDealTime= (TextView) findViewById(R.id.tv_details_deal_date);
         tv_status = (TextView) findViewById(R.id.tv_details_details);
-        tv_place = (TextView) findViewById(R.id.tv_details_place);
+       /// tv_place = (TextView) findViewById(R.id.tv_details_place);
 //        tv_email= (TextView) findViewById(R.id.tv_details_email);
 
         tvArea = (TextView) findViewById(R.id.tv_details_area);
@@ -242,7 +243,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         // tv_employee= (TextView) findViewById(R.id.tv_details_employee);
 
         tv_describe = (TextView) findViewById(R.id.tv_details_describe);
+
+
         img_category = (ImageView) findViewById(R.id.img_category);
+
+        tvNeed= (TextView) findViewById(R.id.tv_details_need);
+        tvCompensation= (TextView) findViewById(R.id.tv_details_compensation);
+        tvAdmin= (TextView) findViewById(R.id.tv_details_admin);
+
+        llCompensation= (LinearLayout) findViewById(R.id.ll_detail_compensation);
+        llNedd= (LinearLayout) findViewById(R.id.ll_detail_nedd);
+        llAdmin= (LinearLayout) findViewById(R.id.ll_detail_admin);
+
+
         img_status = (ImageView) findViewById(R.id.img_status);
 
         img1 = (ImageView) findViewById(R.id.img_pc1);
@@ -262,6 +275,20 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
     }
+
+    private void visibaleFinishTime()
+    {
+        if(!tvDealTime.getText().equals("尚未处理"))
+        {
+            llFinishiTime.setVisibility(View.VISIBLE);
+            llCompensation.setVisibility(View.VISIBLE);
+            llNedd.setVisibility(View.VISIBLE);
+            llAdmin.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+
 
     private void clickPic(View v){
         ImageView iV = (ImageView) v;
@@ -291,7 +318,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tv_category.setText(category.getC_name()+" ("+apply.getDetailClass()+")");
 //        tvDetailCategory.setText(apply.getDetailClass());
-        tv_place.setText(apply.getDetailArea());
+//        tv_place.setText(apply.getDetailArea());
 
         tvArea.setText(Util.setAddress(apply));
 
@@ -302,7 +329,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
 
-        tv_describe.setText(apply.getRepairDetails());
+        tvCompensation.setText(apply.getCompensation());
+        tvNeed.setText(apply.getMaterial());
+        tvAdmin.setText(apply.getLogisticMan());
+
+
+        visibaleFinishTime();
+
+        tv_describe.setText(apply.getClasss()+"("+apply.getDetailClass()+"),"+apply.getRepairDetails());
         img_category.setImageResource(getCategoryIcon());
 
         getApplyImages();

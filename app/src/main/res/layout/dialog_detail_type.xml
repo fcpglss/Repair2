@@ -15,7 +15,7 @@
                 android:id="@+id/dialog_detail_pic1"/>
 
             <TextView
-                android:layout_width="30dp"
+                android:layout_width="50dp"
                 android:layout_height="30dp"
                 android:layout_margin="8dp"
                 android:text="测试"

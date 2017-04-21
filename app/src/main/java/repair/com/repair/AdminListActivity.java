@@ -280,19 +280,20 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         int isSame=0;
         List<Apply> tempList=adminRes.getApplys();
         for (Apply apply : applyList) {
-            for(int i=0;i<tempList.size();i++)
-            {
-                if(apply.getId().equals(tempList.get(i).getId()))
-                {
-                    isSame=1;
-                    break;
-                }
-            }
-            if(isSame!=1)
-            {
-                adminRes.getApplys().add(apply);
-            }
-            isSame=0;
+//            for(int i=0;i<tempList.size();i++)
+//            {
+//                if(apply.getId().equals(tempList.get(i).getId()))
+//                {
+//                    isSame=1;
+//                    break;
+//                }
+//            }
+//            if(isSame!=1)
+//            {
+//                adminRes.getApplys().add(apply);
+//            }
+//            isSame=0;
+            adminRes.getApplys().add(apply);
         }
     }
 

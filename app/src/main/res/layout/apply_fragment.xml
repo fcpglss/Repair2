@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:Android="http://schemas.android.com/apk/res-auto"
     android:background="#d3d3d3"
     android:orientation="vertical">
 
@@ -64,7 +65,7 @@
                         android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
                         android:gravity="left"
-                        android:text="报修人"
+                        android:text="*姓名"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
 
@@ -98,14 +99,14 @@
                         android:id="@+id/t2"
                         android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="电话号码"
+                        android:text="*联系电话"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
 
                     <EditText
                         android:id="@+id/et_tel"
                         android:phoneNumber="true"
-
+                        android:maxLines="11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
@@ -165,7 +166,7 @@
                         android:id="@+id/t4"
                         android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
-                        android:text="报修密码"
+                        android:text="*报修密码"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
 
@@ -206,7 +207,7 @@
                         <TextView
                             android:layout_width="@dimen/dimen72"
                             android:layout_height="wrap_content"
-                            android:text="故障区域"
+                            android:text="*故障地点"
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
@@ -216,7 +217,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:focusable="false"
-                            android:hint="选择故障区域"
+                            android:hint="选择地点类型"
                             android:textColor="@color/ColorSecondaryText"
                             android:textCursorDrawable="@null"
                             android:textSize="@dimen/text_small_word_hints" />
@@ -328,9 +329,9 @@
                     android:layout_margin="8dp">
 
                     <TextView
-                        android:layout_width="@dimen/dimen72"
+                        android:layout_width="105dp"
                         android:layout_height="wrap_content"
-                        android:text="详细地址"
+                        android:text="故障地址描述"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
 
@@ -339,7 +340,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="请输入详细地址"
+                        android:maxLines="25"
+                        android:hint="(仅限25字,描述具体地址)"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -361,13 +363,14 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_type">
 
 
                         <TextView
                             android:layout_width="@dimen/dimen72"
                             android:layout_height="wrap_content"
-                            android:text="故障类型"
+                            android:text="*故障"
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
@@ -386,7 +389,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_apply_detail_type"
+                        android:visibility="invisible">
 
 
                         <TextView
@@ -426,7 +431,7 @@
                     android:layout_margin="8dp"
                     android:background="@null"
                     android:gravity="top"
-                    android:hint="请输入故障描述"
+                    android:hint="请输入故障描述,仅限50字"
                     android:inputType="textMultiLine"
                     android:minLines="4"
                     android:textColor="@color/ColorSecondaryText"
