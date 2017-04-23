@@ -61,7 +61,7 @@
                         android:id="@+id/textView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="申报人信息"
+                        android:text="报修人信息"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_subtitle" />
 
@@ -299,6 +299,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
+
                             <TextView
                                 android:layout_width="75dp"
                                 android:layout_height="wrap_content"
@@ -479,8 +480,8 @@
                     android:id="@+id/ll_finish_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -560,7 +561,7 @@
 
                 </LinearLayout>
 
-                //隐藏的人员信息布局
+                <!--//隐藏的人员信息布局-->
 
                 <LinearLayout
                     android:id="@+id/ll_employee_details"
@@ -588,22 +589,6 @@
                             android:text="" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:text="公司" />
-
-                        <TextView
-                            android:id="@+id/tv_employee_company"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="" />
-                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -616,7 +601,7 @@
                             android:text="联系方式" />
 
                         <TextView
-                            android:id="@+id/tv_employee_phone"
+                            android:id="@+id/tv_details_employee_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="" />
@@ -633,7 +618,7 @@
                             android:text="维修类型" />
 
                         <TextView
-                            android:id="@+id/tv_employee_can"
+                            android:id="@+id/tv_details_employee_can"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="" />
@@ -641,6 +626,12 @@
                 </LinearLayout>
 
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_detail_deal"
+                    android:visibility="gone">
                     <LinearLayout
                         android:id="@+id/ll_detail_compensation"
                         android:layout_width="match_parent"
@@ -679,83 +670,82 @@
                     </LinearLayout>
 
 
-
-
-                <LinearLayout
-                    android:id="@+id/ll_detail_nedd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
-
                     <LinearLayout
+                        android:id="@+id/ll_detail_nedd"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:text="所需材料"
-                            android:textColor="@color/ColorPrimaryText"
-                            android:textSize="@dimen/text_button_text" />
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/textView3"
+                                android:layout_width="75dp"
+                                android:layout_height="wrap_content"
+                                android:text="所需材料"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_button_text" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_details_need"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="16dp"
+                                android:gravity="right"
+
+                                android:textSize="@dimen/text_button_text" />
 
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_details_need"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
-                            android:gravity="right"
-
-                            android:textSize="@dimen/text_button_text" />
 
                     </LinearLayout>
 
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_detail_admin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
-
                     <LinearLayout
+                        android:id="@+id/ll_detail_admin"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:text="处理人"
-                            android:textColor="@color/ColorPrimaryText"
-                            android:textSize="@dimen/text_button_text" />
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="75dp"
+                                android:layout_height="wrap_content"
+                                android:text="处理人"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_button_text" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_details_admin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="16dp"
+                                android:gravity="right"
+
+                                android:textSize="@dimen/text_button_text" />
 
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_details_admin"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
-                            android:gravity="right"
-
-                            android:textSize="@dimen/text_button_text" />
 
                     </LinearLayout>
-
-
                 </LinearLayout>
 
 
@@ -831,7 +821,7 @@
                         <TextView
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
-                            android:text="用户评价"
+                            android:text="报修人评价"
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
@@ -845,6 +835,7 @@
                                 android:layout_height="wrap_content"
                                 android:maxLines="5"
                                 android:minLines="2"
+                                android:gravity="right"
                                 android:text=""
                                 android:textColor="#BF383838" />
                         </LinearLayout>

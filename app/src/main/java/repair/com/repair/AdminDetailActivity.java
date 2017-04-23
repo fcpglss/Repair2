@@ -1,7 +1,9 @@
 package repair.com.repair;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -69,6 +71,10 @@ import static repair.com.repair.MainActivity.windowWitch;
 public class AdminDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "AdminDetailActivity";
 
+    private static final String ADMIN_SUBMIT_EMAIL="http://192.168.43.128:8888/myserver2/AdminEmailCheck";
+
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -78,34 +84,27 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onStop() {
         super.onStop();
-        isSend = false;
+
         Log.d(TAG, "onStop: ");
     }
 
     @Override
     protected void onResume() {
 
-        Log.d(TAG, "onResume: isSend=" + isSend);
-        Log.d(TAG, "onResume: isIntent=" + isIntenet);
-        if (isSend && isIntenet != 1) {
-            Log.d(TAG, "onResume: 重新绑定setSubmitButton()");
-            setSubmitButton();
-
-        }
-        Log.d(TAG, "onResume: listFile的size" + listFile.size());
-        if(listFile!=null&&listFile.size()>0)
-        {
-            for (File file : listFile) {
-                String tempFilePath=file.getAbsolutePath();
-                Util.deleteImage((MyApplication.getContext()),tempFilePath);
-            }
-        }
-        super.onResume();
-
+//
+//        Log.d(TAG, "onResume: listFile的size" + listFile.size());
+//        if(listFile!=null&&listFile.size()>0)
+//        {
+//            for (File file : listFile) {
+//                String tempFilePath=file.getAbsolutePath();
+//                Util.deleteImage((MyApplication.getContext()),tempFilePath);
+//            }
+//        }
+    super.onResume();
     }
 
-
-//    public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
+//
+//   public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
 //    private static final String URL = "http://192.168.31.201:8888/myserver2/servlet/action";
 //    private static final String AdMINUPDATE = "http://192.168.31.201:8888/myserver2/AdminUpdate";
 
@@ -116,7 +115,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
      private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     private static boolean isFirst = true;
-    private static boolean isSend = false;
+
 
     //大图片
     private ImageView showBigImg;
@@ -126,7 +125,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     private DialogPlus dialogChoose;
     private DialogAdapter dialogChooseAdapter;
 
-    private TextView tvName, tvTel, tvTime, tvEmail, tvAdress, tvCategory, tvDetailAddress, tvDescribe, tvDetailCategory;
+    private TextView tvName, tvTel, tvTime, tvEmail, tvAdress, tvCategory;
 
     private ImageView imgCategory;
     private ImageView img1, img2, img3;
@@ -138,21 +137,18 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     private List<Employee> employees;
     private SweetAlertDialog sDialog;
     private List<String> employesName = new ArrayList<>();
-    List<File> listFile = new ArrayList<>();
-
-    List<String> listImage = new ArrayList<>();
 
     private String repairId;
     private int isIntenet;
     private Button btnChoose, btnSend, btnSubmit;
 
-    private EditText etServerMan;
+    private EditText etServerMan,tvMatrial;
     private ResultBean adminDetailRes = null;
-    private Category category = null;
+
 
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
-    private List<ImageView> star_list = new ArrayList<ImageView>();
+
     private List<String> list_imageView = new ArrayList<>();
     private Response adminDetailResponse;
     private Response adminEmployeeResponse;
@@ -200,10 +196,32 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
+                case 9:
+                    sDialog.setTitleText("提交成功,已通过邮件派工。")
+                            .setContentText("")
+                            .setConfirmClickListener(null)
+                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    Intent intents =new Intent(AdminDetailActivity.this,AdminListActivity.class);
+                    startActivity(intents);
+                    break;
+                case 10:
+                    sDialog.setTitleText("服务器维护,邮件派工失败。")
+                            .setContentText("")
+                            .setConfirmClickListener(null)
+                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    break;
+                case 11:
+                    sDialog.setTitleText("网络异常,请检查网络")
+                            .setContentText("")
+                            .setConfirmClickListener(null)
+                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    break;
 
             }
         }
     };
+
+
 
 
     @Override
@@ -272,9 +290,10 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         tvEmail = (TextView) findViewById(R.id.tv_admin_details_email);
         //故障信息
         tvAdress = (TextView) findViewById(R.id.tv_admin_details_address);
-        tvDescribe = (TextView) findViewById(R.id.tv_admin_details_describe);
+
         tvCategory = (TextView) findViewById(R.id.tv_admin_details_category);
-        tvDetailAddress = (TextView) findViewById(R.id.tv_admin_details_detailaddress);
+
+        tvMatrial= (EditText) findViewById(R.id.et_admin_detial_matrial);
         tvTime = (TextView) findViewById(R.id.tv_admin_details_repairtime);
         //button按钮
         btnChoose = (Button) findViewById(R.id.btn_admin_add);
@@ -284,7 +303,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         Util.setOnClickBackgroundColor(btnChoose);
         Util.setOnClickBackgroundColor(btnSend);
         Util.setOnClickBackgroundColor(btnSubmit);
-        btnSubmit.setEnabled(false);
+        btnSubmit.setEnabled(true);
         Log.d(TAG, "1 initView: btn设置setClickable为false");
         Log.d(TAG, "2 执行initSubmitOnClick");
         initSubmitOnClick();
@@ -331,10 +350,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         tvTel.setText(apply.getTel());
         tvEmail.setText(apply.getEmail());
         //设置故障信息
-        tvAdress.setText(Util.setAddress(apply));
-        tvCategory.setText(apply.getClasss() + " " + ("" + apply.getDetailClass() + ""));
-        tvDescribe.setText(apply.getRepairDetails());
-        tvDetailAddress.setText(apply.getDetailArea());
+        tvAdress.setText(Util.setAddress(apply)+","+apply.getAddressDetail());
+        tvCategory.setText(apply.getClasss() + " " + ("" + apply.getDetailClass() + "")+","+apply.getRepairDetails());
+
         tvTime.setText(Util.getDealTime(apply.getRepairTime()));
         //设置类型图标
         imgCategory.setImageResource(getCategoryIcon());
@@ -373,7 +391,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 Log.d(TAG, "list_imageView为0,该Apply没有图片");
             }
         } else {
-
+            list_imageView = apply.getA_imaes();
         }
 
 
@@ -457,28 +475,14 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                downLoadBitmap(apply);
-
+                etServerMan.setText("");
+                tvMatrial.setText("");
             }
         });
     }
 
     private void setSubmitButton() {
-        Log.d(TAG, "setSubmitButton: isSend为" + isSend);
-        if (isSend) {
-            btnSubmit.setBackgroundResource(R.drawable.button_submit);
-            Apply apply = new Apply();
-            apply.setLogisticMan("001");
-            apply.setState(2);
-            apply.setServerMan(etServerMan.getText().toString());
-            apply.setId(repairId);
-            updateJson = JsonUtil.beanToJson(apply);
-            Log.d(TAG, "setSubmitButton: updateJson解析出来的值：" + updateJson);
 
-            btnSubmit.setEnabled(true);
-            Log.d(TAG, "setSubmitButton: 设置了btnSubmit的setClickable为true");
-        }
 
     }
 
@@ -567,113 +571,25 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void startEmail(List<String> emails) {
-        List<String> listTemp = emails;
-        ArrayList<Uri> uris = new ArrayList<>();
-        Log.d(TAG, "startEmail: listFile的size:" + listFile.size());
-        for (int i = 0; i < listFile.size(); i++) {
-            Uri u = Uri.fromFile(listFile.get(i));
-            uris.add(u);
-        }
-        boolean multple = uris.size() > 1;
-        Log.d(TAG, "startEmail3: uri的size: " + uris.size());
-        Intent intent = new Intent(multple ? ACTION_SEND_MULTIPLE : ACTION_SEND);
-        if (listTemp.size() > 0) {
-            if (multple) {
-                intent.setType("*/*");
-                setIntent(listTemp, intent);
-                intent.putParcelableArrayListExtra(intent.EXTRA_STREAM, uris);
-            } else {
-                if (listFile.size() == 0) {
-                    intent.setType("plain/text");
-                    Log.d(TAG, "startEmail3: plain/text");
-                    setIntent(listTemp, intent);
-                } else {
-                    intent.setType("*/*");
-                    Log.d(TAG, "startEmail3: */*");
-                    setIntent(listTemp, intent);
-                    intent.putExtra(Intent.EXTRA_STREAM, uris.get(0));
-                }
 
-            }
-            isSend = true;
-            isIntenet = 0;
-            startActivity(intent);
-        }
+    private String getCOntentString() {
 
-
-    }
-
-    private void setIntent(List<String> listTemp, Intent intent) {
-        int size = listTemp.size();
-        String[] s = listTemp.toArray(new String[size]);
-        Log.d(TAG, "setIntent: emaillist：" + listTemp.toString());
         StringBuilder sb = new StringBuilder();
 
         String tvNames = Util.setNameXX(apply.getRepair());
-        sb.append("报修人信息：    " + tvNames + "\n");
-        sb.append("                            " + tvTel.getText().toString() + "\n");
-        sb.append("故障地点：        " + tvAdress.getText().toString() + "\n");
-        sb.append("具体地点：        " + tvDetailAddress.getText().toString() + "\n");
-        sb.append("故障类型：        " + tvCategory.getText().toString() + "\n");
-        sb.append("故障描述：        " + tvDescribe.getText().toString() + "\n");
-        sb.append("报修时间：        " + tvTime.getText().toString() + "\n");
-        intent.putExtra(Intent.EXTRA_EMAIL, s);
-        intent.putExtra(Intent.EXTRA_CC, s);
-        intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
-        intent.putExtra(Intent.EXTRA_SUBJECT, tvAdress.getText().toString());
+        String  guzhang=tvCategory.getText().toString().trim();
+        String address=tvAdress.getText().toString().trim();
+        String cailiao =tvMatrial.getText().toString().trim();
+        sb.append("报修人：" + tvNames + "\r\n");
+        sb.append("联系电话：" + tvTel.getText().toString() + "\r\n");
+        sb.append("联系邮箱:" +tvEmail.getText().toString() +"\r\n" );
+        sb.append("故障：" + guzhang +"\r\n");
+        sb.append("位置：" + address + "\r\n");
+        sb.append("材料" + cailiao+ "\r\n");
+
+        return sb.toString();
     }
 
-    private void downLoadBitmap(Apply apply) {
-        listImage = list_imageView;
-        listFile.clear();
-        new AsyncTask<Void, Void, List<File>>() {
-            @Override
-            protected List<File> doInBackground(Void... params) {
-                List<File> imgFileList = new ArrayList<File>();
-                File imgFile = null;
-                FileOutputStream out = null;
-                Log.d(TAG, "doInBackground: changeImageUrl" + listImage.size());
-                if (listImage != null && listImage.size() > 0) {
-                    for (int i = 0; i < listImage.size(); i++) {
-
-                        Bitmap bitmap = null;
-                        try {
-                            bitmap = Picasso.with(AdminDetailActivity.this).load(listImage.get(i)).get();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        imgFile = FIleUtils.createImageFile();
-                        try {
-                            out = new FileOutputStream(imgFile);
-                            //有图片
-                            if (bitmap != null) {
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                                imgFileList.add(imgFile);
-                            }
-                            out.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-                return imgFileList;
-            }
-
-            @Override
-            protected void onPostExecute(List<File> imgFileList) {
-                for (File f : imgFileList) {
-                    Log.d(TAG, "onPostExecute: " + f.getAbsolutePath());
-                    listFile.add(f);
-                }
-                String temp = etServerMan.getText().toString();
-                List<String> emails = getEmail(temp);
-                startEmail(emails);
-
-            }
-        }.execute();
-    }
 
     private List<String> getEmail(String serverMan) {
         Log.d(TAG, "getEmail: " + serverMan);
@@ -705,6 +621,62 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences preferences = MyApplication.getContext().getSharedPreferences("adminEmail", Context.MODE_PRIVATE);
+                String email = preferences.getString("email", "");
+                String password=preferences.getString("password","");
+
+                if(email.equals("")||password.equals(""))
+                {
+                    //弹出对话框 让他输入密码 请求网络；
+                }
+                else
+                {
+                    String temp = etServerMan.getText().toString();
+                    List<String> emails = getEmail(temp);
+                    if(emails.size()>0)
+                    {
+
+                        String serverEmail =getServerEmail(emails);
+                        String contentString=getCOntentString();
+                        String  applyId=apply.getId();
+                        String imgPath=getImgName();
+                        Log.d(TAG, "onClick: adminEmail ->"+email);
+                        Log.d(TAG, "onClick: password ->"+password);
+                        Log.d(TAG, "onClick: serverEmailString ->"+serverEmail);
+                        Log.d(TAG, "onClick: contentSTring ->"+contentString);
+                        Log.d(TAG, "onClick: imgPath ->"+imgPath);
+                        Log.d(TAG, "onClick: applyId ->"+applyId);
+
+                        //提交维修单
+                        Util.submit("adminEmail",email,"password",password,"content",contentString,
+                                "serverEmail",serverEmail,"ID",apply.getId(),"imgPath",imgPath,ADMIN_SUBMIT_EMAIL)
+                                .execute(new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e, int id) {
+                                        mhandler.sendEmptyMessage(11);
+                                    }
+
+                                    @Override
+                                    public void onResponse(String response, int id) {
+                                        if("Success".equals(response))
+                                        {
+                                            mhandler.sendEmptyMessage(9);
+                                        }
+                                        else
+                                        {
+                                            mhandler.sendEmptyMessage(10);
+                                        }
+                                    }
+                                });
+                    }
+
+
+
+                }
+
+
+
+
                 sDialog = new SweetAlertDialog(AdminDetailActivity.this, SweetAlertDialog.WARNING_TYPE);
                 sDialog.setTitleText("确定处理完毕？");
 //                sDialog.setContentText("");
@@ -757,6 +729,39 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                         .show();
             }
         });
+    }
+
+    private String getServerEmail(List<String> emails)
+    {
+        String serverEmail="";
+        for(String s: emails)
+        {
+            if(serverEmail.equals(""))
+            {
+                serverEmail=s;
+                continue;
+            }
+            serverEmail=serverEmail+","+s;
+        }
+        Log.d(TAG, "setServerEmail: "+serverEmail);
+        return serverEmail;
+    }
+
+    private String getImgName()
+    {
+        String imgName="";
+        for(String s :list_imageView)
+        {
+            File flies=new File(s);
+            Log.d(TAG, "getImgName: "+flies.getName());
+            if(imgName.equals(""))
+            {
+                imgName=flies.getName();
+                continue;
+            }
+            imgName=imgName+","+flies.getName();
+        }
+        return imgName;
     }
 
 

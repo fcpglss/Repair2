@@ -48,12 +48,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import application.MyApplication;
 import camera.CalculateImage;
 import camera.FIleUtils;
+import fragment.ResetVisable;
 import imagehodler.ImageLoader;
 import model.Apply;
 import model.Area;
@@ -67,6 +69,7 @@ import model.Room;
 import okhttp3.Call;
 import repari.com.adapter.DialogAdapter;
 import repari.com.adapter.DialogDetailAdapter;
+import util.DialogUtil;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -86,13 +89,15 @@ import static repair.com.repair.MainActivity.windowHeigth;
  * Created by hsp on 2017/3/14.
  */
 
-public class ChangeActivity extends AppCompatActivity implements View.OnClickListener {
+public class ChangeActivity extends AppCompatActivity implements View.OnClickListener , ResetVisable {
     private static final String TAG = "changeActivity";
     private static boolean startPic =false;
     private  static boolean startCamarea=false;
     private EditText et_name, et_tel, et_describe, et_details;
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
+    //包含editText 的 LinearLayout
+    private LinearLayout llDetailType,llContain,llFloor,llRoom,llDetailArea;
     //记录区域ID
     int AreaId;
     int PlaceId;//楼号ID
@@ -127,19 +132,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
     private List<String> listArea = new ArrayList<>();
-    private List<String> listDetailArea = new ArrayList<>();
-    private List<String> listFloor = new ArrayList<>();
-    private List<String> listRoom = new ArrayList<>();
-    //用于存放Id的list
 
-
-    private List<Integer> listFloorID = new ArrayList<>();
-    private List<Integer> listRoomID = new ArrayList<>();
-    private List<Integer> listApplyTypeID = new ArrayList<>();
-    private List<Integer> listApplyDetailTypeID = new ArrayList<>();
-
-    private List<String> listApplyType = new ArrayList<>();
-    private List<String> listApplyDetailType = new ArrayList<>();
 
     private int areaId = 0;
     private int placeId = 0;
@@ -166,16 +159,16 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     String addressJson2 = Util.loadAddressFromLocal(MyApplication.getContext());
                     addressRes = JsonUtil.jsonToBean(addressJson2);
                     Log.d(TAG, "handleMessage:2 本地数据addressRes" + addressJson2);
-                    setDialogView(addressRes);
+//                    setDialogView(addressRes);
                     break;
                 case 3:
-                    setDialogView(addressRes);
+//                    setDialogView(addressRes);
                     break;
                 case 4:
                     Log.d(TAG, "handleMessage4: 内存没有数据，尝试从本地文件读取");
                     String addressJson = Util.loadAddressFromLocal(MyApplication.getContext());
                     addressRes = JsonUtil.jsonToBean(addressJson);
-                    setDialogView(addressRes);
+//                    setDialogView(addressRes);
                     break;
                 case 5:
                     Toast.makeText(ChangeActivity.this, "请填写报修地址", Toast.LENGTH_SHORT).show();
@@ -185,17 +178,11 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     };
     //对话框
     DialogPlus dialogArea;
-    DialogPlus dialogDetailArea;
-    DialogPlus dialogFloor;
-    DialogPlus dialogRoom;
-    DialogPlus dialogApplyType;
-    DialogPlus dialogApplyDetailType;
+
     DialogPlus dialogGetImage;
 
     //获取点击修改获得的apply
     Apply changeApply;
-
-    ImageLoader imageLoader;
 
 
     @Override
@@ -204,21 +191,22 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_change2);
         changeApply = (Apply) getIntent().getSerializableExtra("apply");
         addressRes = (ResultBean) getIntent().getSerializableExtra("address");
-        if (addressRes == null) {
-            String addressJson = Util.loadAddressFromLocal(ChangeActivity.this);
-            addressRes = JsonUtil.jsonToBean(addressJson);
-        }
-
 
 
 
         initView();
         setView();
         bindView();
-        setDialogView(addressRes);
     }
 
     private void initView() {
+
+        llDetailArea = (LinearLayout) findViewById(R.id.ll_change_detail_area);
+        llContain = (LinearLayout) findViewById(R.id.ll_change_contain);
+        llFloor = (LinearLayout) findViewById(R.id.ll_change_floor);
+        llRoom = (LinearLayout) findViewById(R.id.ll_change_room);
+        llDetailType = (LinearLayout) findViewById(R.id.ll_change_detail_type);
+
 
         etEmail = (EditText) findViewById(R.id.et_change_email);
         etApplyPassword = (EditText) findViewById(R.id.et_change_apply_password);
@@ -282,6 +270,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         //滚动
         svBackground = (ScrollView) findViewById(R.id.sv_change_apply);
+
+        /**
+         * 初始化Dialog
+         */
+        setDialogAdapter();
+        setDialog();
+        setEditTextOnTouch();
 
     }
 
@@ -373,16 +368,21 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etApplyType.setText(changeApply.getClasss());
         etApplyTypeDetails.setText(changeApply.getDetailClass());
         et_describe.setText(changeApply.getRepairDetails());
+        et_details.setText(changeApply.getAddressDetail());
         areaId = getAreaID(etArea.getText().toString());
         placeId = getDetailId(etDetailArea.getText().toString());
         categoryId = getCategoryID(etApplyType.getText().toString());
         detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
         changeImgUrl = changeApply.getA_imaes();
-//
-//        for (String s :
-//                changeImgUrl) {
-//            Log.d(TAG, "setView: " + s.toString());
-//        }
+
+        //赋值之后 设定可见性
+        resetVisible();
+
+        /**
+         * 请求area 和 category
+         */
+        queryFromServer("area","0",JSON_URL);
+        queryFromServer("category","0",JSON_URL);
 
         //  把传来的uri变为本地的uri存进list_uri
         new AsyncTask<Void, Void, List<File>>() {
@@ -451,455 +451,427 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
+        apply.setAddressDetail(et_details.getText().toString());
     }
 
-    private void setDialogView(ResultBean resultBean) {
-        if (resultBean != null) {
+
+    /**
+     * 存放网络请求的对象list
+     */
+    private List<Area> newAreaList = new ArrayList<>();
+    private List<Place> newPlace = new ArrayList<>();
+    private List<Flies> newFlies = new ArrayList<>();
+    private List<Room> newRoom = new ArrayList<>();
+    private List<Category> newCategory = new ArrayList<>();
+    private List<DetailClass> newDetailClass = new ArrayList<>();
 
 
-            DialogAdapter areaAdapter = new DialogAdapter(this, listArea, R.layout.simple_list_item);
-            DialogAdapter detailAreaAdapter = new DialogAdapter(this, listDetailArea, R.layout.simple_list_item);
-            DialogAdapter floorAdapter = new DialogAdapter(this, listFloor, R.layout.simple_list_item);
-            DialogAdapter roomAdapter = new DialogAdapter(this, listRoom, R.layout.simple_list_item);
-            DialogDetailAdapter applyTypeAdapter = new DialogDetailAdapter(this, listApplyType, resultBean.getCategory(), R.layout.dialog_detail_type);
-            DialogAdapter applyTypeAdapterDetail = new DialogAdapter(this, listApplyDetailType, R.layout.simple_list_item);
-
-            //选择区域对话框
-            setDialogArea(areaAdapter);
-            //选择楼号对话框
-            setDialogDetailArea(detailAreaAdapter);
-            //选择层数对话框
-            setDialogFloor(floorAdapter);
-            //选择房间对话框
-            setDialogRoom(roomAdapter);
-            //选择类型对话框
-            setDialogApplyType(applyTypeAdapter);
-            //
-            setDialogApplyDetailType(applyTypeAdapterDetail);
-        }
+    /**
+     * 用于适配器的 Stringlist
+     */
+    List<String> newAreaStringList = new ArrayList<>();
+    List<String> newPlaceStringList = new ArrayList<>();
+    List<String> newFliesStringList = new ArrayList<>();
+    List<String> newRoomStringList = new ArrayList<>();
+    List<String> newCategoryStringList = new ArrayList<>();
+    List<String> newDetailClassStringList = new ArrayList<>();
 
 
+    /**
+     * 用于对话框的适配器
+     */
+    DialogAdapter areaAdapter;
+    DialogAdapter placeAdapter;
+    DialogAdapter fliesAdapter;
+    DialogAdapter roomAdapter;
+    DialogAdapter categoryAdapter;
+    DialogAdapter detailClassAdapter;
+    /**
+     * 对话框
+     */
+    DialogPlus areaDialog;
+    DialogPlus placeDialog;
+    DialogPlus fliesDialog;
+    DialogPlus roomDialog;
+    DialogPlus categoryDialog;
+    DialogPlus detailClassDialog;
+
+    /**
+     * logID测试
+     */
+    private void showId(){
+        Log.d(TAG, "showId: 区域id: "+areaId);
+        Log.d(TAG, "showId: 楼号id： "+placeId);
+        Log.d(TAG, "showId: 楼层id： "+flieId);
+        Log.d(TAG, "showId: 房间id： "+roomId);
+        Log.d(TAG, "showId: 类型id:  "+categoryId );
+        Log.d(TAG, "showId: 类详id： "+detailTypeID);
     }
 
-    private void setDialogArea(final DialogAdapter dialogAdapter) {
 
-        for (Area a :
-                addressRes.getAreas()) {
-            listArea.add(a.getArea());
 
-        }
-        dialogArea = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head1)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
+    /**
+     * 设置适配器
+     * 需要的list是全局的stringlist
+     */
+    private void setDialogAdapter() {
+        areaAdapter = new DialogAdapter(this, newAreaStringList, R.layout.simple_list_item);
+        placeAdapter = new DialogAdapter(this, newPlaceStringList, R.layout.simple_list_item);
+        fliesAdapter = new DialogAdapter(this, newFliesStringList, R.layout.simple_list_item);
+        roomAdapter = new DialogAdapter(this, newRoomStringList, R.layout.simple_list_item);
+        categoryAdapter = new DialogAdapter(this, newCategoryStringList, R.layout.simple_list_item);
+        detailClassAdapter = new DialogAdapter(this, newDetailClassStringList, R.layout.simple_list_item);
+    }
+
+
+    private void setDialog() {
+        /**
+         * 设置区域Dialog
+         */
+        areaDialog = DialogUtil.getDialogBuilder(this, areaAdapter, R.layout.dialog_head1, this)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
                         if (position != -1) {
-                            etArea.setText(listArea.get(position));
-                            areaId = getAreaID(listArea.get(position));
-                            Log.d(TAG, "onItemClick: 区域Id " + AreaId);
-                            dialogArea.dismiss();
+                            areaId = newAreaList.get(position).getId();
+                            showId();
+                            etArea.setText(newAreaList.get(position).getArea());
+                            dialog.dismiss();
                         }
                     }
                 })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        /**
+         * 楼号
+         */
+        placeDialog = DialogUtil.getDialogBuilder(this, placeAdapter, R.layout.dialog_head2, this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        if (position != -1) {
+                            placeId = newPlace.get(position).getP_id();
+                            showId();
+                            etDetailArea.setText(newPlace.get(position).getP_name());
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .create();
+        /**
+         * 楼层
+         */
+        fliesDialog = DialogUtil.getDialogBuilder(this,fliesAdapter,R.layout.dialog_head6,this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        flieId = newFlies.get(position).getId();
+                        showId();
+                        etFloor.setText(newFlies.get(position).getFlies());
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        /**
+         * 房间
+         */
+        roomDialog = DialogUtil.getDialogBuilder(this,roomAdapter,R.layout.dialog_head7,this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        roomId = newRoom.get(position).getId();
+                        showId();
+                        etRoom.setText(newRoom.get(position).getRoomNumber());
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        /**
+         * 类型
+         */
+        categoryDialog = DialogUtil.getDialogBuilder(this,categoryAdapter,R.layout.dialog_head3,this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        categoryId = newCategory.get(position).getC_id();
+                        showId();
+                        etApplyType.setText(newCategory.get(position).getC_name());
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        /**
+         * 详细类型
+         */
+        detailClassDialog = DialogUtil.getDialogBuilder(this,detailClassAdapter,R.layout.dialog_head10,this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        detailTypeID = newDetailClass.get(position).getId();
+                        showId();
+                        etApplyTypeDetails.setText(newDetailClass.get(position).getClassDetail());
+                        dialog.dismiss();
+                    }
+                })
                 .create();
 
-        //给EditText设置点击事件
+    }
+
+    private void setEditTextOnTouch() {
+
+        /**
+         * 区域edittext touch事件 点击清空下一级可见性
+         */
         etArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    dialogAdapter.notifyDataSetChanged();
-                    //点击区域清空 楼号 层号 房间
-                    etDetailArea.setText("");
-                    etFloor.setText("");
-                    etRoom.setText("");
-                    //清空存放好的Id
-                    placeId = 0;
-                    flieId = 0;
-                    roomId = 0;
-                    dialogArea.show();
-                    Log.d(TAG, "onTouch: dialogDetailArea.show()");
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    setNextVisible(v, event);
+                    areaDialog.show();
                 }
                 return false;
             }
         });
 
-
-    }
-
-    private void setDialogDetailArea(final DialogAdapter dialogAdapter) {
-
-        dialogDetailArea = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head2)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        if (position != -1) {
-                            etDetailArea.setText(listDetailArea.get(position));
-                            placeId = getDetailId(listDetailArea.get(position));
-                            Log.d(TAG, "onItemClick: 区域Id " + AreaId);
-                            dialogDetailArea.dismiss();
-                        }
-
-                    }
-
-                })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
-                .create();
-
-        //给EditText设置点击事件
+        /**
+         * 楼号
+         */
         etDetailArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    //点击区域清空 层号 房间
-                    etFloor.setText("");
-                    etRoom.setText("");
-                    //清空存放好的Id
-                    flieId = 0;
-                    roomId = 0;
-
-                    listDetailArea.clear();
-
-                    for (Place p :
-                            addressRes.getPlaces()) {
-                        if (etArea.getText().toString() != null && !etArea.equals("")) {
-                            areaId = getAreaID(etArea.getText().toString());
-                            if (areaId == p.getAreaID())
-                                listDetailArea.add(p.getP_name());
-                        }
-                    }
-                    dialogAdapter.notifyDataSetChanged();
-
-                    // 提示先选择区域
-                    Log.d(TAG, "onTouch: etArea数据 " + etArea.getText());
-                    if (!etArea.getText().toString().equals("")) {
-                        dialogDetailArea.show();
-                        Log.d(TAG, "onTouch:show ");
-                    } else {
-                        List<String> list = new ArrayList<>();
-                        list.add("请先选择报修区域");
-                        DialogAdapter dialogAdapter = new DialogAdapter(ChangeActivity.this, list, R.layout.simple_list_item);
-                        dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
-                                .setAdapter(dialogAdapter)
-                                .setGravity(Gravity.CENTER)
-                                .setContentWidth((int) (windowWitch / 1.5))
-                                .setOnItemClickListener(new OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                                        dialogGetImage.dismiss();
-                                    }
-
-                                })
-                                .create();
-                        dialogGetImage.show();
-                    }
-
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    queryFromServer("place",String.valueOf(areaId),JSON_URL);
+                    setNextVisible(v, event);
+                    placeDialog.show();
                 }
                 return false;
             }
         });
-
-
-    }
-
-    private void setDialogFloor(final DialogAdapter dialogAdapter) {
-
-        dialogFloor = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head6)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        if (position != -1) {
-                            etFloor.setText(listFloor.get(position));
-//                            flieId = getFloor(listFloor.get(position));
-                            flieId = listFloorID.get(position);
-                            dialogFloor.dismiss();
-                        }
-
-                    }
-
-                })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
-                .create();
-
-        //给EditText设置点击事件
+        /**
+         * 层号
+         */
         etFloor.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-                    //点击区域清空  房间
-                    etRoom.setText("");
-                    //清空存放好的Id
-                    roomId = 0;
-                    listFloor.clear();
-                    listFloorID.clear();
-                    Log.d(TAG, "onTouch: for之前");
-
-                    //// FIXME: 2017/3/22 添加相应数据
-                    for (Flies f : addressRes.getFlies()) {
-                        Log.d(TAG, "onTouch: f：" + f.getFlies());
-                        if (etDetailArea.getText().toString() != null && !etDetailArea.equals("")) {
-                            int id = getDetailId(etDetailArea.getText().toString());
-                            Log.d(TAG, "onTouch: id " + id);
-                            Log.d(TAG, "onTouch: f.getaFloor:" + f.getaFloor());
-                            Log.d(TAG, "onTouch: f.getid " + f.getId());
-                            if (id == f.getaFloor()) {
-                                listFloor.add(f.getFlies());
-                                Log.d(TAG, "onTouch: 层号 ：" + f.getFlies());
-                                listFloorID.add(f.getId());
-                            }
-                        }
-                    }
-
-
-                    dialogAdapter.notifyDataSetChanged();
-
-
-                    if (!etDetailArea.getText().toString().equals("")) {
-                        dialogFloor.show();
-                        Log.d(TAG, "onTouch:show ");
-                    } else {
-                        List<String> list = new ArrayList<>();
-                        list.add("请先选择楼号");
-                        DialogAdapter dialogAdapter = new DialogAdapter(ChangeActivity.this, list, R.layout.simple_list_item);
-                        dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
-                                .setAdapter(dialogAdapter)
-                                .setGravity(Gravity.CENTER)
-                                .setContentWidth((int) (windowWitch / 1.5))
-                                .setOnItemClickListener(new OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                                        dialogGetImage.dismiss();
-                                    }
-
-                                })
-                                .create();
-                        dialogGetImage.show();
-                    }
-
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    queryFromServer("flies",String.valueOf(placeId),JSON_URL);
+                    setNextVisible(v, event);
+                    fliesDialog.show();
                 }
                 return false;
             }
         });
-
-    }
-
-    private void setDialogRoom(final DialogAdapter dialogAdapter) {
-
-        dialogRoom = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head7)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        if (position != -1) {
-                            etRoom.setText(listRoom.get(position));
-//                            roomId = getRoom(listRoom.get(position));
-                            roomId = listRoomID.get(position);
-                            Log.d(TAG, "onItemClick: " + listRoom.get(position));
-                            Log.d(TAG, "onItemClick: " + roomId);
-                            dialogRoom.dismiss();
-                        }
-                    }
-
-                })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
-                .create();
-
-        //给EditText设置点击事件
+        /**
+         * 房间
+         */
         etRoom.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-                    listRoom.clear();
-                    listRoomID.clear();
-
-                    // FIXME: 2017/3/22 添加相应数据
-                    for (Room r : addressRes.getRooms()) {
-                        if (etFloor.getText().toString() != null && !etFloor.equals("")) {
-                            int Id = getFloor(etFloor.getText().toString());
-                            if (Id == r.getFlies()) {
-                                listRoom.add(r.getRoomNumber());
-                                listRoomID.add(r.getId());
-                            }
-                        }
-                    }
-
-                    dialogAdapter.notifyDataSetChanged();
-
-                    // 提示先选择区域
-                    if (!etFloor.getText().toString().equals("")) {
-                        dialogRoom.show();
-                        Log.d(TAG, "onTouch:show ");
-                    } else {
-                        List<String> list = new ArrayList<>();
-                        list.add("请先选择层号");
-                        DialogAdapter dialogAdapter = new DialogAdapter(ChangeActivity.this, list, R.layout.simple_list_item);
-                        dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
-                                .setAdapter(dialogAdapter)
-                                .setGravity(Gravity.CENTER)
-                                .setContentWidth((int) (windowWitch / 1.5))
-                                .setOnItemClickListener(new OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                                        dialogGetImage.dismiss();
-                                    }
-                                })
-                                .create();
-                        Log.d(TAG, "onTouch: warnning show");
-                        dialogGetImage.show();
-                    }
-
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    queryFromServer("room",String.valueOf(flieId),JSON_URL);
+                    setNextVisible(v, event);
+                    roomDialog.show();
                 }
                 return false;
             }
         });
-
-    }
-
-    private void setDialogApplyType(DialogDetailAdapter dialogAdapter) {
-
-        dialogApplyType = DialogPlus.newDialog(ChangeActivity.this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head3)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        if (position != -1) {
-                            etApplyType.setText(listApplyType.get(position));
-//                            categoryId = getCategroy(listApplyType.get(position));
-                            categoryId = listApplyTypeID.get(position);
-                            dialogApplyType.dismiss();
-                        }
-                    }
-
-                })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
-                .create();
+        /**
+         * 类型
+         * 不用请求网络
+         */
         etApplyType.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: ");
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-                    listApplyType.clear();
-                    listApplyTypeID.clear();
-                    for (Category c : addressRes.getCategory()) {
-                        listApplyType.add(c.getC_name());
-                        listApplyTypeID.add(c.getC_id());
-                    }
-                    dialogApplyType.show();
-                    Log.d(TAG, "onTouch: dialogDetailArea.show()");
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    setNextVisible(v,event);
+                    categoryDialog.show();
                 }
                 return false;
             }
         });
-    }
-
-
-    private void setDialogApplyDetailType(DialogAdapter dialogAdapter) {
-        dialogApplyDetailType = DialogPlus.newDialog(this)
-                .setAdapter(dialogAdapter)
-                .setGravity(Gravity.CENTER)
-                .setHeader(R.layout.dialog_head10)
-                .setContentWidth((int) (windowWitch / 1.5))
-//                .setCancelable(true)
-                .setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        Log.d("DialogPlus", "onItemClick() called with: " + "item = [" +
-                                item + "], position = [" + position + "]");
-                        if (position != -1) {
-                            etApplyTypeDetails.setText(listApplyDetailType.get(position));
-                            detailTypeID = listApplyDetailTypeID.get(position);
-                            dialogApplyDetailType.dismiss();
-                        }
-                    }
-
-                })
-                .setExpanded(true, (int) (windowHeigth / 1.5))  // This will enable the expand feature, (similar to android L share dialog)
-                .create();
+        /**
+         * 详细类型
+         */
         etApplyTypeDetails.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //获取类详
-                    String category = etApplyType.getText().toString();
-                    Log.d(TAG, "onTouch: category:" + category);
-
-                    listApplyDetailType.clear();
-                    listApplyDetailTypeID.clear();
-
-                    for (DetailClass detailType : addressRes.getDetailClasses()) {
-                        Log.d(TAG, "onTouch: category inner:" + detailType.getCategoryName() + "  onTouch: detailTypeID:" + detailType.getClassDetail());
-                        if (detailType.getCategoryName().equals(category)) {
-                            listApplyDetailType.add(detailType.getClassDetail());
-                            listApplyDetailTypeID.add(detailType.getId());
-                        }
-                    }
-                    if (etApplyType.getText().toString().trim().equals("")) {
-                        List<String> list = new ArrayList<>();
-                        list.add("请先选择类型");
-                        DialogAdapter dialogAdapter = new DialogAdapter(ChangeActivity.this, list, R.layout.simple_list_item);
-                        dialogGetImage = DialogPlus.newDialog(ChangeActivity.this)
-                                .setAdapter(dialogAdapter)
-                                .setGravity(Gravity.CENTER)
-                                .setContentWidth((int) (windowWitch / 1.5))
-                                .setOnItemClickListener(new OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                                        dialogGetImage.dismiss();
-                                    }
-                                })
-                                .create();
-                        Log.d(TAG, "onTouch: warnning show");
-                        dialogGetImage.show();
-                    } else {
-                        dialogApplyDetailType.show();
-                    }
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    queryFromServer("detailClass",String.valueOf(categoryId),JSON_URL);
+                    setNextVisible(v,event);
+                    detailClassDialog.show();
                 }
                 return false;
             }
         });
+
+
     }
+
+    private void setNextVisible(View view, MotionEvent event) {
+        switch (view.getId()) {
+            case R.id.et_change_area:
+                //点击区域清空 楼号 层号 房间
+                etDetailArea.setText("");
+                etFloor.setText("");
+                etRoom.setText("");
+                //清空下一级可见
+                llDetailArea.setVisibility(View.INVISIBLE);
+                llContain.setVisibility(View.GONE);
+                llFloor.setVisibility(View.INVISIBLE);
+                llRoom.setVisibility(View.INVISIBLE);
+                //清空存放好的Id
+                placeId = 0;
+                flieId = 0;
+                roomId = 0;
+                break;
+            case R.id.et_change_detail_area:
+                //点击区域清空  层号 房间
+                etFloor.setText("");
+                etRoom.setText("");
+                //清空下一级可见
+                llContain.setVisibility(View.GONE);
+                llFloor.setVisibility(View.INVISIBLE);
+                llRoom.setVisibility(View.INVISIBLE);
+                //清空存放好的Id
+                flieId = 0;
+                roomId = 0;
+                break;
+            case R.id.et_change_floor:
+                //点击区域清空   房间
+                etRoom.setText("");
+                //清空下一级可见
+                llRoom.setVisibility(View.INVISIBLE);
+                //清空存放好的Id
+                roomId = 0;
+                break;
+        }
+    }
+
+
+    /**
+     * 获取stringlist 在edittext.ontouch事件里面 或者 dialog.itemonclick里面调用
+     * 改变全局的stringlist 并且更新适配器
+     *
+     * @param parmsName
+     */
+    private void changeStringList(String parmsName) {
+
+        Log.d(TAG, "changeStringList: 参数名 ： " + parmsName);
+        switch (parmsName) {
+            case "area": {
+                newAreaList.clear();
+                newAreaStringList.clear();
+                newAreaList.addAll(response.getResultBean().getAreas());
+                Area.Comparator1 c = new Area.Comparator1();
+                Collections.sort(newAreaList, c);
+                for (Area a : newAreaList) {
+                    newAreaStringList.add(a.getArea());
+                }
+                areaAdapter.notifyDataSetChanged();
+                break;
+            }
+
+            case "place": {
+                newPlace.clear();
+                newPlaceStringList.clear();
+                newPlace.addAll(response.getResultBean().getPlaces());
+                Place.ComparatorPlace c = new Place.ComparatorPlace();
+                Collections.sort(newPlace,c);
+                for (Place p : newPlace) {
+                    newPlaceStringList.add(p.getP_name());
+                }
+
+                placeAdapter.notifyDataSetChanged();
+                break;
+            }
+            case "flies": {
+                newFlies.clear();
+                newFliesStringList.clear();
+                newFlies.addAll(response.getResultBean().getFlies());
+                Flies.ComparatorFlies flies = new Flies.ComparatorFlies();
+                Collections.sort(newFlies,flies);
+
+                for (Flies f : newFlies) {
+                    newFliesStringList.add(f.getFlies());
+                }
+                fliesAdapter.notifyDataSetChanged();
+                break;
+            }
+            case "room": {
+                newRoom.clear();
+                newRoomStringList.clear();
+                newRoom.addAll(response.getResultBean().getRooms());
+                Room.ComparatorRoom ro=new Room.ComparatorRoom();
+                Collections.sort(newRoom,ro);
+                for (Room r : newRoom) {
+                    newRoomStringList.add(r.getRoomNumber());
+                }
+                roomAdapter.notifyDataSetChanged();
+                break;
+            }
+            case "category": {
+                newCategory.clear();
+                newCategoryStringList.clear();
+                newCategory.addAll(response.getResultBean().getCategory());
+
+                Category.ComparatorCategory ca=new Category.ComparatorCategory();
+                Collections.sort(newCategory,ca);
+
+                for (Category c :
+                        newCategory) {
+                    newCategoryStringList.add(c.getC_name());
+                }
+                categoryAdapter.notifyDataSetChanged();
+                break;
+            }
+            case "detailClass": {
+                newDetailClass.clear();
+                newDetailClassStringList.clear();
+                newDetailClass.addAll(response.getResultBean().getDetailClasses());
+
+                DetailClass.ComparatorDetail deta=new DetailClass.ComparatorDetail();
+                Collections.sort(newDetailClass,deta);
+                for (DetailClass d : newDetailClass) {
+                    newDetailClassStringList.add(d.getClassDetail());
+                }
+                detailClassAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+
+    }
+
+
+    private Response queryFromServer(final String parmsName, String parmsVules, String url) {
+        Log.d(TAG, "queryFromServer: ->调用了");
+        Util.submit(parmsName, parmsVules, url)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        response = new Response();
+                        response.setEnd(true);
+                        response.setErrorMessage("连接服务器失败,请检查网络");
+                        response.setErrorType(-2);
+                    }
+
+                    @Override
+                    public void onResponse(String responses, int id) {
+                        final String responseJson = responses.toString();
+                        Log.d(TAG, "onResponse -> queryArea: " + responseJson);
+                        ;
+                        response = JsonUtil.jsonToResponse(responseJson);
+                        if (response.getErrorType() == -1) {
+                            //服务器读取数据错误
+                            response.setErrorMessage("服务器维护");
+                        } else {
+                            changeStringList(parmsName);
+                        }
+                    }
+
+                });
+        return response;
+    }
+
+
 
     @Override
     public void onPause() {
@@ -1348,5 +1320,36 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         return true;
     }
 
+
+    @Override
+    public void resetVisible() {
+
+        //进来就全部不可见
+        llDetailArea.setVisibility(View.INVISIBLE);
+        llContain.setVisibility(View.GONE);
+        llFloor.setVisibility(View.INVISIBLE);
+        llRoom.setVisibility(View.INVISIBLE);
+        llDetailType.setVisibility(View.INVISIBLE);
+
+
+        //如果区域不为其他 楼号可见
+        if (!etArea.getText().toString().equals("其它") && !etArea.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etArea.getText());
+            llDetailArea.setVisibility(View.VISIBLE);
+        }
+        if (!etDetailArea.getText().toString().equals("其它") && !etDetailArea.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etDetailArea.getText());
+            llContain.setVisibility(View.VISIBLE);
+            llFloor.setVisibility(View.VISIBLE);
+        }
+        if (!etFloor.getText().toString().equals("其它") && !etFloor.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etFloor.getText());
+            llRoom.setVisibility(View.VISIBLE);
+        }
+        if (!etApplyType.getText().toString().equals("其它") && !etApplyType.getText().toString().equals("")) {
+            Log.d(TAG, "resetVisible: " + etApplyType.getText());
+            llDetailType.setVisibility(View.VISIBLE);
+        }
+    }
 
 }

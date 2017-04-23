@@ -62,7 +62,7 @@
                 <TextView
                     android:layout_width="65dp"
                     android:layout_height="wrap_content"
-                    android:text="报修人"
+                    android:text="姓名"
                     android:textColor="#838383"
                     android:textSize="14sp" />
 
@@ -93,7 +93,7 @@
                         android:layout_width="65dp"
                         android:layout_height="wrap_content"
                         android:maxLines="2"
-                        android:text="报修区域"
+                        android:text="故障地点"
                         android:textColor="#838383"
                         android:textSize="14sp" />
 
@@ -142,7 +142,7 @@
                     <TextView
                         android:layout_width="65dp"
                         android:layout_height="wrap_content"
-                        android:text="报修类型"
+                        android:text="故障"
                         android:textColor="#838383"
                         android:textSize="14sp" />
 

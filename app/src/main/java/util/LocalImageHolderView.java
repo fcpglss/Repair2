@@ -26,7 +26,7 @@ import repari.com.adapter.ApplysAdapter;
 /**
  * Created by hsp on 2016/12/15.
  */
-public class LocalImageHolderView implements Holder<String> {
+public class LocalImageHolderView implements Holder<Integer> {
     private ImageView imageview;
     private Context mContext;
     private ResultBean res = null;
@@ -36,6 +36,7 @@ public class LocalImageHolderView implements Holder<String> {
         mContext = context;
         mImageLoader = ImageLoader.build(context);
         res = resultBean;
+
     }
 
 
@@ -47,13 +48,15 @@ public class LocalImageHolderView implements Holder<String> {
     }
 
 
+
     @Override
-    public void UpdateUI(final Context context, final int position, String data) {
+    public void UpdateUI(final Context context, final int position, Integer data) {
         try {
 //            final  String url = data;
 //            mImageLoader.bindBitmap(data,imageview,150,150);
-            Picasso.with(context).load(data).into(imageview);
+//            Picasso.with(context).load(data).into(imageview);
 
+            imageview.setImageResource(data);
             imageview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -63,9 +66,6 @@ public class LocalImageHolderView implements Holder<String> {
                     Intent intent = new Intent(mContext, AnnocementActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("list", (Serializable) list);
-
-
-
                     mContext.startActivity(intent);
                 }
             });

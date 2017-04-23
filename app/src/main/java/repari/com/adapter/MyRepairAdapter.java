@@ -218,8 +218,7 @@ public class MyRepairAdapter extends BaseAdapter {
                 if (state == 4) {
                     Log.d(TAG, "JumpApprise  onClick: 点击事件");
                     Log.d(TAG, "onClick: position: " + position);
-                    DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context, R.layout.dialog_input_password,
-                            myRes.getApplys().get(position));
+                    DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context, R.layout.dialog_input_password,myRes.getApplys().get(position));
                     //点击弹出对话框输入密码
                     dialogPlus = DialogPlus.newDialog(context)
                             .setAdapter(dialogAdapterPassword)
@@ -266,21 +265,24 @@ public class MyRepairAdapter extends BaseAdapter {
         int a_status = rs.getApplys().get(position).getState();
         switch (a_status) {
             case 1:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
                 break;
             case 2:
 
-                image = R.drawable.chulizhong;
+                image = R.drawable.yipaigong;
                 break;
             case 3:
-                image = R.drawable.yishixiao;
+                image = R.drawable.yizuofei;
                 break;
 
             case 4:
-                image = R.drawable.finish;
+                image = R.drawable.yiwanjie;
+                break;
+            case 5:
+                image = R.drawable.dengdaicailiao;
                 break;
             default:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
         }
         return image;
     }

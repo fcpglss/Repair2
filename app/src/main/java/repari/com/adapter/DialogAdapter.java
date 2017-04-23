@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Area;
 import model.Employee;
 import repair.com.repair.R;
 
@@ -55,7 +56,7 @@ public class DialogAdapter extends BaseAdapter {
         if (null == view) {
             view = layoutInflater.inflate(layout, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.textView = (TextView) view.findViewById(R.id.tv_dialog_detail_text);;
+            viewHolder.textView = (TextView) view.findViewById(R.id.tv_dialog_detail_text);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();

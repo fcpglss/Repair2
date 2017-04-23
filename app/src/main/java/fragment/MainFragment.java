@@ -137,13 +137,6 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         }
     };
 
-//    private void stopRefrushs() {
-//        if (isRefresh) {
-//            isRefresh = false;
-//            waterDropListView.stopRefresh();
-//            svProgressHUD.dismiss();
-//        }
-//    }
 
     @Override
     public void onAttach(Context context) {
@@ -344,6 +337,10 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     private void setView() {
         convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
         convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+        List<Integer> stringList=new ArrayList<>();
+        stringList.add(R.drawable.yejing);
+        stringList.add(R.drawable.gonggao1);
+        stringList.add(R.drawable.gonggao2);
             Log.d(TAG, "setPage之前");
             convenientBanner.setPages(
                     new CBViewHolderCreator<LocalImageHolderView>() {
@@ -351,7 +348,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                         public LocalImageHolderView createHolder() {
                             return new LocalImageHolderView(getActivity(),applysAdapter,res);
                         }
-                    }, viewpager_url);
+                    }, stringList);
         Log.d(TAG, "setView: 执行了");
         applysAdapter.notifyDataSetChanged();
         waterDropListView.setAdapter(applysAdapter);
@@ -364,12 +361,12 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             return null;
         }
 
-        for (Announcement announce : res.getAnnouncements()) {
-            if (viewpager_url.size() >= 3) {
-                viewpager_url.remove(0);
-            }
-            viewpager_url.add(announce.getImage_url());
-        }
+//        for (Announcement announce : res.getAnnouncements()) {
+//            if (viewpager_url.size() >= 3) {
+//                viewpager_url.remove(0);
+//            }
+//            viewpager_url.add(announce.getImage_url());
+//        }
         if (applysAdapter == null) {
             applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
         } else {

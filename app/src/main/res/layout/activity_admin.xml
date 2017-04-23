@@ -41,6 +41,35 @@
     </LinearLayout>
 
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:padding="@dimen/dimen4"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen8"
+            android:text="待处理单号"
+            android:layout_weight="1"
+            android:textColor="@color/ColorPrimaryText"
+            android:textSize="@dimen/text_subtitle" />
+        <Button
+            android:layout_width="@dimen/dimen64"
+            android:layout_height="28dp"
+            android:background="@drawable/button_submit"
+            android:layout_marginRight="@dimen/dimen8"
+            android:id="@+id/btn_admin_email"
+            android:textSize="@dimen/text_button_text"
+            android:textColor="@color/ColorLightPrimaryColor"
+            android:text="设置邮箱"/>
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

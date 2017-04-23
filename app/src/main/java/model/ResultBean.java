@@ -31,10 +31,6 @@ public class ResultBean implements Serializable {
         this.flies = flies;
     }
 
-    public List<Area> getArea() {
-        return area;
-    }
-
     public void setArea(List<Area> area) {
         this.area = area;
     }

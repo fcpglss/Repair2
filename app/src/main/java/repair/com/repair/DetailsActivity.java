@@ -53,9 +53,9 @@ import static repair.com.repair.MainActivity.windowHeigth;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "DetailsActivity";
-   private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
+  //  private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
 
-    //private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
+    private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     boolean visible = false;//员工详细页面默认不可见
 
@@ -73,13 +73,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView  tvName, tv_date, tv_category, tv_status, tv_place, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
+    private TextView  tvName, tv_date,  tv_status, tv_place, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
 
     private TextView tv_details_employee1;
 
-    private TextView tv_employee_company, tv_employee_phone, tv_employee_can, tv_paigong;
+    private TextView tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details,llFinishiTime,llNedd,llCompensation,llAdmin;
+    private LinearLayout ll_employee_details,llFinishiTime,llNedd,llCompensation,llAdmin,llDetailDeal;
+
 
     private ImageView img_category, img_status, img_back;
     private ImageView img1, img2, img3;
@@ -190,9 +191,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initView() {
         //员工详细信息
-        tv_employee_company = (TextView) findViewById(R.id.tv_employee_company);
-        tv_employee_phone = (TextView) findViewById(R.id.tv_employee_phone);
-        tv_employee_can = (TextView) findViewById(R.id.tv_employee_can);
+        tv_employee_phone = (TextView) findViewById(R.id.tv_details_employee_phone);
+        tv_employee_can = (TextView) findViewById(R.id.tv_details_employee_can);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
         llFinishiTime= (LinearLayout) findViewById(R.id.ll_finish_time);
@@ -228,7 +228,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tvName = (TextView) findViewById(R.id.tv_details_name);
 //        tv_tel = (TextView) findViewById(R.id.tv_details_tel);
-        tv_category = (TextView) findViewById(tv_details_category);
+//        tv_category = (TextView) findViewById(tv_details_category);
     //    tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
         tvDealTime= (TextView) findViewById(R.id.tv_details_deal_date);
@@ -254,6 +254,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         llCompensation= (LinearLayout) findViewById(R.id.ll_detail_compensation);
         llNedd= (LinearLayout) findViewById(R.id.ll_detail_nedd);
         llAdmin= (LinearLayout) findViewById(R.id.ll_detail_admin);
+        llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
 
 
         img_status = (ImageView) findViewById(R.id.img_status);
@@ -280,10 +281,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     {
         if(!tvDealTime.getText().equals("尚未处理"))
         {
-            llFinishiTime.setVisibility(View.VISIBLE);
-            llCompensation.setVisibility(View.VISIBLE);
-            llNedd.setVisibility(View.VISIBLE);
-            llAdmin.setVisibility(View.VISIBLE);
+            llDetailDeal.setVisibility(View.VISIBLE);
         }
     }
 
@@ -308,7 +306,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private void bindItem() {
-        getCategory();
+//        getCategory();
         Log.d(TAG, "bindItem: "+apply.getRepair());
         tvName.setText(apply.getRepair());
         setNameXXX();
@@ -316,11 +314,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        setTelXXXX();
 //        tv_email.setText(apply.getEmail());
 
-        tv_category.setText(category.getC_name()+" ("+apply.getDetailClass()+")");
+//        tv_category.setText(apply.getClasss()+" ("+apply.getDetailClass()+")");
 //        tvDetailCategory.setText(apply.getDetailClass());
 //        tv_place.setText(apply.getDetailArea());
 
-        tvArea.setText(Util.setAddress(apply));
+        tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail()));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -336,7 +334,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         visibaleFinishTime();
 
-        tv_describe.setText(apply.getClasss()+"("+apply.getDetailClass()+"),"+apply.getRepairDetails());
+        tv_describe.setText(apply.getClasss()+"("+apply.getDetailClass()+")\n"+apply.getRepairDetails());
         img_category.setImageResource(getCategoryIcon());
 
         getApplyImages();
@@ -354,7 +352,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
        // setEmployeeInf(apply.getLogisticMan());
         if (employee!=null){
             tv_details_employee1.setText(employee.getName());
-            tv_employee_company.setText("");
             tv_employee_phone.setText(employee.getE_tel());
             tv_employee_can.setText(employee.getJob());
         }
@@ -378,31 +375,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             tvName.setText(name);
         }
     }
-//
-
-
-
-
-
-
-
-    private void setEmployeeInf(String logisticAccount)
-    {
-        if(getEmploye(logisticAccount)!=null)
-        {
-            Employee e=getEmploye(logisticAccount);
-            tv_details_employee1.setText(e.getName());
-            tv_employee_phone.setText(" "+e.getE_tel());
-        }
-        else
-        {
-            tv_details_employee1.setText(" ");
-            tv_employee_phone.setText(" ");
-            tv_employee_can.setText(" ");
-            tv_employee_company.setText(" ");
-        }
-    }
-
 
     //获取到apply中LogisticMan字段，（员工姓名)的对象
     private Employee getEmploye(String employeeName) {
@@ -459,19 +431,24 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         switch (apply.getState()) {
             case 1:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
                 break;
             case 2:
-                image = R.drawable.yichuli;
+
+                image = R.drawable.yipaigong;
                 break;
             case 3:
-                image = R.drawable.yishixiao;
+                image = R.drawable.yizuofei;
                 break;
+
             case 4:
-                image = R.drawable.finish;
+                image = R.drawable.yiwanjie;
+                break;
+            case 5:
+                image = R.drawable.dengdaicailiao;
                 break;
             default:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
         }
         return image;
     }

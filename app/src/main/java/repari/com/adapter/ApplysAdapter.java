@@ -2,6 +2,7 @@ package repari.com.adapter;
 
 import android.content.Context;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,9 +82,9 @@ public class ApplysAdapter extends BaseAdapter {
         final String tag = (String) imageView.getTag();
         String c_url = "";
         String a_details = "";
-        c_url = getCategoryId(position, res);
+//        c_url = getCategoryId(position, res);
         Apply apply = res.getApplys().get(position);
-        a_details = Util.setTitle(apply);
+        a_details = Util.setAddress(apply);
 
         final String uri = c_url;
 
@@ -93,7 +94,7 @@ public class ApplysAdapter extends BaseAdapter {
 
         if (mCanGetBitmapFromNetWork) {
             imageView.setTag(c_url);
-            Picasso.with(context).load(c_url).into(imageView);
+//            Picasso.with(context).load(c_url).into(imageView);
         }
         viewHolder.tvTitle.setText(a_details);
         viewHolder.tvContent.setText(apply.getRepairDetails());
@@ -102,7 +103,39 @@ public class ApplysAdapter extends BaseAdapter {
         viewHolder.tvTime.setText(temp.split(":")[0] + ":" + temp.split(":")[1]);
         setIcon(viewHolder);
         viewHolder.ivRightDownIcon.setImageResource(getRightIcon(position, res));
+
+        viewHolder.ivIcon.setImageResource(getImageResource(res.getApplys().get(position).getClasss()));
+
         return convertView;
+    }
+
+    private int getImageResource(String name) {
+
+        switch (name) {
+            case "电工类":
+
+                return   R.drawable.dian2;
+            case "木工类":
+
+                return   R.drawable.chulizhong;
+            case "水工类":
+                return   R.drawable.shui;
+
+            case "家具类":
+
+                return  R.drawable.jiaju;
+            case "土建类":
+
+                return  R.drawable.tujian;
+
+            case "媒体类":
+
+                return  R.drawable.meiti;
+            default:
+
+                return   R.drawable.other;
+        }
+
     }
 
     /**
@@ -116,14 +149,14 @@ public class ApplysAdapter extends BaseAdapter {
         String c_url = "";
 
 
-        for (Category category : rs.getCategory()) {
-            if (appyly_cid.equals(category.getC_name())) {
-                categoryProprety = category.getC_priority();
-
-                c_url = category.getC_imageurl();
-                break;
-            }
-        }
+//        for (Category category : rs.getCategory()) {
+//            if (appyly_cid.equals(category.getC_name())) {
+//                categoryProprety = category.getC_priority();
+//
+//                c_url = category.getC_imageurl();
+//                break;
+//            }
+//        }
         return c_url;
     }
 
@@ -132,21 +165,24 @@ public class ApplysAdapter extends BaseAdapter {
         int a_status = rs.getApplys().get(position).getState();
         switch (a_status) {
             case 1:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
                 break;
             case 2:
 
-                image = R.drawable.chulizhong;
+                image = R.drawable.yipaigong;
                  break;
             case 3:
-                image = R.drawable.yishixiao;
+                image = R.drawable.yizuofei;
                 break;
 
             case 4:
-                image = R.drawable.finish;
+                image = R.drawable.yiwanjie;
+                break;
+            case 5:
+                image = R.drawable.dengdaicailiao;
                 break;
             default:
-                image = R.drawable.daichuli;
+                image = R.drawable.weichuli;
         }
         return image;
     }

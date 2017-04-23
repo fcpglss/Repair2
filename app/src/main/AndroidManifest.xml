@@ -46,6 +46,7 @@
         <activity android:name=".LoginActivity"/>
         <activity android:name=".AdminDetailActivity"/>
         <activity android:name=".AnnonceDetailActivity"/>
+        <activity android:name=".SaveEmailActivity"/>
     </application>
 
 </manifest>

@@ -1,50 +1,40 @@
 package repair.com.repair;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.orhanobut.dialogplus.DialogPlus;
 import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import application.MyApplication;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import fragment.MainFragment;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
-import medusa.theone.waterdroplistview.view.WaterDropListViewHeader;
 import model.Admin;
 import model.Apply;
 import model.Response;
-import model.ResponseAdmin;
 import model.ResultBean;
 import repari.com.adapter.AdminListAdapter;
+import repari.com.adapter.SaveEmailAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
-import util.LocalImageHolderView;
-import util.Util;
-import util.WaterListViewListener;
 
-import static repair.com.repair.MainActivity.FRIST_URL;
-import static repair.com.repair.MainActivity.SENDMORE_URL;
+import static repair.com.repair.MainActivity.windowHeigth;
+import static repair.com.repair.MainActivity.windowWitch;
 
 /**
  * Created by hsp on 2017/4/7.
@@ -54,11 +44,12 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     private static final String TAG = "AdminListActivity";
 
 
-    private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
-    // private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
+    // private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
+    private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
 
-    private static final String ADMINLIST_SENDMORE = "http://192.168.31.201:8888/myserver2/SendAdminListMore";
-     // private static final String ADMINLIST_SENDMORE = "http://192.168.43.128:8888/myserver2/SendAdminListMore";
+    //private static final String ADMINLIST_SENDMORE = "http://192.168.31.201:8888/myserver2/SendAdminListMore";
+    private static final String ADMINLIST_SENDMORE = "http://192.168.43.128:8888/myserver2/SendAdminListMore";
+    public static final String ADMIN_EMAIL_CHECK = "http://192.168.43.128:8888/myserver2/AdminEmailCheck";
 
 
     SwitchButton switchButton;
@@ -73,6 +64,9 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
     private TextView tvHead;
 
+
+    private Button btnEmail;
+
     private ResultBean moreRes;
 
     private Response moreResponse;
@@ -85,10 +79,12 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
     private Admin admin;
 
-    public static  boolean hasPic=true;
+    public static boolean hasPic = true;
 
     private WaterDropListView lvAdmin;
     AdminListAdapter adminListAdapter;
+    SaveEmailAdapter saveEmailAdapter;
+    public static DialogPlus admindialogPlus;
 
     private ResultBean refrushRes;
 
@@ -107,7 +103,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                     break;
                 case 3:
                     Toast.makeText(AdminListActivity.this, "第一次加载", Toast.LENGTH_SHORT).show();
-                    updateView(0,hasPic);
+                    updateView(0, hasPic);
                     break;
                 case 4:
                     lvAdmin.stopRefresh();
@@ -115,8 +111,9 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                     break;
                 case 5:
                     lvAdmin.stopRefresh();
-                    Toast.makeText(AdminListActivity.this,"刷新成功",Toast.LENGTH_SHORT).show();;
-                    updateView(0,hasPic);
+                    Toast.makeText(AdminListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
+                    ;
+                    updateView(0, hasPic);
                     break;
                 case 6:
                     Toast.makeText(AdminListActivity.this, "下边已经没有数据了", Toast.LENGTH_SHORT).show();
@@ -126,8 +123,8 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                 case 7:
                     moreList = moreRes.getApplys();
                     setMoreApply(moreList);
-                    updateView(0,hasPic);
-                  //  Util.writeJsonToLocal(res, MyApplication.getContext());
+                    updateView(0, hasPic);
+                    //  Util.writeJsonToLocal(res, MyApplication.getContext());
                     lvAdmin.setSelection(start);
                     Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
                     moreFlag = moreResponse.isEnd();
@@ -136,7 +133,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                     break;
                 case 8:
                     Toast.makeText(AdminListActivity.this, "网络异常,请检查网络", Toast.LENGTH_SHORT).show();
-                    updateView(0,hasPic);
+                    updateView(0, hasPic);
                     break;
             }
         }
@@ -146,29 +143,48 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-        admin=getAdmin();
+        admin = getAdmin();
         init();
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("加载中");
-        queryFromServer(JSONFIRST,0);
+        queryFromServer(JSONFIRST, 0);
 
     }
 
 
-    private Admin getAdmin()
-    {
-        Admin admin =new Admin();
-        admin= (Admin) getIntent().getSerializableExtra("admin");
-        hasPic=getIntent().getBooleanExtra("hasPic",false);
+    private Admin getAdmin() {
+        Admin admin = new Admin();
+        admin = (Admin) getIntent().getSerializableExtra("admin");
+        hasPic = getIntent().getBooleanExtra("hasPic", false);
         return admin;
     }
 
 
-
     private void init() {
 
+        saveEmailAdapter = new SaveEmailAdapter(this,R.layout.save_email);
+
+        btnEmail = (Button) findViewById(R.id.btn_admin_email);
+        admindialogPlus = DialogPlus.newDialog(AdminListActivity.this)
+                .setGravity(Gravity.CENTER)
+                .setContentWidth((int) (windowWitch/1.1))
+                .setContentHeight(windowHeigth/3)
+                .setAdapter(saveEmailAdapter)
+        .create();
+//                        .setOnBackPressListener()
+//        saveEmailAdapter = new SaveEmailAdapter(this,R.layout.save_email);
+        btnEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                admindialogPlus
+                     .show();
+            }
+        });
+
+
         switchButton = (SwitchButton) findViewById(R.id.switch_button);
-        tvHead= (TextView) findViewById(R.id.tv_head);
+        tvHead = (TextView) findViewById(R.id.tv_head);
         tvHead.setText(admin.getAccount());
         tvImage = (TextView) findViewById(R.id.tv_image);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
@@ -184,13 +200,13 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
 
                 if (isChecked) {
-                    hasPic=true;
+                    hasPic = true;
                     tvImage.setText("有图");
-                    updateView(0,hasPic);
+                    updateView(0, hasPic);
                 } else {
-                    hasPic=false;
+                    hasPic = false;
                     tvImage.setText("无图");
-                    updateView(0,hasPic);
+                    updateView(0, hasPic);
                 }
             }
         });
@@ -203,6 +219,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             public void onFinish(String responseString) {
                 //请求成功后获取到json
                 final String responseJson = responseString.toString();
+                Log.d(TAG, "onFinish: responseJson: " + responseJson);
                 //解析json获取到Response;
                 adminResponse = JsonUtil.jsonToResponse(responseJson);
                 postMessage(adminResponse, isRefrush);
@@ -216,12 +233,9 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                 rp.setErrorMessage("网络异常，返回空值");
                 adminResponse = rp;
                 Log.d(TAG, " onEnrror调用:" + e.getMessage());
-                if(isRefrush==1)
-                {
+                if (isRefrush == 1) {
                     mhandler.sendEmptyMessage(4);
-                }
-                else
-                {
+                } else {
                     mhandler.sendEmptyMessage(8);
                 }
 
@@ -230,46 +244,32 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     }
 
     private void postMessage(Response response, int isRefrush) {
-        if(response==null)
-        {
-            response=new Response();
+        if (response == null) {
+            response = new Response();
             response.setErrorType(-2);
             response.setError(false);
             response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
             Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-            if(isRefrush==1)
-            {
+            if (isRefrush == 1) {
                 mhandler.sendEmptyMessage(4);
-            }
-            else
-            {
+            } else {
                 mhandler.sendEmptyMessage(2);
             }
-        }
-        else
-        {
-            refrushRes=response.getResultBean();
+        } else {
+            refrushRes = response.getResultBean();
             setFirstApply(refrushRes);
             if (adminRes != null) {
-                if(isRefrush==1)
-                {
+                if (isRefrush == 1) {
                     Log.d(TAG, "刷新调用 queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
                     mhandler.sendEmptyMessage(5);
-                }
-                else
-                {
+                } else {
                     Log.d(TAG, "postMessage: 第一次进来调用,不需要停止刷新");
                     mhandler.sendEmptyMessage(3);
                 }
-            }
-            else
-            {
-                if(isRefrush==1)
-                {
+            } else {
+                if (isRefrush == 1) {
                     mhandler.sendEmptyMessage(4);
-                }
-                else
-                {
+                } else {
                     mhandler.sendEmptyMessage(2);
                 }
             }
@@ -277,8 +277,8 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     }
 
     private void setMoreApply(List<Apply> applyList) {
-        int isSame=0;
-        List<Apply> tempList=adminRes.getApplys();
+        int isSame = 0;
+        List<Apply> tempList = adminRes.getApplys();
         for (Apply apply : applyList) {
 //            for(int i=0;i<tempList.size();i++)
 //            {
@@ -298,8 +298,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     }
 
 
-
-    private void updateView(int isRefrush,boolean isLoadImages) {
+    private void updateView(int isRefrush, boolean isLoadImages) {
         //从内存中的数据更新；
         if (adminListAdapter != null) {
             adminListAdapter.setIsLoadImages(isLoadImages);
@@ -311,21 +310,21 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                 }
             } else {
                 Log.d(TAG, "updateView: 内存中的adminListAdapter没有被销毁，但是adminRes已经被销毁了,需再次请求网络");
-                queryFromServer(JSONFIRST,isRefrush);
+                queryFromServer(JSONFIRST, isRefrush);
             }
         }
         //内存中的applyAdapters已经被销毁，需重新创建一个
         else {
             Log.d(TAG, "updateView: 内存中的adminListAdapter已经被销毁,重新构造adminListAdapter");
             if (adminRes != null) {
-                adminListAdapter = new AdminListAdapter(AdminListActivity.this, adminRes,hasPic);
+                adminListAdapter = new AdminListAdapter(AdminListActivity.this, adminRes, hasPic);
                 Log.d(TAG, "updateView: adminListAdapter不为null");
                 setView();
                 if (svProgressHUD.isShowing()) {
                     svProgressHUD.dismiss();
                 }
             } else {
-                queryFromServer(JSONFIRST,isRefrush);
+                queryFromServer(JSONFIRST, isRefrush);
             }
 
         }
@@ -352,7 +351,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     @Override
     public void onRefresh() {
         isRefresh = true;
-        queryFromServer(JSONFIRST,1);
+        queryFromServer(JSONFIRST, 1);
     }
 
     @Override
@@ -368,8 +367,8 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             end = end + 5;
         }
 
-        String request=ADMINLIST_SENDMORE + "?start=" + start + "&&end=" + end;
-        Log.d(TAG, "onLoadMore: "+request);
+        String request = ADMINLIST_SENDMORE + "?start=" + start + "&&end=" + end;
+        Log.d(TAG, "onLoadMore: " + request);
         HttpUtil.sendHttpRequest(ADMINLIST_SENDMORE + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
 
             @Override
@@ -408,13 +407,12 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     private void setFirstApply(ResultBean resultBean) {
         if (adminRes != null && adminRes.getApplys().size() > 0) {
             for (int i = 0; i < resultBean.getApplys().size(); i++) {
-                if(adminRes.getApplys().size()>i)
-                {
+                if (adminRes.getApplys().size() > i) {
                     adminRes.getApplys().remove(i);
                     adminRes.getApplys().add(i, resultBean.getApplys().get(i));
                     continue;
                 }
-                  adminRes.getApplys().add(i, resultBean.getApplys().get(i));
+                adminRes.getApplys().add(i, resultBean.getApplys().get(i));
             }
         } else {
             adminRes = resultBean;
@@ -438,7 +436,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     protected void onDestroy() {
         start = 0;
         end = 5;
-        moreFlag=false;
+        moreFlag = false;
         super.onDestroy();
     }
 }

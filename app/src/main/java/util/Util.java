@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,6 +54,11 @@ import static repair.com.repair.MainActivity.UP_APPLY;
 public class Util {
 
     private static final String TAG = "Util";
+
+    private  static View.OnTouchListener touch;
+
+
+    private EdiTTouch ed;
 
     public static int convertToInt(Object value, int defaultValue) {
         if (value != null || "".equals(value.toString().trim())) {
@@ -187,15 +193,34 @@ public class Util {
         String address = "";
         String flies = apply.getFlies();
         String room = apply.getRoom();
-        if (flies != null && !flies.equals("")) {
-            address = apply.getDetailArea() + flies;
-            if (room != null && !room.equals("")) {
-                address = apply.getDetailArea() + flies + apply.getRoom();
+        String place = apply.getDetailArea();
+        if (place==null||"null".equals(place)||"".equals(place)){
+            return apply.getArea()+getAdressDetalil(apply.getAddressDetail());
+        }else {
+            if (flies != null && !flies.equals("")) {
+                address = apply.getDetailArea() + flies;
+                if (room != null && !room.equals("")) {
+                    address = apply.getArea()+apply.getDetailArea() + flies + apply.getRoom();
+                }
+            } else {
+                address = apply.getArea() + apply.getDetailArea(); //没有层号的时候 可在后面加其他地址
             }
-        } else {
-            address = apply.getArea() + apply.getDetailArea() + ""; //没有层号的时候 可在后面加其他地址
         }
         return address;
+    }
+
+    public static String getAdressDetalil(String s){
+        Log.d(TAG, "getAdressDetalil: 1");
+        Log.d(TAG, "getAdressDetalil: ss: "+s);
+        if (s==null||"null".equals(s)||"".equals(s)){
+            Log.d(TAG, "getAdressDetalil: 2");
+            s="";
+        }else {
+            Log.d(TAG, "getAdressDetalil: 3");
+            s = ","+s;
+        }
+
+        return s;
     }
 
     public static String errorMessage(Response response) {
@@ -401,6 +426,23 @@ public class Util {
         postFormBuilder.url(requestURL);
         return postFormBuilder.build();
     }
+    public static RequestCall submit(String adminEmail, String adminEmailVules, String password, String passwordVules,
+                                     String content ,String contentVules ,String serverEmail,String serverMailVules,
+                                     String ID,String IDVules,String imgPath,String imgPathVules,
+                                     String URL) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
+        postFormBuilder.addParams(adminEmail, adminEmailVules);
+        postFormBuilder.addParams(password, passwordVules);
+        postFormBuilder.addParams(content, contentVules);
+        postFormBuilder.addParams(serverEmail, serverMailVules);
+        postFormBuilder.addParams(ID, IDVules);
+        postFormBuilder.addParams(imgPath, imgPathVules);
+        postFormBuilder.url(URL);
+        return postFormBuilder.build();
+    }
+
+
+
 
     public static RequestCall submit(String paramsKey, String paramsValues, String paramsKey2, String paramsValues2, String requestURL) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
@@ -503,11 +545,12 @@ public class Util {
             md.update(mingwen.getBytes());
             // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
             // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
-            return new BigInteger(1, md.digest()).toString(16);
+            return new  BigInteger(1, md.digest()).toString(16);
         } catch (Exception e) {
             throw new RuntimeException("MD5加密出现错误");
         }
     }
+
 
     public static void setOnClickBackgroundColor(final View view){
 
@@ -525,5 +568,25 @@ public class Util {
             }
         });
     }
+    public static void setEditTextOnTouch(final View view){
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_UP){
+//                    ed.setVisable();
+                }
+
+
+
+                return false;
+            }
+        });
+
+    }
+
+
+
+
 
 }

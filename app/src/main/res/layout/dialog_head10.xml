@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请选择类型详情"
+        android:text="请选择故障详情"
         android:textColor="@color/ColorPrimaryText"
 
         android:textSize="18sp"/>

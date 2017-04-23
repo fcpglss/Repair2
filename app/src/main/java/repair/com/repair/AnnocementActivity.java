@@ -49,14 +49,14 @@ import static repair.com.repair.MainActivity.FRIST_URL;
 
 public class AnnocementActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener{
 //
-    private final static String  ANNCOUCEMENT="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementFirst";
-//
-    private final static String  ANNCOUCEMENTMORE="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementMore";
+   // private final static String  ANNCOUCEMENT="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementFirst";
+
+ //   private final static String  ANNCOUCEMENTMORE="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementMore";
 
 
-   // private final static String  ANNCOUCEMENT="http://192.168.43.128:8888/myserver2/SendAnnoucement?annoucementFirst";
+    private final static String  ANNCOUCEMENT="http://192.168.43.128:8888/myserver2/SendAnnoucement?annoucementFirst";
 
-   // private final static String  ANNCOUCEMENTMORE="http://192.43.128.201:8888/myserver2/SendAnnoucement?annoucementMore";
+    private final static String  ANNCOUCEMENTMORE="http://192.43.128.201:8888/myserver2/SendAnnoucement";
 
 
     private static boolean moreFlag = false;
@@ -186,7 +186,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
             Log.d(TAG, "updateView: 内存中的ApplyAdapters已经被销毁,重新构造ApplyAdapter,并且读本地数据更新View");
             String json = Util.loadFirstFromLocal(AnnocementActivity.this);
             annoceResult = JsonUtil.jsonToBean(json);
-            adapter = getBeanFromJson(annoceResult, adapter);
+            adapter = getBeanFromJson(refrushRes, adapter);
             if (adapter == null) {
                 Toast.makeText(this, "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
                 queryFromServer(FRIST_URL,isRefrush);
@@ -211,7 +211,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         }
 
         if (applysAdapter == null) {
-            applysAdapter = new AnnocmentListAdapter(res.getAnnouncements(), MyApplication.getContext());
+        applysAdapter = new AnnocmentListAdapter(res.getAnnouncements(), MyApplication.getContext());
         } else {
             applysAdapter.notifyDataSetChanged();
         }

@@ -229,7 +229,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_change_detail_area"
+                        android:visibility="invisible">
 
                         <TextView
                             android:layout_width="@dimen/dimen40"
@@ -260,12 +262,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_margin="8dp"
+                    android:id="@+id/ll_change_contain"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_change_floor"
+                        android:visibility="invisible">
 
                         <TextView
                             android:id="@+id/textView12"
@@ -290,7 +296,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_change_room"
+                        android:visibility="invisible">
 
                         <TextView
                             android:layout_width="@dimen/dimen40"
@@ -380,7 +388,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/ll_change_detail_type">
 
 
                         <TextView

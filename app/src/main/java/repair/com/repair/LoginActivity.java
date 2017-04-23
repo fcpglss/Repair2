@@ -40,8 +40,8 @@ import util.Util;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
-   private static final String LOGIN="http://192.168.31.201:8888/myserver2/AdminLogin";
-     // private static final String LOGIN="http://192.168.43.128:8888/myserver2/AdminLogin";
+  // private static final String LOGIN="http://192.168.31.201:8888/myserver2/AdminLogin";
+      private static final String LOGIN="http://192.168.43.128:8888/myserver2/AdminLogin";
 
     private String account;
 
@@ -100,8 +100,9 @@ public class LoginActivity extends AppCompatActivity {
         btnAdminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                account=etAdminName.getText().toString().trim();
+                account=etAdminName.getText().toString();
                 password=Util.getMD5(etAdminPassword.getText().toString());
+                Log.d(TAG, "onClick: account :"+account);
                 Log.d(TAG, "onClick: password :"+password);
                 upply();
             }
@@ -169,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
         {
             responseAdmin=new ResponseAdmin();
             responseAdmin.setEnd(false);
-            responseAdmin.setErrorMessage("网络连接超时，请检查网络");
+            responseAdmin.setErrorMessage("账户或者密码错误");
             //请求网络失败
             mhandler.sendEmptyMessage(2);
         }
