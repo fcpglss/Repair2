@@ -7,31 +7,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import application.MyApplication;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import model.Admin;
-import model.Response;
 import model.ResponseAdmin;
 import okhttp3.Call;
-import util.HttpCallbackListener;
-import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
+
+import static constant.RequestUrl.LOGIN;
 
 /**
  * Created by hsp on 2017/4/10.
@@ -40,8 +33,7 @@ import util.Util;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
-  // private static final String LOGIN="http://192.168.31.201:8888/myserver2/AdminLogin";
-      private static final String LOGIN="http://192.168.43.128:8888/myserver2/AdminLogin";
+
 
     private String account;
 
@@ -67,6 +59,14 @@ public class LoginActivity extends AppCompatActivity {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("admin",admin);
                     intent.putExtras(bundle);
+
+                    //存值
+                    Gson gson = new Gson();
+                    String adminJson = gson.toJson(admin,Admin.class);
+                    SharedPreferences.Editor editor = LoginActivity.this.getSharedPreferences("admin_data", MODE_PRIVATE).edit();
+                    editor.putString("admin",adminJson);
+                    editor.apply();
+
                     startActivity(intent);
                     break;
                 case 4:

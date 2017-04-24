@@ -1,12 +1,9 @@
 package repari.com.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,22 +14,17 @@ import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.orhanobut.dialogplus.DialogPlus;
-import com.zhy.http.okhttp.callback.Callback;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import application.MyApplication;
+import constant.RequestUrl;
 import imagehodler.ImageLoader;
 import model.Apply;
 import okhttp3.Call;
-import okhttp3.Response;
-import repair.com.repair.AdminListActivity;
-import repair.com.repair.AppraiseActivity;
 import repair.com.repair.R;
 import util.Util;
-//import repair.com.repair.AdminListActivity
 
 import static repair.com.repair.AdminListActivity.admindialogPlus;
-import static repari.com.adapter.MyRepairAdapter.dialogPlus;
+
 
 /**
  * Created by hsp on 2017/3/20.
@@ -130,7 +122,7 @@ public class SaveEmailAdapter extends BaseAdapter {
                 String email = viewHolder.etEmail.getText().toString();
                 String password = viewHolder.etPassword.getText().toString();
                 //加密密码
-                Util.submit("adminEmail", email, "password", password, AdminListActivity.ADMIN_EMAIL_CHECK).execute(new StringCallback() {
+                Util.submit("adminEmail", email, "password", password, RequestUrl.ADMIN_EMAIL_CHECK).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
 

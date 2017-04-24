@@ -7,9 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,9 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,19 +27,18 @@ import imagehodler.ImageLoader;
 import model.Apply;
 import model.Category;
 import model.Employee;
-import model.Place;
 import model.Response;
 import model.ResultBean;
-import repari.com.adapter.DialogAdapterImg;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
 
-import static repair.com.repair.R.id.tv_details_category;
-//import static repair.com.repair.R.id.tv_details_employee;
-import static repair.com.repair.MainActivity.windowWitch;
+import static constant.RequestUrl.URL;
 import static repair.com.repair.MainActivity.windowHeigth;
+import static repair.com.repair.MainActivity.windowWitch;
+
+//import static repair.com.repair.R.id.tv_details_employee;
 
 
 /**
@@ -53,9 +48,7 @@ import static repair.com.repair.MainActivity.windowHeigth;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "DetailsActivity";
-  //  private static final String URL="http://192.168.31.201:8888/myserver2/servlet/action";
 
-    private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     boolean visible = false;//员工详细页面默认不可见
 

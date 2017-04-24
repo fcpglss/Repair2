@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import model.Admin;
 import model.Apply;
 import model.Response;
 import model.ResponseAdmin;
@@ -14,6 +15,27 @@ public class JsonUtil {
 
 
 	private static final String TAG = "JsonUtil";
+
+	public static Admin jsonToAdmin(String jsonString)
+	{
+
+		try
+		{
+			if(jsonString!=null&&jsonString.length()>0)
+			{
+				Gson gson =new Gson();
+				Admin bean =gson.fromJson(jsonString, Admin.class);
+
+				return bean;
+			}
+		}
+		catch (Exception e) {
+
+			Log.d(TAG, "jsonToBean: "+e.getMessage().toString());
+		}
+		return null;
+	}
+
 
 	public static ResultBean jsonToBean(String jsonString)
 	{

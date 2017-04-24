@@ -33,6 +33,8 @@ import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
 
+import static constant.RequestUrl.ADMINLIST_SENDMORE;
+import static constant.RequestUrl.JSONFIRST;
 import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
 
@@ -42,14 +44,6 @@ import static repair.com.repair.MainActivity.windowWitch;
 
 public class AdminListActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener {
     private static final String TAG = "AdminListActivity";
-
-
-    // private static final String JSONFIRST = "http://192.168.31.201:8888/myserver2/AdminServerApply";
-    private static final String JSONFIRST = "http://192.168.43.128:8888/myserver2/AdminServerApply";
-
-    //private static final String ADMINLIST_SENDMORE = "http://192.168.31.201:8888/myserver2/SendAdminListMore";
-    private static final String ADMINLIST_SENDMORE = "http://192.168.43.128:8888/myserver2/SendAdminListMore";
-    public static final String ADMIN_EMAIL_CHECK = "http://192.168.43.128:8888/myserver2/AdminEmailCheck";
 
 
     SwitchButton switchButton;
@@ -78,6 +72,8 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
 
     private Admin admin;
+
+    public static String onResumeValue = "Init";
 
     public static boolean hasPic = true;
 
@@ -147,10 +143,25 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         init();
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("加载中");
+
+
         queryFromServer(JSONFIRST, 0);
 
     }
 
+    @Override
+    protected void onResume() {
+
+       if (onResumeValue.equals("OK")){
+           Log.d(TAG, "onResume: OK");
+           onResumeValue = "Init";
+           queryFromServer(JSONFIRST, 0);
+       }
+
+        super.onResume();
+
+
+    }
 
     private Admin getAdmin() {
         Admin admin = new Admin();
@@ -162,15 +173,15 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
     private void init() {
 
-        saveEmailAdapter = new SaveEmailAdapter(this,R.layout.save_email);
+        saveEmailAdapter = new SaveEmailAdapter(this, R.layout.save_email);
 
         btnEmail = (Button) findViewById(R.id.btn_admin_email);
         admindialogPlus = DialogPlus.newDialog(AdminListActivity.this)
                 .setGravity(Gravity.CENTER)
-                .setContentWidth((int) (windowWitch/1.1))
-                .setContentHeight(windowHeigth/3)
+                .setContentWidth((int) (windowWitch / 1.1))
+                .setContentHeight(windowHeigth / 3)
                 .setAdapter(saveEmailAdapter)
-        .create();
+                .create();
 //                        .setOnBackPressListener()
 //        saveEmailAdapter = new SaveEmailAdapter(this,R.layout.save_email);
         btnEmail.setOnClickListener(new View.OnClickListener() {
@@ -178,7 +189,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
             public void onClick(View v) {
 
                 admindialogPlus
-                     .show();
+                        .show();
             }
         });
 

@@ -23,10 +23,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
-
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
@@ -49,22 +47,21 @@ import okhttp3.Call;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.DialogAdapter;
-import repari.com.adapter.DialogDetailAdapter;
 import util.DialogUtil;
 import util.EdiTTouch;
 import util.JsonUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
-import static repair.com.repair.MainActivity.GET_JSON;
-import static repair.com.repair.MainActivity.JSON_URL;
+import static constant.RequestUrl.GET_JSON;
+import static constant.RequestUrl.JSON_URL;
+import static constant.RequestUrl.UP_APPLY;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
-import static repair.com.repair.MainActivity.UP_APPLY;
 import static repair.com.repair.MainActivity.list_uri;
-import static util.NetworkUtils.isNetworkConnected;
-import static repair.com.repair.MainActivity.windowWitch;
 import static repair.com.repair.MainActivity.windowHeigth;
+import static repair.com.repair.MainActivity.windowWitch;
+import static util.NetworkUtils.isNetworkConnected;
 
 
 public class ApplyFragment extends LazyFragment2 implements View.OnClickListener, GetFragment, EdiTTouch, ResetVisable {
@@ -664,6 +661,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 llApplyRoom.setVisibility(View.INVISIBLE);
                 //清空存放好的Id
                 roomId = 0;
+                break;
+            case R.id.et_apply_type:
+                //清空详细类型
+                etApplyTypeDetails.setText("");
+                llApplyDetailType.setVisibility(View.INVISIBLE);
+                detailTypeID = 0;
                 break;
         }
     }

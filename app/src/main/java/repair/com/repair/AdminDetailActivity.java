@@ -1,25 +1,17 @@
 package repair.com.repair;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,38 +21,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnDismissListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import application.MyApplication;
-import camera.FIleUtils;
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import imagehodler.ImageLoader;
+import model.Admin;
 import model.Apply;
-import model.Category;
 import model.Employee;
 import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
-import repari.com.adapter.AdminListAdapter;
 import repari.com.adapter.DialogAdapter;
-import util.FileUtils;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
 
-import static android.content.Intent.ACTION_SEND;
-import static android.content.Intent.ACTION_SEND_MULTIPLE;
+import static constant.RequestUrl.ADMIN_SUBMIT_EMAIL;
+import static constant.RequestUrl.AdMINUPDATE;
+import static constant.RequestUrl.JSONEMPLOYEE;
+import static constant.RequestUrl.URL;
 import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
 
@@ -71,7 +58,8 @@ import static repair.com.repair.MainActivity.windowWitch;
 public class AdminDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "AdminDetailActivity";
 
-    private static final String ADMIN_SUBMIT_EMAIL="http://192.168.43.128:8888/myserver2/AdminEmailCheck";
+
+
 
 
 
@@ -90,29 +78,11 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onResume() {
-
-//
-//        Log.d(TAG, "onResume: listFile的size" + listFile.size());
-//        if(listFile!=null&&listFile.size()>0)
-//        {
-//            for (File file : listFile) {
-//                String tempFilePath=file.getAbsolutePath();
-//                Util.deleteImage((MyApplication.getContext()),tempFilePath);
-//            }
-//        }
     super.onResume();
     }
 
-//
-//   public static String JSONEMPLOYEE = "http://192.168.31.201:8888/myserver2/AdminServerUpdate";
-//    private static final String URL = "http://192.168.31.201:8888/myserver2/servlet/action";
-//    private static final String AdMINUPDATE = "http://192.168.31.201:8888/myserver2/AdminUpdate";
 
 
-    private static final String AdMINUPDATE = "http://192.168.43.128:8888/myserver2/AdminUpdate";
-     public static String JSONEMPLOYEE = "http://192.168.43.128:8888/myserver2/AdminServerUpdate";
-
-     private static final String URL="http://192.168.43.128:8888/myserver2/servlet/action";
 
     private static boolean isFirst = true;
 
@@ -142,7 +112,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     private int isIntenet;
     private Button btnChoose, btnSend, btnSubmit;
 
-    private EditText etServerMan,tvMatrial;
+    private EditText etServerMan,etMatrial;
     private ResultBean adminDetailRes = null;
 
 
@@ -173,7 +143,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                     Log.d(TAG, "handleMessage4 ");
                     break;
                 case 5:
-                    Log.d(TAG, "handleMessage: employeeName" + employesName.toString());
+                    Log.d(TAG, "handleMessage: 根据CategoryId获取相应的维修人员: employeList="+employees.toString());
                     dialogChooseAdapter.notifyDataSetChanged();
                     setChooseDialog();
                     break;
@@ -201,8 +171,40 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .setContentText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    Intent intents =new Intent(AdminDetailActivity.this,AdminListActivity.class);
-                    startActivity(intents);
+                    SharedPreferences preferences = AdminDetailActivity.this.getSharedPreferences("admin_data",MODE_PRIVATE);
+                    String json = preferences.getString("admin", "");
+                    Admin adminFromJson = JsonUtil.jsonToAdmin(json);
+
+
+                    Apply applyTemp = new Apply();
+                    applyTemp.setId(apply.getId());
+//                    维修工
+                    applyTemp.setServerMan(etServerMan.getText().toString());
+                    //后台人员
+                    applyTemp.setLogisticMan(adminFromJson.getAccount());
+                    //状态 改为 2 已派工
+                    applyTemp.setState(2);
+                    //物料
+                    applyTemp.setMaterial(etMatrial.getText().toString());
+
+                    String applyJson = JsonUtil.beanToJson(applyTemp);
+                    Util.submit("deal",applyJson,AdMINUPDATE).execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            if (response.equals("OK")){
+                                mhandler.sendEmptyMessage(12);
+                                Log.d(TAG, "onResponse:  handler 12 "+response);
+                            }else {
+                                mhandler.sendEmptyMessage(13);
+                            }
+                        }
+                    });
+
                     break;
                 case 10:
                     sDialog.setTitleText("服务器维护,邮件派工失败。")
@@ -215,6 +217,16 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .setContentText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    break;
+                case 12:
+                    sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+
+                    AdminListActivity.onResumeValue = "OK";
+                    Intent intentToList = new Intent(AdminDetailActivity.this,AdminListActivity.class);
+                    startActivity(intentToList);
+                    break;
+                case 13:
+                    sDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
 
             }
@@ -293,7 +305,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
         tvCategory = (TextView) findViewById(R.id.tv_admin_details_category);
 
-        tvMatrial= (EditText) findViewById(R.id.et_admin_detial_matrial);
+        etMatrial= (EditText) findViewById(R.id.et_admin_detial_matrial);
         tvTime = (TextView) findViewById(R.id.tv_admin_details_repairtime);
         //button按钮
         btnChoose = (Button) findViewById(R.id.btn_admin_add);
@@ -302,8 +314,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         //设置颜色点击改变
         Util.setOnClickBackgroundColor(btnChoose);
         Util.setOnClickBackgroundColor(btnSend);
-        Util.setOnClickBackgroundColor(btnSubmit);
-        btnSubmit.setEnabled(true);
+
         Log.d(TAG, "1 initView: btn设置setClickable为false");
         Log.d(TAG, "2 执行initSubmitOnClick");
         initSubmitOnClick();
@@ -476,10 +487,36 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View view) {
                 etServerMan.setText("");
-                tvMatrial.setText("");
+                etMatrial.setText("");
+                setMatrial();;
             }
         });
     }
+
+    /**
+     * 在判断 etServerMan中是不是选中值了,如为空值则 设置按钮颜色和不可点击
+     * 应在对话框dissMiss调用,和有关serverMan赋值的地方调用
+     */
+    private void setMatrial()
+    {
+        //进入方法都设置能输入；
+        if(etServerMan.getText().toString().equals(""))
+        {
+            Log.d(TAG, "setMatrial: ");
+            etMatrial.setText("");
+            btnSubmit.setBackgroundResource(R.drawable.button_submit2);
+            //设置不能输入
+            etServerMan.setEnabled(false);
+        }
+        else
+        {
+
+            btnSubmit.setBackgroundResource(R.drawable.button_submit);
+
+        }
+    }
+
+
 
     private void setSubmitButton() {
 
@@ -494,6 +531,12 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialog_head9)
                 .setContentWidth((int) (windowWitch / 1.5))
+                .setOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogPlus dialog) {
+                        setMatrial();
+                    }
+                })
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -524,6 +567,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         } else {
             etServerMan.setText(employesName.get(position).toString());
         }
+
     }
 
     private void upApply(String categoryName) {
@@ -579,13 +623,14 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         String tvNames = Util.setNameXX(apply.getRepair());
         String  guzhang=tvCategory.getText().toString().trim();
         String address=tvAdress.getText().toString().trim();
-        String cailiao =tvMatrial.getText().toString().trim();
-        sb.append("报修人：" + tvNames + "\r\n");
-        sb.append("联系电话：" + tvTel.getText().toString() + "\r\n");
+        String cailiao =etMatrial.getText().toString().trim();
+
+        sb.append("报修人:" + tvNames + "\r\n");
+        sb.append("联系电话:" + tvTel.getText().toString() + "\r\n");
         sb.append("联系邮箱:" +tvEmail.getText().toString() +"\r\n" );
-        sb.append("故障：" + guzhang +"\r\n");
+        sb.append("故障:" + guzhang +"\r\n");
         sb.append("位置：" + address + "\r\n");
-        sb.append("材料" + cailiao+ "\r\n");
+        sb.append("材料:" + cailiao+ "\r\n");
 
         return sb.toString();
     }
@@ -624,109 +669,88 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 SharedPreferences preferences = MyApplication.getContext().getSharedPreferences("adminEmail", Context.MODE_PRIVATE);
                 String email = preferences.getString("email", "");
                 String password=preferences.getString("password","");
+                password=Util.encryptStr("1234","R9k1d0?j");
 
-                if(email.equals("")||password.equals(""))
+                if(password == null||"".equals(password)){
+                    SweetAlertDialog sweetDialog = new SweetAlertDialog(AdminDetailActivity.this,SweetAlertDialog.WARNING_TYPE)
+                            .setContentText("请到电脑端设置邮箱密码")
+                            .setConfirmText("确定")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismiss();
+                                }
+                            });
+                    sweetDialog.show();
+                    return;
+                }
+
+
+                if(etServerMan.getText().toString().equals(""))
                 {
-                    //弹出对话框 让他输入密码 请求网络；
+                    Toast.makeText(AdminDetailActivity.this,"请添加维修人员",Toast.LENGTH_SHORT).show();
+                    return ;
                 }
                 else
                 {
-                    String temp = etServerMan.getText().toString();
-                    List<String> emails = getEmail(temp);
-                    if(emails.size()>0)
+                    btnSubmit.setBackgroundResource(R.drawable.button_submit);
+                    if(email.equals("")||password.equals(""))
                     {
-
-                        String serverEmail =getServerEmail(emails);
-                        String contentString=getCOntentString();
-                        String  applyId=apply.getId();
-                        String imgPath=getImgName();
-                        Log.d(TAG, "onClick: adminEmail ->"+email);
-                        Log.d(TAG, "onClick: password ->"+password);
-                        Log.d(TAG, "onClick: serverEmailString ->"+serverEmail);
-                        Log.d(TAG, "onClick: contentSTring ->"+contentString);
-                        Log.d(TAG, "onClick: imgPath ->"+imgPath);
-                        Log.d(TAG, "onClick: applyId ->"+applyId);
-
-                        //提交维修单
-                        Util.submit("adminEmail",email,"password",password,"content",contentString,
-                                "serverEmail",serverEmail,"ID",apply.getId(),"imgPath",imgPath,ADMIN_SUBMIT_EMAIL)
-                                .execute(new StringCallback() {
-                                    @Override
-                                    public void onError(Call call, Exception e, int id) {
-                                        mhandler.sendEmptyMessage(11);
-                                    }
-
-                                    @Override
-                                    public void onResponse(String response, int id) {
-                                        if("Success".equals(response))
-                                        {
-                                            mhandler.sendEmptyMessage(9);
-                                        }
-                                        else
-                                        {
-                                            mhandler.sendEmptyMessage(10);
-                                        }
-                                    }
-                                });
+                        //弹出对话框 让他输入密码 请求网络；
                     }
+                    else
+                    {
+                        Util.setOnClickBackgroundColor(btnSubmit);
+                        String temp = etServerMan.getText().toString();
+                        List<String> emails = getEmail(temp);
+                        if(emails.size()>0)
+                        {
 
+                            String serverEmail =getServerEmail(emails);
+                            String contentString=getCOntentString();
+                            String  applyId=apply.getId();
+                            String imgPath=getImgName();
+                            Log.d(TAG, "onClick: adminEmail ->"+email);
+                            Log.d(TAG, "onClick: password ->"+password);
+                            Log.d(TAG, "onClick: serverEmailString ->"+serverEmail);
+                            Log.d(TAG, "onClick: contentSTring ->"+contentString);
+                            Log.d(TAG, "onClick: imgPath ->"+imgPath);
+                            Log.d(TAG, "onClick: applyId ->"+applyId);
 
+                            //应该放在Util。submit下方
+                            sDialog = new SweetAlertDialog(AdminDetailActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                            sDialog.setTitleText("等待服务器返回结果").show();
+                            //提交维修单
+                            Util.submit("adminEmail",email,"password",password,"content",contentString,
+                                    "serverEmail",serverEmail,"ID",apply.getId(),"imgPath",imgPath,ADMIN_SUBMIT_EMAIL)
+                                    .execute(new StringCallback() {
+                                        @Override
+                                        public void onError(Call call, Exception e, int id) {
+                                            Log.d(TAG, "onError: ->联网失败");
+                                            mhandler.sendEmptyMessage(11);
+                                        }
 
+                                        @Override
+                                        public void onResponse(String response, int id) {
+                                            Log.d(TAG, "onResponse:  ->"+response);
+                                            if("Success".equals(response))
+                                            {
+                                                //发送邮件成功
+                                                mhandler.sendEmptyMessage(9);
+                                            }
+                                            else
+                                            {
+                                                //发送邮件失败
+                                                mhandler.sendEmptyMessage(10);
+                                            }
+                                        }
+                                    });
+                        }
+                    }
                 }
 
 
 
-
-                sDialog = new SweetAlertDialog(AdminDetailActivity.this, SweetAlertDialog.WARNING_TYPE);
-                sDialog.setTitleText("确定处理完毕？");
-//                sDialog.setContentText("");
-                sDialog.setCancelText("取消");
-                sDialog.setConfirmText("提交");
-                sDialog.showCancelButton(true);
-                sDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        // reuse previous dialog instance, keep widget user state, reset them if you need
-                        Log.d(TAG, "onClick: 执行了点击事件");
-                        sDialog.setTitleText("确认取消")
-//                                .setContentText("Your imaginary file is safe :)")
-                                .setConfirmText("OK")
-                                .showCancelButton(false)
-                                .setCancelClickListener(null)
-                                .setConfirmClickListener(null)
-                                .changeAlertType(SweetAlertDialog.ERROR_TYPE);
-                    }
-                })
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-
-                                Log.d(TAG, "onClick: updateJosn=" + updateJson);
-                                Util.submit("deal", updateJson, AdMINUPDATE).execute(new StringCallback() {
-                                    @Override
-                                    public void onError(Call call, Exception e, int id) {
-
-                                        Log.d(TAG, "onError: submit提交,网络不通");
-                                        mhandler.sendEmptyMessage(8);
-                                    }
-
-                                    @Override
-                                    public void onResponse(String response, int id) {
-                                        Log.d(TAG, "onResponse: " + response);
-                                        String resp = response;
-                                        if (resp.equals("OK")) {
-                                            mhandler.sendEmptyMessage(6);
-                                        } else {
-                                            mhandler.sendEmptyMessage(7);
-                                        }
-                                    }
-                                });
-                                sDialog.setContentText("请等待")
-                                        .setConfirmClickListener(null)
-                                        .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-                            }
-                        })
-                        .show();
             }
         });
     }

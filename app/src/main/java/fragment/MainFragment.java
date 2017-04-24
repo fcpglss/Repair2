@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,6 @@ import java.util.List;
 
 import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
-import model.Announcement;
 import model.Apply;
 import model.Response;
 import model.ResultBean;
@@ -34,9 +32,8 @@ import util.LocalImageHolderView;
 import util.Util;
 import util.WaterListViewListener;
 
-import static repair.com.repair.MainActivity.FRIST_URL;
-import static repair.com.repair.MainActivity.JSON_URL;
-import static repair.com.repair.MainActivity.SENDMORE_URL;
+import static constant.RequestUrl.FRIST_URL;
+import static constant.RequestUrl.SENDMORE_URL;
 
 /**
  * Created by hsp on 2016/11/27.
@@ -59,6 +56,8 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     private static final int NOTDATA = 4;//连接服务器成功，但是没有获取到数据
 
     private static boolean isRefresh = false;
+
+    private static boolean isMore=false;
 
     private static boolean isFirst = true;
 
@@ -98,7 +97,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                     break;
                 case 3:
                     Toast.makeText(getActivity(), "进来第一次请求网络调用,firstRes有值", Toast.LENGTH_SHORT).show();
-                    applysAdapter = getBeanFromJson(res, viewpager_url, applysAdapter);
+                    applysAdapter = getBeanFromJson(res, applysAdapter);
                     Log.d(TAG, "handleMessage: 3");
                     updateView(0);
                     break;
@@ -180,7 +179,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         {
             queryFromServer(FRIST_URL, SUCCESS,0);
             svProgressHUD = new SVProgressHUD(getActivity());
-            svProgressHUD.showWithStatus("加载中");
+            svProgressHUD.showWithStatus("正在加载");
             Log.d(TAG, "第一次载入");
         }
 
@@ -314,7 +313,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             Log.d(TAG, "updateView: 内存中的ApplyAdapters已经被销毁,重新构造ApplyAdapter,并且读本地数据更新View");
             String json = Util.loadFirstFromLocal(getActivity());
             res = JsonUtil.jsonToBean(json);
-            applysAdapter = getBeanFromJson(res, viewpager_url, applysAdapter);
+            applysAdapter = getBeanFromJson(res, applysAdapter);
             if (applysAdapter == null) {
                 Toast.makeText(getActivity(), "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
                 queryFromServer(FRIST_URL, SUCCESS,isRefrush);
@@ -332,6 +331,22 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             svProgressHUD.dismiss();
         }
     }
+
+
+    private void closeReflush()
+    {
+        if(isRefresh)
+        {
+            waterDropListView.stopRefresh();
+            isRefresh=false;
+        }
+        if(isMore)
+        {
+            waterDropListView.stopLoadMore();
+            isMore=false;
+        }
+    }
+
 
     //设置View属性
     private void setView() {
@@ -356,17 +371,11 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     }
 
 
-    public ApplysAdapter getBeanFromJson(ResultBean res, List<String> viewpager_url, ApplysAdapter applysAdapter) {
+    public ApplysAdapter getBeanFromJson(ResultBean res, ApplysAdapter applysAdapter) {
         if (res == null) {
             return null;
         }
 
-//        for (Announcement announce : res.getAnnouncements()) {
-//            if (viewpager_url.size() >= 3) {
-//                viewpager_url.remove(0);
-//            }
-//            viewpager_url.add(announce.getImage_url());
-//        }
         if (applysAdapter == null) {
             applysAdapter = new ApplysAdapter(res, MyApplication.getContext());
         } else {
@@ -378,14 +387,10 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     //// FIXME: 2017/3/22
     @Override
     public void onLoadMore() {
-
-        Log.d(TAG, "onLoadMore: " + moreFlag);
-        if (moreFlag) {
-            mhandler.sendEmptyMessage(6);
-            Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
-            return;
-        } else {
-            Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
+        isMore=true;
+        Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
+        if(!moreFlag)
+        {
             start = start + 5;
             end = end + 5;
         }
@@ -401,7 +406,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                 moreRes = moreResponse.getResultBean();
                 if (moreRes != null) {
                     mhandler.sendEmptyMessage(7);
-//                    Util.writeJsonToLocal(res, MyApplication.getContext());
+
                 } else {
                     response.setErrorType(-2);
                     response.setError(false);

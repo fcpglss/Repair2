@@ -1,17 +1,13 @@
 package repair.com.repair;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -20,11 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,17 +26,14 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.RequestCall;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -55,8 +45,8 @@ import java.util.List;
 import application.MyApplication;
 import camera.CalculateImage;
 import camera.FIleUtils;
+import constant.RequestUrl;
 import fragment.ResetVisable;
-import imagehodler.ImageLoader;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -68,22 +58,19 @@ import model.ResultBean;
 import model.Room;
 import okhttp3.Call;
 import repari.com.adapter.DialogAdapter;
-import repari.com.adapter.DialogDetailAdapter;
 import util.DialogUtil;
-import util.HttpCallbackListener;
-import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
-import static repair.com.repair.MainActivity.GET_JSON;
-import static repair.com.repair.MainActivity.JSON_URL;
+import static constant.RequestUrl.GET_JSON;
+import static constant.RequestUrl.JSON_URL;
+import static constant.RequestUrl.UP_APPLY;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
-import static repair.com.repair.MainActivity.UP_APPLY;
-import static util.NetworkUtils.isNetworkConnected;
-import static repair.com.repair.MainActivity.windowWitch;
 import static repair.com.repair.MainActivity.windowHeigth;
+import static repair.com.repair.MainActivity.windowWitch;
+import static util.NetworkUtils.isNetworkConnected;
 
 /**
  * Created by hsp on 2017/3/14.
@@ -101,7 +88,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     //记录区域ID
     int AreaId;
     int PlaceId;//楼号ID
-    int fliesId;//层号ID
     // 添加层号 房间号
     private EditText etFloor, etRoom;
 
@@ -128,6 +114,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     public static ResultBean addressRes = null;
 
+    private SVProgressHUD svProgressHUD;
 
 
     //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
@@ -155,26 +142,26 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
-                    Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
-                    String addressJson2 = Util.loadAddressFromLocal(MyApplication.getContext());
-                    addressRes = JsonUtil.jsonToBean(addressJson2);
-                    Log.d(TAG, "handleMessage:2 本地数据addressRes" + addressJson2);
-//                    setDialogView(addressRes);
+
                     break;
                 case 3:
-//                    setDialogView(addressRes);
+                    //只有请求到了该记录才展示View;
+                   // setInt();
+                    closeDiag();
+                    initView();
+                    setInt();
+                    setView();
+                    bindView();
                     break;
                 case 4:
-                    Log.d(TAG, "handleMessage4: 内存没有数据，尝试从本地文件读取");
-                    String addressJson = Util.loadAddressFromLocal(MyApplication.getContext());
-                    addressRes = JsonUtil.jsonToBean(addressJson);
-//                    setDialogView(addressRes);
+
                     break;
                 case 5:
                     Toast.makeText(ChangeActivity.this, "请填写报修地址", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
+
     };
     //对话框
     DialogPlus dialogArea;
@@ -183,6 +170,18 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     //获取点击修改获得的apply
     Apply changeApply;
+    Apply tempApply=new Apply();
+
+    private void setInt() {
+        Log.d(TAG, "setInt: "+tempApply.getArea());
+        areaId=Integer.parseInt(tempApply.getArea());
+        placeId=Integer.parseInt(tempApply.getDetailArea());
+        flieId=Integer.parseInt(tempApply.getFlies());
+        roomId=Integer.parseInt(tempApply.getRoom());
+        categoryId=Integer.parseInt(tempApply.getClasss());
+        detailTypeID=Integer.parseInt(tempApply.getDetailClass());
+
+    }
 
 
     @Override
@@ -191,12 +190,40 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_change2);
         changeApply = (Apply) getIntent().getSerializableExtra("apply");
         addressRes = (ResultBean) getIntent().getSerializableExtra("address");
+        svProgressHUD = new SVProgressHUD(this);
+        svProgressHUD.showWithStatus("正在加载");
+        Util.submit("changeId",changeApply.getId(), RequestUrl.QUERYMYREPAIR)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
 
+                    }
 
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Response response1 =JsonUtil.jsonToResponse(response);
+                        if(response1==null||response1.getResultBean()==null||response1.getResultBean().getApplys()==null
+                                ||response1.getResultBean().getApplys().size()<=0)
+                        {
+                            //没有获取到数据
+                            mhandler.sendEmptyMessage(2);
+                        }
+                        else
+                        {
+                            tempApply=response1.getResultBean().getApplys().get(0);
+                            Log.d(TAG, "onResponse: tempApply"+tempApply.getFlies());
+                            //获取到了该条数据
+                            mhandler.sendEmptyMessage(3);
+                        }
 
-        initView();
-        setView();
-        bindView();
+                    }
+                });
+    }
+
+    private void closeDiag() {
+        if (svProgressHUD.isShowing()){
+            svProgressHUD.dismiss();
+        }
     }
 
     private void initView() {
@@ -369,10 +396,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etApplyTypeDetails.setText(changeApply.getDetailClass());
         et_describe.setText(changeApply.getRepairDetails());
         et_details.setText(changeApply.getAddressDetail());
-        areaId = getAreaID(etArea.getText().toString());
-        placeId = getDetailId(etDetailArea.getText().toString());
-        categoryId = getCategoryID(etApplyType.getText().toString());
-        detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
+
+//        areaId = getAreaID(etArea.getText().toString());
+//        placeId = getDetailId(etDetailArea.getText().toString());
+//        categoryId = getCategoryID(etApplyType.getText().toString());
+//        detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
+
         changeImgUrl = changeApply.getA_imaes();
 
         //赋值之后 设定可见性
@@ -639,7 +668,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d(TAG, "onTouch: plac"+areaId);
                     queryFromServer("place",String.valueOf(areaId),JSON_URL);
+                    Log.d(TAG, "onTouch: "+String.valueOf(areaId));
                     setNextVisible(v, event);
                     placeDialog.show();
                 }
@@ -654,6 +685,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     queryFromServer("flies",String.valueOf(placeId),JSON_URL);
+                    Log.d(TAG, "onTouch: "+String.valueOf(placeId));
                     setNextVisible(v, event);
                     fliesDialog.show();
                 }
@@ -668,6 +700,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     queryFromServer("room",String.valueOf(flieId),JSON_URL);
+                    Log.d(TAG, "onTouch: "+String.valueOf(flieId));
                     setNextVisible(v, event);
                     roomDialog.show();
                 }
@@ -1178,6 +1211,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     private void setApply() {
         apply.setArea(String.valueOf(areaId));
+        Log.d(TAG, "setApply: areaID"+areaId);
         apply.setDetailArea(String.valueOf(placeId));
         apply.setFlies(String.valueOf(flieId));
         apply.setRoom(String.valueOf(roomId));

@@ -1,59 +1,23 @@
 package repari.com.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.builder.PostFormBuilder;
-import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.RequestCall;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import application.MyApplication;
-
-
-import camera.FIleUtils;
 import model.Apply;
-import model.Employee;
-import model.Response;
 import model.ResultBean;
-import okhttp3.Call;
-import repair.com.repair.AdminListActivity;
-
 import repair.com.repair.R;
-import util.JsonUtil;
 import util.Util;
-
-import static android.content.Intent.ACTION_SEND;
-import static android.content.Intent.ACTION_SEND_MULTIPLE;
-import static repair.com.repair.MainActivity.UP_APPLY;
-import static repair.com.repair.MainActivity.windowWitch;
-import static repair.com.repair.MainActivity.windowHeigth;
 
 /**
  * Created by hsp on 2017/4/8.

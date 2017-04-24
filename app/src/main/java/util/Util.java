@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,29 +25,29 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+
 import camera.CalculateImage;
-import model.Announcement;
 import model.Apply;
-import model.Area;
 import model.Category;
 import model.Flies;
 import model.Place;
 import model.Response;
 import model.ResultBean;
 import model.Room;
-import repair.com.repair.AdminDetailActivity;
-import repair.com.repair.ChangeActivity;
 import repair.com.repair.R;
 
 import static android.content.Context.MODE_PRIVATE;
-import static repair.com.repair.MainActivity.JSON_URL;
-import static repair.com.repair.MainActivity.UP_APPLY;
+
 
 
 public class Util {
@@ -426,6 +425,16 @@ public class Util {
         postFormBuilder.url(requestURL);
         return postFormBuilder.build();
     }
+    public static RequestCall submit(String paramsKey, String paramsValues,String parmasKey,String v2,String p3,String v3, String p4 ,String v4,String requestURL) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
+
+        postFormBuilder.addParams(paramsKey, paramsValues);
+        postFormBuilder.addParams(parmasKey, v2);
+        postFormBuilder.addParams(p3, v3);
+        postFormBuilder.addParams(p4 , v4);
+        postFormBuilder.url(requestURL);
+        return postFormBuilder.build();
+    }
     public static RequestCall submit(String adminEmail, String adminEmailVules, String password, String passwordVules,
                                      String content ,String contentVules ,String serverEmail,String serverMailVules,
                                      String ID,String IDVules,String imgPath,String imgPathVules,
@@ -481,6 +490,87 @@ public class Util {
 
         return getNewPath;
     }
+
+
+
+    public static  byte[] desCrypto(byte[] datasource, String password) {
+        try{
+            SecureRandom random = new SecureRandom();
+            DESKeySpec desKey = new DESKeySpec(password.getBytes());
+            //创建一个密匙工厂，然后用它把DESKeySpec转换成
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey securekey = keyFactory.generateSecret(desKey);
+            //Cipher对象实际完成加密操作
+            Cipher cipher = Cipher.getInstance("DES");
+            //用密匙初始化Cipher对象
+            cipher.init(Cipher.ENCRYPT_MODE, securekey, random);
+            //现在，获取数据并加密
+            //正式执行加密操作
+            return cipher.doFinal(datasource);
+        }catch(Throwable e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    //base 64 加密
+    public static String encryptStr(String strMing,String key) {
+        byte[] byteMi = null;
+        byte[] byteMing = null;
+        String strMi = "";
+        try {
+            byteMing = strMing.getBytes("utf-8");
+
+            byteMi = desCrypto(byteMing, key);
+
+            strMi = new String(Base64.encode(byteMi,Base64.DEFAULT));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            byteMing = null;
+            byteMi = null;
+        }
+        return strMi;
+    }
+
+
+    //des 解密
+    public static byte[] decrypt(byte[] src, String password) throws Exception {
+        // DES算法要求有一个可信任的随机数源
+        SecureRandom random = new SecureRandom();
+        // 创建一个DESKeySpec对象
+        DESKeySpec desKey = new DESKeySpec(password.getBytes());
+        // 创建一个密匙工厂
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+        // 将DESKeySpec对象转换成SecretKey对象
+        SecretKey securekey = keyFactory.generateSecret(desKey);
+        // Cipher对象实际完成解密操作
+        Cipher cipher = Cipher.getInstance("DES");
+        // 用密匙初始化Cipher对象
+        cipher.init(Cipher.DECRYPT_MODE, securekey, random);
+        // 真正开始解密操作
+        return cipher.doFinal(src);
+    }
+
+
+    //base64 加密
+    public static String decryptStr(String strMi, String key) {
+        byte[] byteMing = null;
+        String strMing = "";
+        try {
+
+            byteMing = Base64.decode(strMi,Base64.DEFAULT);
+
+            byteMing = decrypt(byteMing, key);
+            strMing = new String(byteMing);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            byteMing = null;
+        }
+        return strMing;
+    }
+
+
 
     public static String getPath(Activity context, Uri uri) {
 

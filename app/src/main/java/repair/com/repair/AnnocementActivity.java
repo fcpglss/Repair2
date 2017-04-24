@@ -8,40 +8,29 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
-import fragment.MainFragment;
-import imagehodler.ImageLoader;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Announcement;
 import model.Apply;
 import model.Response;
 import model.ResultBean;
-import repari.com.adapter.AdminListAdapter;
 import repari.com.adapter.AnnocmentListAdapter;
-import repari.com.adapter.ApplysAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
-import util.WaterListViewListener;
 
-import static android.os.Build.VERSION_CODES.M;
-import static repair.com.repair.MainActivity.FRIST_URL;
+import static constant.RequestUrl.ANNCOUCEMENT;
+import static constant.RequestUrl.ANNCOUCEMENTMORE;
+import static constant.RequestUrl.FRIST_URL;
 
 /**
  * Created by Administrator on 2016-11-29.
@@ -49,14 +38,7 @@ import static repair.com.repair.MainActivity.FRIST_URL;
 
 public class AnnocementActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener{
 //
-   // private final static String  ANNCOUCEMENT="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementFirst";
 
- //   private final static String  ANNCOUCEMENTMORE="http://192.168.31.201:8888/myserver2/SendAnnoucement?annoucementMore";
-
-
-    private final static String  ANNCOUCEMENT="http://192.168.43.128:8888/myserver2/SendAnnoucement?annoucementFirst";
-
-    private final static String  ANNCOUCEMENTMORE="http://192.43.128.201:8888/myserver2/SendAnnoucement";
 
 
     private static boolean moreFlag = false;

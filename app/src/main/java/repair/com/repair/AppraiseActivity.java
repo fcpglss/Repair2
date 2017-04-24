@@ -2,7 +2,6 @@ package repair.com.repair;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,28 +16,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.RequestCall;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
 import model.Apply;
-import model.Response;
 import okhttp3.Call;
-import util.HttpCallbackListener;
-import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
 
-import static repair.com.repair.MainActivity.GET_JSON;
-import static repair.com.repair.MainActivity.UP_APPLY;
-import static repair.com.repair.MainActivity.list_uri;
-import static util.NetworkUtils.isNetworkConnected;
+import static constant.RequestUrl.UPDATESERVER;
 
 /**
  * Created by hsp on 2017/3/14.
@@ -47,8 +36,7 @@ import static util.NetworkUtils.isNetworkConnected;
 public class AppraiseActivity extends AppCompatActivity {
     private static final String TAG = "AppraiseActivity";
 
-   // private static final String UPDATESERVER="http://192.168.31.201:8888/myserver2/updateServer";
-      private static final String UPDATESERVER="http://192.168.43.128:8888/myserver2/updateServer";
+
     //报修人姓名，电话，报修地址（从区域到房间），其他信息，维修人员
     TextView tvAppraiseName,tvAppraisePhone,tvAppraiseAddress,tvAppraiseOther,tvAppraiseServerName;
     //星星

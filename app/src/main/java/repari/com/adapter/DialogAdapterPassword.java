@@ -12,20 +12,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import fragment.MyRepairFragment;
+import constant.RequestUrl;
 import imagehodler.ImageLoader;
 import model.Apply;
-import model.Category;
 import okhttp3.Call;
 import repair.com.repair.AppraiseActivity;
 import repair.com.repair.R;
@@ -129,7 +123,7 @@ public class DialogAdapterPassword extends BaseAdapter {
                     String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
                     Log.d(TAG, "onClick: MD5: "+MD5);
                     Log.d(TAG, "onClick: ID: "+apply.getId());
-                    Util.submit("password",MD5,"ID",apply.getId(), MyRepairFragment.QUERYMYREPAIR).execute(new StringCallback() {
+                    Util.submit("password",MD5,"ID",apply.getId(), RequestUrl.QUERYMYREPAIR).execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
                             mhandler.sendEmptyMessage(3);
@@ -137,7 +131,7 @@ public class DialogAdapterPassword extends BaseAdapter {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            Log.d(TAG, "onResponse: response:"+response);
+                            Log.d(TAG, "onResponse: response:");
                             if ("OK".equals(response)){
                                 mhandler.sendEmptyMessage(1);
                             }else {
