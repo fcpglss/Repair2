@@ -2,25 +2,18 @@ package util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bigkoo.convenientbanner.holder.Holder;
-import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
 import java.util.List;
 
-import application.MyApplication;
-import imagehodler.ImageLoader;
 import model.Announcement;
-import model.Apply;
 import model.ResultBean;
 import repair.com.repair.AnnocementActivity;
-import repair.com.repair.DetailsActivity;
 import repari.com.adapter.ApplysAdapter;
 
 /**
@@ -30,11 +23,9 @@ public class LocalImageHolderView implements Holder<Integer> {
     private ImageView imageview;
     private Context mContext;
     private ResultBean res = null;
-    public ImageLoader mImageLoader = null;
 
     public LocalImageHolderView(Context context, ApplysAdapter applysAdapter, ResultBean resultBean) {
         mContext = context;
-        mImageLoader = ImageLoader.build(context);
         res = resultBean;
 
     }

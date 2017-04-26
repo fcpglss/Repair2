@@ -60,4 +60,8 @@ dependencies {
     //滑动按钮
     compile 'com.github.zcweng:switch-button:0.0.3@aar'
 
+
+    //RxBinding
+    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+
 }

@@ -1,6 +1,5 @@
 package repair.com.repair;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,16 +11,16 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import application.MyApplication;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Announcement;
-import model.Apply;
 import model.Response;
 import model.ResultBean;
+import okhttp3.Call;
 import repari.com.adapter.AnnocmentListAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
@@ -30,7 +29,6 @@ import util.Util;
 
 import static constant.RequestUrl.ANNCOUCEMENT;
 import static constant.RequestUrl.ANNCOUCEMENTMORE;
-import static constant.RequestUrl.FRIST_URL;
 
 /**
  * Created by Administrator on 2016-11-29.
@@ -43,20 +41,26 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     private static boolean moreFlag = false;
 
+    private static boolean ishasData=false;
+
+    private static boolean isRefrush=false;
+    private static boolean isMore=false;
+
     private ResultBean moreRes;
 
     private Response moreResponse;
 
+    private static final int fenye=10;//一次读取10条和服务端一致
     private static int start = 0;
-    private static int end = 5;
+    private static int end = fenye;
 
-    private List<Apply> moreList = new ArrayList<>();
+    private List<Announcement> moreList = new ArrayList<>();
 
     private static final String TAG = "AnnocementActivity";
     Response annoceResponse;
     ResultBean annoceResult;
     WaterDropListView lvAnnocment;
-    List<Announcement> list;
+    List<Announcement> annoucementList;
     AnnocmentListAdapter adapter;
 
     private boolean isFirst=true;
@@ -71,45 +75,41 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
+                    closeDiag();
+                    closeReflush();
                     Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    queryFromServer(ANNCOUCEMENT);
                     Log.d(TAG, "handleMessage: 2");
                     break;
                 case 3:
-                    Toast.makeText(AnnocementActivity.this, "第一次加载", Toast.LENGTH_SHORT).show();
+                    closeDiag();
+                    closeReflush();
+                    ishasData=annoceResponse.isEnd();
+                    adapter.notifyDataSetChanged();
                     Log.d(TAG, "handleMessage: 3");
-                    updateView(0);
                     break;
                 case 4:
-                    lvAnnocment.stopRefresh();
+                    closeReflush();
                     Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "handleMessage: 4");
                     break;
                 case 5:
-                    lvAnnocment.stopRefresh();
-                    Toast.makeText(AnnocementActivity.this,"刷新成功",Toast.LENGTH_SHORT).show();;
-                    Log.d(TAG, "handleMessage: 5");
-                    updateView(0);
-                    break;
-                case 6:
-                    Toast.makeText(AnnocementActivity.this, "下边已经没有数据了", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "handleMessage: 6");
-                    lvAnnocment.stopLoadMore();
-                    break;
-                case 7:
-                    moreList = moreRes.getApplys();
+                    moreList = moreRes.getAnnouncements();
                     setMoreApply(moreList);
-                    updateView(0);
-                      Util.writeAnnouceToLocal(annoceResult, MyApplication.getContext());
                     lvAnnocment.setSelection(start);
                     Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
                     moreFlag = moreResponse.isEnd();
                     Log.d(TAG, "handleMessage: " + moreFlag);
-                    lvAnnocment.stopLoadMore();
+                    closeReflush();
                     break;
-                case 8:
-                    Toast.makeText(AnnocementActivity.this, "网络异常,请检查网络", Toast.LENGTH_SHORT).show();
-                    updateView(0);
+                case 6:
+                    Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "handleMessage: 6");
+                    closeReflush();
                     break;
+
+
+
             }
         }
     };
@@ -124,60 +124,27 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     }
 
     protected void initViews() {
+        //初始化
+        annoucementList=new ArrayList<>();
+
         lvAnnocment = (WaterDropListView) findViewById(R.id.lv_annocement_list);
         lvAnnocment.setWaterDropListViewListener(this);
         lvAnnocment.setPullLoadEnable(true);
-    }
-
-    private void setView()
-    {
-        adapter.notifyDataSetChanged();
+        svProgressHUD = new SVProgressHUD(this);
+        svProgressHUD.showWithStatus("加载中");
+        adapter = new AnnocmentListAdapter(annoucementList,this);
         lvAnnocment.setAdapter(adapter);
         lvAnnocment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(AnnocementActivity.this,AnnonceDetailActivity.class);
-                Bundle bundle =new Bundle();
-                bundle.putSerializable("annoucement",adapter.list.get(position));
-                intent.putExtras(bundle);
-                startActivity(intent);
+//                Intent intent = new Intent(AnnocementActivity.this,AnnonceDetailActivity.class);
+//                Bundle bundle =new Bundle();
+//                bundle.putSerializable("annoucement",adapter.list.get(position));
+//                intent.putExtras(bundle);
+//                startActivity(intent);
             }
         });
-    }
-
-    private void updateView(int isRefrush) {
-        //从内存中的数据更新；
-        if (adapter != null) {
-            if (annoceResult != null ) {
-                Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁,fistRes还在内存中，直接更新Water,Conven两个View");
-                setView();
-                Log.d(TAG, "handleMessage: show");
-                closeDiag();
-            } else {
-                Log.d(TAG, "updateView: 内存中的ApplyAdapters没有被销毁，但是firstRes已经被销毁了,需从本地读取firstRes");
-                String json = Util.loadAnnouceFromLocal(this);
-                annoceResult = JsonUtil.jsonToBean(json);
-                setView();
-                Log.d(TAG, "handleMessage: show");
-                closeDiag();
-            }
-        }
-        //内存中的applyAdapters已经被销毁，需重新创建一个
-        else {
-            Log.d(TAG, "updateView: 内存中的ApplyAdapters已经被销毁,重新构造ApplyAdapter,并且读本地数据更新View");
-            String json = Util.loadFirstFromLocal(AnnocementActivity.this);
-            annoceResult = JsonUtil.jsonToBean(json);
-            adapter = getBeanFromJson(refrushRes, adapter);
-            if (adapter == null) {
-                Toast.makeText(this, "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
-                queryFromServer(FRIST_URL,isRefrush);
-            } else {
-                Toast.makeText(this, "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
-                setView();
-                closeDiag();
-            }
-        }
     }
 
 
@@ -187,23 +154,10 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         }
     }
 
-    public AnnocmentListAdapter getBeanFromJson(ResultBean res, AnnocmentListAdapter applysAdapter) {
-        if (res == null) {
-            return null;
-        }
 
-        if (applysAdapter == null) {
-        applysAdapter = new AnnocmentListAdapter(res.getAnnouncements(), MyApplication.getContext());
-        } else {
-            applysAdapter.notifyDataSetChanged();
-        }
-        return applysAdapter;
-    }
-
-
-    private void setMoreApply(List<Apply> applyList) {
-        for (Apply apply : applyList) {
-            annoceResult.getApplys().add(apply);
+    private void setMoreApply(List<Announcement> annoucement) {
+        for (Announcement annouce : annoucement) {
+           annoucementList.add(annouce);
         }
     }
 
@@ -213,46 +167,47 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         Log.d(TAG, "loadData: ");
         if(isFirst)
         {
-            queryFromServer(ANNCOUCEMENT ,0);
-            //new SVProgressHUD(getActivity()).showInfoWithStatus();
-            svProgressHUD = new SVProgressHUD(this);
-            svProgressHUD.showWithStatus("加载中");
+            queryFromServer(ANNCOUCEMENT);
             Log.d(TAG, "第一次载入");
             isFirst=false;
         }
 
     }
 
-    public void queryFromServer(String url,final int isRefrush) {
-        //isFirst=false;
-        HttpUtil.sendHttpRequest(url, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String responseString) {
-                //请求成功后获取到json
-                final String responseJson = responseString.toString();
-                Log.d(TAG, "onFinish: "+responseJson);
-                //解析json获取到Response;
-                annoceResponse = JsonUtil.jsonToResponse(responseJson);
-                Log.d(TAG, "onFinish: annoceResponse "+annoceResponse.toString());
-                postMessage(annoceResponse,isRefrush);
-            }
 
+    public void queryFromServer(String url) {
+        Util.submit(url).execute(new StringCallback() {
             @Override
-            public void onError(Exception e) {
+            public void onError(Call call, Exception e, int id) {
                 Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
-                rp.setErrorMessage("网络异常，返回空值");
+                rp.setErrorMessage("网络异常,尝试重连");
                 annoceResponse = rp;
                 Log.d(TAG, " onEnrror调用:" + e.getMessage());
-                if(isRefrush==1)
+                mhandler.sendEmptyMessage(2);
+            }
+
+            @Override
+            public void onResponse(String responses, int id) {
+                final String responseJson = responses.toString();
+                Log.d(TAG, "onResponse: "+responseJson);
+                annoceResponse = JsonUtil.jsonToResponse(responseJson);
+                Log.d(TAG, "onResponse: annoceResponse "+annoceResponse.toString());
+                if(annoceResponse==null)
                 {
+                    annoceResponse=new Response();
+                    annoceResponse.setErrorMessage("服务器维护");
                     mhandler.sendEmptyMessage(4);
+                    return;
                 }
-                else
+                if(annoceResponse.getResultBean()==null||annoceResponse.getResultBean().getAnnouncements().size()<=0)
                 {
-                    mhandler.sendEmptyMessage(8);
+                    annoceResponse.setErrorMessage("没有公告");
+                    mhandler.sendEmptyMessage(4);
+                    return ;
                 }
+                postMessage(annoceResponse);
             }
         });
     }
@@ -261,126 +216,101 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
 
 
-    private void postMessage(Response response, int isRefrush) {
-        Log.d(TAG, "postMessage:  -> 1 ");
-        if(response==null)
-        {
-            response=new Response();
-            response.setErrorType(-2);
-            response.setError(false);
-            response.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
-            Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-            if(isRefrush==1)
-            {
-                mhandler.sendEmptyMessage(4);
-            }
-            else
-            {
-                mhandler.sendEmptyMessage(2);
-            }
-        }
-        else
-        {
+    private void postMessage(Response response) {
+
             refrushRes=response.getResultBean();
             Log.d(TAG, "postMessage: -> 4");
             setFirstApply(refrushRes);
-            Util.writeAnnouceToLocal(annoceResult, MyApplication.getContext());
-            if (annoceResult != null) {
-                if(isRefrush==1)
-                {
-                    Log.d(TAG, "刷新调用 queryFromServer请求成功：res有值，抛到到主线程更新UI,messages=3");
-                    mhandler.sendEmptyMessage(5);
-                }
-                else
-                {
-                    Log.d(TAG, "postMessage: 第一次进来调用,不需要停止刷新");
-                    mhandler.sendEmptyMessage(3);
-                }
+            if (annoucementList != null&&annoucementList.size()>0) {
+               mhandler.sendEmptyMessage(3);
             }
             else
             {
-                Log.d(TAG, "postMessage:  -> 2");
-                if(isRefrush==1)
-                {
-                    Log.d(TAG, "postMessage:  -> 3");
-                    mhandler.sendEmptyMessage(4);
-
-                }
-                else
-                {
-                    Log.d(TAG, "postMessage:  -> 3");
-                    mhandler.sendEmptyMessage(2);
-
-                }
+                response.setErrorMessage("没有公告了");
+                mhandler.sendEmptyMessage(4);
             }
-        }
+
     }
 
 
 
-    private void setFirstApply(ResultBean resultBean)
-    {
-        if(annoceResult!=null&&annoceResult.getAnnouncements().size()>0)
-        {
-            for(int i=0;i<resultBean.getAnnouncements().size();i++)
-            {
-                if(annoceResult.getAnnouncements().size()>i)
-                {
-                    annoceResult.getAnnouncements().remove(i);
-                    annoceResult.getAnnouncements().add(i,resultBean.getAnnouncements().get(i));
-                    continue;
-                }
-                annoceResult.getAnnouncements().add(i,resultBean.getAnnouncements().get(i));
+    private void setFirstApply(ResultBean resultBean) {
 
+        for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
+            if (annoucementList.size() > i) {
+                annoucementList.remove(i);
+                annoucementList.add(i, resultBean.getAnnouncements().get(i));
+                continue;
             }
-        }
-        else
-        {
-            annoceResult=resultBean;
+            annoucementList.add(i, resultBean.getAnnouncements().get(i));
         }
 
+    }
+
+
+
+    private void closeReflush()
+    {
+        if(isRefrush)
+        {
+            lvAnnocment.stopRefresh();
+            isRefrush=false;
+        }
+        if(isMore)
+        {
+            lvAnnocment.stopLoadMore();
+            isMore=false;
+        }
     }
 
 
 
     @Override
     public void onRefresh() {
-        queryFromServer(ANNCOUCEMENT,1);
+        isRefrush=true;
+        queryFromServer(ANNCOUCEMENT);
     }
 
     @Override
     public void onLoadMore() {
         Log.d(TAG, "onLoadMore: " + moreFlag);
-        if (moreFlag) {
+        isMore=true;
+        if (moreFlag||ishasData) {
+            annoceResponse.setErrorMessage("下边没有数据了");
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
         } else {
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
-            start = start + 5;
-            end = end + 5;
+            start = start + fenye;
+            end = end + fenye;
         }
 
         String request=ANNCOUCEMENTMORE + "?start=" + start + "&&end=" + end;
         Log.d(TAG, "onLoadMore: "+request);
         HttpUtil.sendHttpRequest(ANNCOUCEMENTMORE + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
-
             @Override
             public void onFinish(String responseString) {
-                //请求成功后获取到json
                 final String responseJson = responseString.toString();
-                //解析json获取到Response;
                 moreResponse = JsonUtil.jsonToResponse(responseJson);
                 moreRes = moreResponse.getResultBean();
-                if (moreRes != null) {
-                    mhandler.sendEmptyMessage(7);
-//                    Util.writeJsonToLocal(res, MyApplication.getContext());
-                } else {
-                    moreResponse.setErrorType(-2);
-                    moreResponse.setError(false);
-                    moreResponse.setErrorMessage("连接服务器成功，但返回的数据为空或是异常");
-                    Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
-                    mhandler.sendEmptyMessage(8);
+                if(moreResponse.getErrorType()==-3)
+                {
+                    moreFlag=moreResponse.isEnd();//服务器维护
+                    annoceResponse.setErrorMessage("服务器维护");
+                    mhandler.sendEmptyMessage(4);
+                    return ;
+                }
+
+                if (moreRes.getAnnouncements()!=null&&moreRes.getAnnouncements().size()>0) {
+                    //有数据
+                    mhandler.sendEmptyMessage(5);
+                }
+                else
+                {
+                    moreResponse.setErrorMessage("下边没有更多数据了");
+                    annoceResponse.setErrorMessage(moreResponse.getErrorMessage());
+                    mhandler.sendEmptyMessage(6);
                 }
             }
 
@@ -389,10 +319,10 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
-                rp.setErrorMessage("网络异常，返回空值");
+                rp.setErrorMessage("网络异常");
                 annoceResponse = rp;
                 Log.d(TAG, " onEnrror调用:" + e.getMessage());
-                mhandler.sendEmptyMessage(2);
+                mhandler.sendEmptyMessage(6);
             }
         });
     }
@@ -400,8 +330,9 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     @Override
     protected void onDestroy() {
         start = 0;
-        end = 5;
+        end = fenye;
         moreFlag=false;
+        ishasData=false;
         super.onDestroy();
     }
 

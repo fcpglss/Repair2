@@ -41,8 +41,8 @@ public class AppraiseActivity extends AppCompatActivity {
     TextView tvAppraiseName,tvAppraisePhone,tvAppraiseAddress,tvAppraiseOther,tvAppraiseServerName;
     //星星
     ImageView star1,star2,star3,star4,star5;
-    //数星星
-    int starCount=0;
+    //数星星 默认好评
+    int starCount=5;
     boolean starState=true;
 
     String accpetServer="";
@@ -163,6 +163,8 @@ public class AppraiseActivity extends AppCompatActivity {
             list.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //点击了 说明要改默认好评
+                    starCount = 0;
                     starCount = finalI+1;
                     Log.d(TAG, "onClick: "+starCount);
                     for (int j= 0; j<5;j++){

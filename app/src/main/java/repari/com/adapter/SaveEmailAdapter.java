@@ -17,7 +17,6 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import constant.RequestUrl;
-import imagehodler.ImageLoader;
 import model.Apply;
 import okhttp3.Call;
 import repair.com.repair.R;
@@ -32,7 +31,6 @@ import static repair.com.repair.AdminListActivity.admindialogPlus;
 
 public class SaveEmailAdapter extends BaseAdapter {
     LayoutInflater layoutInflater;
-    ImageLoader imageLoader;
     Apply apply;
     Context context;
     int position;

@@ -65,7 +65,8 @@
             android:id="@+id/btn_admin_email"
             android:textSize="@dimen/text_button_text"
             android:textColor="@color/ColorLightPrimaryColor"
-            android:text="设置邮箱"/>
+            android:text="设置邮箱"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

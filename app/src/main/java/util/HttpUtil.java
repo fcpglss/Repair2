@@ -1,22 +1,12 @@
 package util;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-import android.widget.Toast;
-
 import java.io.BufferedReader;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
-import application.MyApplication;
 import repair.com.repair.MainActivity;
 
 public class HttpUtil {
@@ -38,7 +28,7 @@ public class HttpUtil {
 					connection=(HttpURLConnection) new URL(address).openConnection();
 					connection.setRequestProperty("Charset", "utf-8");
 					connection.setRequestProperty("Accept-Charset", "utf-8");
-					connection.setConnectTimeout(5000);
+					connection.setConnectTimeout(8000);
 					connection.setReadTimeout(8000);
 					connection.setDoInput(true);
 					connection.setRequestMethod("GET");

@@ -26,7 +26,6 @@ import butterknife.ButterKnife;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.MyRepairFragment;
-import model.Response;
 import repari.com.adapter.FragmentAdapter;
 
 
@@ -106,9 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * ��ʼ��ʵ��
-     */
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
 
@@ -210,10 +206,10 @@ public class MainActivity extends AppCompatActivity {
                         tvHead.setText("首页");
                         break;
                     case 1:
-                        tvHead.setText("我的报修");
+                        tvHead.setText("我要报修");
                         break;
                     case 2:
-                        tvHead.setText("报修列表");
+                        tvHead.setText("我的报修");
                         break;
 
                 }
@@ -258,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.ll_chat:
                     mviewPager.setCurrentItem(0);
-
                     break;
                 case R.id.ll_friend:
                     mviewPager.setCurrentItem(2);
@@ -268,10 +263,6 @@ public class MainActivity extends AppCompatActivity {
                     mviewPager.setCurrentItem(1);
 
                     break;
-                case R.id.et_seach:
-                    //Intent intent = new Intent(MainActivity.this, SeachActivity.class);
-                    //startActivity(intent);
-
             }
         }
 
@@ -318,7 +309,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        super.onNewIntent(intent);
+    }
 }
 
 

@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.orhanobut.dialogplus.DialogPlus;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
-import imagehodler.ImageLoader;
 import model.Apply;
 import model.Category;
 import model.Employee;
@@ -32,13 +30,13 @@ import model.ResultBean;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
+import util.UIUtil;
 import util.Util;
 
 import static constant.RequestUrl.URL;
 import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
 
-//import static repair.com.repair.R.id.tv_details_employee;
 
 
 /**
@@ -61,21 +59,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView showBigImg;
     //背景
     LinearLayout linearLayoutDetail;
-    //对话框
-    private DialogPlus dialogPlus;
 
     private TextView tvArea;
 
-    private TextView  tvName, tv_date,  tv_status, tv_place, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
+    private TextView  tvName, tv_date, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
 
     private TextView tv_details_employee1;
 
     private TextView tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details,llFinishiTime,llNedd,llCompensation,llAdmin,llDetailDeal;
+    private LinearLayout ll_employee_details,llDetailDeal;
 
 
-    private ImageView img_category, img_status, img_back;
+    private ImageView img_category, img_status;
     private ImageView img1, img2, img3;
     private Apply apply = null;
     private Employee employee=null;
@@ -87,7 +83,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
     private List<ImageView> star_list=new ArrayList<ImageView>();
-    public ImageLoader mImageLoader = ImageLoader.build(MyApplication.getContext());
     private List<String> list_imageView = new ArrayList<>();
     private Response response;
 
@@ -188,7 +183,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_employee_can = (TextView) findViewById(R.id.tv_details_employee_can);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
-        llFinishiTime= (LinearLayout) findViewById(R.id.ll_finish_time);
 
         //星星
         star1 = (ImageView) findViewById(R.id.iv_star1);
@@ -213,19 +207,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_paigong = (TextView) findViewById(R.id.tv_paigong);
 
         tv_details_employee1 = (TextView) findViewById(R.id.tv_details_employee1);
-//        tv_details_employee2 = (TextView) findViewById(R.id.tv_details_employee2);
-//        tv_details_employee3 = (TextView) findViewById(R.id.tv_details_employee3);
-//        tv_details_employee4 = (TextView) findViewById(R.id.tv_details_employee4);
 
 
 
         tvName = (TextView) findViewById(R.id.tv_details_name);
-//        tv_tel = (TextView) findViewById(R.id.tv_details_tel);
-//        tv_category = (TextView) findViewById(tv_details_category);
-    //    tvDetailCategory = (TextView) findViewById(R.id.tv_details_details_category);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
         tvDealTime= (TextView) findViewById(R.id.tv_details_deal_date);
-        tv_status = (TextView) findViewById(R.id.tv_details_details);
        /// tv_place = (TextView) findViewById(R.id.tv_details_place);
 //        tv_email= (TextView) findViewById(R.id.tv_details_email);
 
@@ -243,10 +230,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvNeed= (TextView) findViewById(R.id.tv_details_need);
         tvCompensation= (TextView) findViewById(R.id.tv_details_compensation);
         tvAdmin= (TextView) findViewById(R.id.tv_details_admin);
-
-        llCompensation= (LinearLayout) findViewById(R.id.ll_detail_compensation);
-        llNedd= (LinearLayout) findViewById(R.id.ll_detail_nedd);
-        llAdmin= (LinearLayout) findViewById(R.id.ll_detail_admin);
         llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
 
 
@@ -328,7 +311,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         visibaleFinishTime();
 
         tv_describe.setText(apply.getClasss()+"("+apply.getDetailClass()+")\n"+apply.getRepairDetails());
-        img_category.setImageResource(getCategoryIcon());
+        img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
         getApplyImages();
 
@@ -407,18 +390,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
-
-    private void getCategory() {
-
-        for (Category c : detailRes.getCategory()) {
-            if (apply.getClasss().equals(c.getC_name())) {
-                category = c;
-                break;
-            }
-        }
-
-    }
-
     private int getRightIcon() {
         int image = R.id.iv_icon;
 
@@ -473,27 +444,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    private int getCategoryIcon() {
-        int image = R.id.iv_icon;
 
-        switch (apply.getClasss()) {
-            case "水":
-                image = R.drawable.water;
-                break;
-            case "电":
-                image = R.drawable.dian;
-                break;
-            case "土建":
-                image = R.drawable.door;
-                break;
-            case "设备":
-                image = R.drawable.computer;
-                break;
-            default:
-                image = R.drawable.computer;
-        }
-        return image;
-    }
 
 
     @Override
@@ -511,10 +462,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
         switch (view.getId()) {
-//            case R.id.img_back2:
-//                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-//                startActivity(intent);
-//                break;
             case R.id.iv_employee_arr:
 
                 if (apply.getLogisticMan()!=null){
@@ -570,6 +517,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
             }else{
                 Intent intent = new Intent(this,MainActivity.class);
+                intent.putExtra("appraise","ok");
                 startActivity(intent);
                 Log.d(TAG, "onKeyDown: 返回了main");
                 this.finish();

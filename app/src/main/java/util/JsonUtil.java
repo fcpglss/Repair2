@@ -80,6 +80,8 @@ public class JsonUtil {
 
 		return json;
 	}
+
+
 	public static Response jsonToResponse(String json)
 	{
 
@@ -105,8 +107,16 @@ public class JsonUtil {
 		{
 			if(json!=null&&json.length()>0)
 			{
+//
+//				GsonBuilder gb =new GsonBuilder();
+//				ResponseAdmin res =gb.create().fromJson(json,ResponseAdmin.class);
+
+
+
 				Gson gson =new Gson();
 				ResponseAdmin response =gson.fromJson(json, ResponseAdmin.class);
+				Log.d(TAG, "jsonToResponseAdmin: "+response.getAdmin().getAccount());
+				Log.d(TAG, "jsonToResponseAdmin: "+response.getAdmin().getEmailPassword());
 
 				return response;
 			}

@@ -76,6 +76,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="请输入真实姓名"
+                        android:maxLength="10"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -104,12 +105,12 @@
 
                     <EditText
                         android:id="@+id/et_tel"
-                        android:phoneNumber="true"
-                        android:maxLines="11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="请输入电话号码"
+                        android:maxLength="11"
+                        android:phoneNumber="true"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -143,6 +144,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="请输入电子邮箱"
+                        android:maxLength="30"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -166,6 +168,7 @@
                         android:layout_width="@dimen/dimen72"
                         android:layout_height="wrap_content"
                         android:text="*报修密码"
+
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
 
@@ -174,7 +177,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="请输入4位报修密码"
+                        android:hint="请输入用于评价的报修密码"
+                        android:maxLength="50"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -194,14 +198,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    >
+                    android:layout_margin="10dp">
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_area"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:id="@+id/ll_apply_area">
+                        android:layout_weight="1">
 
                         <TextView
                             android:layout_width="@dimen/dimen72"
@@ -223,10 +226,10 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_detail_area"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/ll_apply_detail_area"
                         android:visibility="invisible">
 
                         <TextView
@@ -257,17 +260,17 @@
                     android:background="@color/ColorDividerColor" />
 
                 <LinearLayout
+                    android:id="@+id/ll_apply_big_floor_room"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:id="@+id/ll_apply_big_floor_room"
                     android:visibility="gone">
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_floor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:id="@+id/ll_apply_floor">
+                        android:layout_weight="1">
 
                         <TextView
                             android:layout_width="@dimen/dimen72"
@@ -289,10 +292,10 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_room"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/ll_apply_room"
                         android:visibility="invisible">
 
                         <TextView
@@ -330,6 +333,7 @@
                     <TextView
                         android:layout_width="105dp"
                         android:layout_height="wrap_content"
+                        android:maxLength="25"
                         android:text="故障地址描述"
                         android:textColor="@color/ColorPrimaryText"
                         android:textSize="@dimen/text_button_text" />
@@ -339,8 +343,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:maxLines="25"
                         android:hint="(仅限25字,描述具体地址)"
+                        android:maxLength="25"
                         android:textColor="@color/ColorSecondaryText"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_small_word_hints" />
@@ -360,10 +364,10 @@
                     android:layout_margin="10dp">
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:id="@+id/ll_apply_type">
+                        android:layout_weight="1">
 
 
                         <TextView
@@ -386,10 +390,10 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_apply_detail_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/ll_apply_detail_type"
                         android:visibility="invisible">
 
 
@@ -432,6 +436,7 @@
                     android:gravity="top"
                     android:hint="请输入故障描述,仅限50字"
                     android:inputType="textMultiLine"
+                    android:maxLength="50"
                     android:minLines="4"
                     android:textColor="@color/ColorSecondaryText"
                     android:textCursorDrawable="@null"

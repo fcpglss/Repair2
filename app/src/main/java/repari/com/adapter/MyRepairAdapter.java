@@ -2,7 +2,6 @@ package repari.com.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,29 +15,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.DialogPlusBuilder;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import application.MyApplication;
 import fragment.ApplyFragment;
-import imagehodler.ImageLoader;
+import io.reactivex.functions.Consumer;
 import model.Apply;
-import model.Area;
-import model.Category;
-import model.Place;
 import model.ResultBean;
-import repair.com.repair.AppraiseActivity;
 import repair.com.repair.ChangeActivity;
-import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
 import util.JsonUtil;
+import util.UIUtil;
 import util.Util;
-import static repair.com.repair.MainActivity.windowWitch;
+
 import static repair.com.repair.MainActivity.windowHeigth;
+import static repair.com.repair.MainActivity.windowWitch;
 
 
 /**
@@ -55,7 +50,6 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private Drawable mDefaultBitmapDrawable;
 
-    public ImageLoader mImageLoader;
 
     private static final int mImageWidth = 150;
 
@@ -75,7 +69,6 @@ public class MyRepairAdapter extends BaseAdapter {
         mInflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.context = context;
-        mImageLoader = ImageLoader.build(context);
     }
 
     @Override
@@ -144,11 +137,11 @@ public class MyRepairAdapter extends BaseAdapter {
 
         viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
         viewHolder.tvName.setText(apply.getRepair());
-        viewHolder.ivState.setImageResource(getState(position, myRes));
+
+        int status = myRes.getApplys().get(position).getState();
+        viewHolder.ivState.setImageResource(UIUtil.getStatusIcon(status));
         viewHolder.tvAddress.setText(area_name + a_details);
         viewHolder.tvType.setText(categoryName+" ("+apply.getDetailClass()+")");
-
-
 
         //判断是否能修改和评价然后跳转
         JumpApprise(viewHolder.tvAppraise, apply.getState(), position);
@@ -159,32 +152,31 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private void JumpChange(final TextView tvChange, final int state, final int position) {
 
-        Log.d(TAG, "JumpApprise: 状态c "+state);
+
         if (state ==1){
-            Log.d(TAG, "JumpApprise: 状态c 里面"+state);
             tvChange.setVisibility(View.VISIBLE);
         }else {
             tvChange.setVisibility(View.GONE);
         }
 
-        tvChange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (state == 1) {
-                    // 放入被点击的item的Id ,跳转修改Activity
-                    Intent intent = new Intent(context, ChangeActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("apply", myRes.getApplys().get(position));
-                    bundle.putSerializable("address", getAddressRes());
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtras(bundle);
-                    context.startActivity(intent);
-                } else {
-                    Toast.makeText(context, "维修单已开始处理，不能再修改", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
+        RxView.clicks(tvChange).throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        if (state == 1) {
+                            // 放入被点击的item的Id ,跳转修改Activity
+                            Intent intent = new Intent(context, ChangeActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("apply", myRes.getApplys().get(position));
+                            bundle.putSerializable("address", getAddressRes());
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtras(bundle);
+                            context.startActivity(intent);
+                        } else {
+                            Toast.makeText(context, "维修单已开始处理，不能再修改", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
         tvChange.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -204,7 +196,10 @@ public class MyRepairAdapter extends BaseAdapter {
     private void JumpApprise(final TextView tvAppraise, final int state, final int position) {
 
         Log.d(TAG, "JumpApprise: 状态 "+state);
-        if (state == 4){
+        Log.d(TAG, "JumpApprise: "+(myRes.getApplys().get(position).getEvalText()==null));
+
+
+        if (state == 4 && myRes.getApplys().get(position).getEvalText()==null){
             Log.d(TAG, "JumpApprise: 状态 里面"+state);
             tvAppraise.setVisibility(View.VISIBLE);
         }else {

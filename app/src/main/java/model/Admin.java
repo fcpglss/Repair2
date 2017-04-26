@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class Admin implements Serializable{
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 123123435435L;
 
     private String account;
 
@@ -23,6 +23,16 @@ public class Admin implements Serializable{
     private String sex;
 
     private String job;
+
+    public String getEmailPassword() {
+        return emailPassword;
+    }
+
+    public void setEmailPassword(String emailPassword) {
+        this.emailPassword = emailPassword;
+    }
+
+    private String emailPassword;
 
     public String getAccount() {
         return account;

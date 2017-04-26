@@ -78,6 +78,19 @@ public class AnnocmentListAdapter extends BaseAdapter {
         return view;
     }
 
+    public void setAnnouncemnetList(List<Announcement> announcemnetList) {
+       if(list!=null)
+       {
+           for(int i=0;i<list.size();i++)
+           {
+               list.remove(i);
+               list.add(announcemnetList.get(i));
+           }
+       }
+    }
+
+
+
     private static class ViewHolder {
         TextView tvTitle, tvTime, tvContent;
         LinearLayout llTitle, llContent;

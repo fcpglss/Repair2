@@ -15,10 +15,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import java.util.concurrent.TimeUnit;
+
 import constant.RequestUrl;
-import imagehodler.ImageLoader;
+import io.reactivex.functions.Consumer;
 import model.Apply;
 import okhttp3.Call;
 import repair.com.repair.AppraiseActivity;
@@ -34,7 +37,6 @@ import static repari.com.adapter.MyRepairAdapter.dialogPlus;
 public class DialogAdapterPassword extends BaseAdapter {
     private static final String TAG = "DialogAdapterPassword";
     LayoutInflater layoutInflater;
-    ImageLoader imageLoader;
     Apply apply;
     Context context;
     int position;
@@ -48,9 +50,9 @@ public class DialogAdapterPassword extends BaseAdapter {
                 case 1:
                     closeDiag();
                     //跳转
-                    Intent intent = new Intent(context,AppraiseActivity.class);
-                    Bundle bundle =new Bundle();
-                    bundle.putSerializable("apply",apply);
+                    Intent intent = new Intent(context, AppraiseActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("apply", apply);
                     intent.putExtras(bundle);
                     context.startActivity(intent);
                     break;
@@ -107,44 +109,45 @@ public class DialogAdapterPassword extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        viewHolder.btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String s = viewHolder.editText.getText().toString();
+        RxView.clicks(viewHolder.btnConfirm).throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        String s = viewHolder.editText.getText().toString();
 
-                //输入为空提醒输入密码
-                if ("".equals(s)) {
-                    Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show();
-                } else {
-                    //请求网络判断对错
-                    svProgressHUD = new SVProgressHUD(context);
-                    svProgressHUD.showWithStatus("验证中");
-                    svProgressHUD.show();
-                    String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
-                    Log.d(TAG, "onClick: MD5: "+MD5);
-                    Log.d(TAG, "onClick: ID: "+apply.getId());
-                    Util.submit("password",MD5,"ID",apply.getId(), RequestUrl.QUERYMYREPAIR).execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-                            mhandler.sendEmptyMessage(3);
+                        //输入为空提醒输入密码
+                        if ("".equals(s)) {
+                            Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //请求网络判断对错
+                            svProgressHUD = new SVProgressHUD(context);
+                            svProgressHUD.showWithStatus("验证中");
+                            svProgressHUD.show();
+                            String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
+                            Log.d(TAG, "onClick: MD5: " + MD5);
+                            Log.d(TAG, "onClick: ID: " + apply.getId());
+                            Util.submit("password", MD5, "ID", apply.getId(), RequestUrl.QUERYMYREPAIR).execute(new StringCallback() {
+                                @Override
+                                public void onError(Call call, Exception e, int id) {
+                                    mhandler.sendEmptyMessage(3);
+                                }
+
+                                @Override
+                                public void onResponse(String response, int id) {
+                                    Log.d(TAG, "onResponse: response:" + response);
+                                    if ("OK".equals(response)) {
+                                        mhandler.sendEmptyMessage(1);
+                                    } else {
+                                        mhandler.sendEmptyMessage(2);
+                                    }
+                                }
+                            });
+
                         }
-
-                        @Override
-                        public void onResponse(String response, int id) {
-                            Log.d(TAG, "onResponse: response:");
-                            if ("OK".equals(response)){
-                                mhandler.sendEmptyMessage(1);
-                            }else {
-                                mhandler.sendEmptyMessage(2);
-                            }
-                        }
-                    });
-
-                }
+                    }
+                });
 
 
-            }
-        });
         viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,12 +163,13 @@ public class DialogAdapterPassword extends BaseAdapter {
             svProgressHUD.dismiss();
 
         }
-        if (dialogPlus!=null){
-            if (dialogPlus.isShowing()){
+        if (dialogPlus != null) {
+            if (dialogPlus.isShowing()) {
                 dialogPlus.dismiss();
             }
         }
     }
+
     private static class ViewHolder {
         EditText editText;
         Button btnCancel, btnConfirm;

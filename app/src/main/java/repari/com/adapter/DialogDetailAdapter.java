@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Pack200;
 
-import imagehodler.ImageLoader;
 import model.Category;
 import repair.com.repair.R;
 
@@ -27,7 +25,6 @@ public class DialogDetailAdapter extends BaseAdapter {
     LayoutInflater layoutInflater;
     List<String> list = new ArrayList<>();
     List<Category> listCategory = new ArrayList<>();
-    ImageLoader imageLoader;
     int layout;
 
     public DialogDetailAdapter(Context context, List<String> list, List<Category> listCategory  , int layout) {
@@ -35,7 +32,6 @@ public class DialogDetailAdapter extends BaseAdapter {
         this.layout = layout;
         this.listCategory = listCategory;
         layoutInflater = LayoutInflater.from(context);
-        imageLoader = ImageLoader.build(context);
     }
 
     @Override
@@ -72,7 +68,6 @@ public class DialogDetailAdapter extends BaseAdapter {
             Log.d(TAG, "getView: "+list.get(position));
             viewHolder.textView.setText(list.get(position));
             viewHolder.imageView.setTag(listCategory.get(position).getC_imageurl());
-            imageLoader.bindBitmap(listCategory.get(position).getC_imageurl(),viewHolder.imageView,100,100);
 
         return view;
     }

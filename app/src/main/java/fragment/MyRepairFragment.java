@@ -52,17 +52,21 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     private EditText etName, etPhone;
     private Button btnSearch;
 
-    private String phone = "phone";
     private static boolean isRefrush =false;
 
-
+    String appraise="false";
 
     private static boolean moreFlag = false;
 
     private static boolean isMore=false;
+    private static boolean ishasData=false;
 
     private static int start = 0;
     private static int end = 5;
+
+    private String phone="";
+    private String name="";
+
 
     public Response moreResponse = null;
 
@@ -100,11 +104,13 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     closeReflush();
                     //先清后填
                     setFirstApply(myRespon.getResultBean());
+                    ishasData=myRespon.isEnd();
                     adapter.notifyDataSetChanged();
                     break;
 
                 case 5:
                     lvMyList.stopRefresh();
+                    ishasData=myRespon.isEnd();
                     Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
                     Log.d(TAG, "handleMessage: 5");
                     break;
@@ -155,6 +161,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        appraise="faile";
+        phone="";
+        name="";
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -206,6 +215,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                moreFlag=false;
+                start=0;
+                end=5;
 
                 if (svProgressHUD == null) {
                     svProgressHUD = new SVProgressHUD(getActivity());
@@ -213,7 +225,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 } else {
                     svProgressHUD.showWithStatus("搜索中");
                 }
-                queryFromServer("phone",etPhone.getText().toString(),"name",etName.getText().toString(),QUERYMYREPAIR);
+                phone=etPhone.getText().toString();
+                name=etName.getText().toString();
+                queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
 
             }
         });
@@ -222,6 +236,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
     private void queryFromServer(String parms,String Vules,String params2,String Vules2,String url)
     {
+        Log.d(TAG, "queryFromServer: 执行");
         Util.submit(parms, Vules, params2, Vules2, url)
                 .execute(new StringCallback() {
                     @Override
@@ -314,13 +329,23 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         start = 0;
         end = 5;
         moreFlag = false;
+        ishasData=false;
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
 
 
+
     @Override
     public void onResume() {
+
+        appraise= getActivity().getIntent().getStringExtra("appraise");
+        Log.d(TAG, "onResume: appraise :"+appraise);
+
+        if (appraise!=null&&appraise.equals("ok")){
+            appraise="false";
+            queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
+        }
         super.onResume();
         Log.d(TAG, "onResume: ");
     }
@@ -340,7 +365,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     @Override
     public void onLoadMore() {
         isMore=true;
-        if (moreFlag) {
+        if (moreFlag||ishasData) {
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
@@ -367,7 +392,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 } else {
                     myRespon.setErrorType(-2);
                     myRespon.setError(false);
-                    myRespon.setErrorMessage("服务器维护");
+                    myRespon.setErrorMessage("没有数据");
 
                     mhandler.sendEmptyMessage(2);
                 }
@@ -385,5 +410,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
             }
         });
     }
+
+
 
 }

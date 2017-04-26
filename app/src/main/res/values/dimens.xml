@@ -27,7 +27,8 @@
     <dimen name="dimen32">32dp</dimen>
     <dimen name="dimen40">40dp</dimen>
     <dimen name="dimen48">48dp</dimen>
-    <dimen name="dimen56">56dp</dimen>
+    <dimen name="dimen56">50dp</dimen>
+    <dimen name="dimen50">56dp</dimen>
     <dimen name="dimen64">64dp</dimen>
     <dimen name="dimen72">72dp</dimen>
     <dimen name="dimen80">80dp</dimen>
@@ -38,6 +39,7 @@
     <dimen name="text_button_text">15sp</dimen>
     <dimen name="text_subtitle">17sp</dimen>
     <dimen name="text_appbar_text">20sp</dimen>
+    <dimen name="text_appbar_22_text">22sp</dimen>
     <dimen name="text_big_title">24sp</dimen>
     <dimen name="text_big_text34sp">34sp</dimen>
     <dimen name="text_big_text45sp">45sp</dimen>

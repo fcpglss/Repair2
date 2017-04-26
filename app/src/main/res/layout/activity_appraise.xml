@@ -217,35 +217,35 @@
                     android:id="@+id/iv_appraise_star1"
                     android:layout_width="19dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/star_white" />
+                    android:src="@drawable/star_red" />
 
                 <ImageView
                     android:id="@+id/iv_appraise_star2"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginLeft="8dp"
-                    android:src="@drawable/star_white" />
+                    android:src="@drawable/star_red" />
 
                 <ImageView
                     android:id="@+id/iv_appraise_star3"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginLeft="8dp"
-                    android:src="@drawable/star_white" />
+                    android:src="@drawable/star_red" />
 
                 <ImageView
                     android:id="@+id/iv_appraise_star4"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginLeft="8dp"
-                    android:src="@drawable/star_white" />
+                    android:src="@drawable/star_red" />
 
                 <ImageView
                     android:id="@+id/iv_appraise_star5"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginLeft="8dp"
-                    android:src="@drawable/star_white" />
+                    android:src="@drawable/star_red" />
             </LinearLayout>
 
         </LinearLayout>

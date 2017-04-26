@@ -1,10 +1,7 @@
 package repari.com.adapter;
 
 import android.content.Context;
-
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
-import imagehodler.ImageLoader;
 import model.Apply;
-import model.Category;
 import model.ResultBean;
 import repair.com.repair.R;
+import util.UIUtil;
 import util.Util;
 
 
@@ -102,89 +96,14 @@ public class ApplysAdapter extends BaseAdapter {
         String temp = res.getApplys().get(position).getRepairTime();
         viewHolder.tvTime.setText(temp.split(":")[0] + ":" + temp.split(":")[1]);
         setIcon(viewHolder);
-        viewHolder.ivRightDownIcon.setImageResource(getRightIcon(position, res));
 
-        viewHolder.ivIcon.setImageResource(getImageResource(res.getApplys().get(position).getClasss()));
+        int state = res.getApplys().get(position).getState();
+
+        viewHolder.ivRightDownIcon.setImageResource(UIUtil.getStatusIcon(state));
+
+        viewHolder.ivIcon.setImageResource(UIUtil.getCategoryIcon(res.getApplys().get(position).getClasss()));
 
         return convertView;
-    }
-
-    private int getImageResource(String name) {
-
-        switch (name) {
-            case "电工类":
-
-                return   R.drawable.dian2;
-            case "木工类":
-
-                return   R.drawable.chulizhong;
-            case "水工类":
-                return   R.drawable.shui;
-
-            case "家具类":
-
-                return  R.drawable.jiaju;
-            case "土建类":
-
-                return  R.drawable.tujian;
-
-            case "媒体类":
-
-                return  R.drawable.meiti;
-            default:
-
-                return   R.drawable.other;
-        }
-
-    }
-
-    /**
-     * 获得相应的category的Image_url
-     */
-
-
-    private String getCategoryId(int position, ResultBean rs) {
-        String appyly_cid = rs.getApplys().get(position).getClasss();
-
-        String c_url = "";
-
-
-//        for (Category category : rs.getCategory()) {
-//            if (appyly_cid.equals(category.getC_name())) {
-//                categoryProprety = category.getC_priority();
-//
-//                c_url = category.getC_imageurl();
-//                break;
-//            }
-//        }
-        return c_url;
-    }
-
-    private int getRightIcon(int position, ResultBean rs) {
-        int image = 0;
-        int a_status = rs.getApplys().get(position).getState();
-        switch (a_status) {
-            case 1:
-                image = R.drawable.weichuli;
-                break;
-            case 2:
-
-                image = R.drawable.yipaigong;
-                 break;
-            case 3:
-                image = R.drawable.yizuofei;
-                break;
-
-            case 4:
-                image = R.drawable.yiwanjie;
-                break;
-            case 5:
-                image = R.drawable.dengdaicailiao;
-                break;
-            default:
-                image = R.drawable.weichuli;
-        }
-        return image;
     }
     private void setIcon(ViewHolder view) {
         if(categoryProprety==null||categoryProprety.equals(""))

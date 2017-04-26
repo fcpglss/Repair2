@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_big_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/iv_big_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:background="@color/ColorText_Icons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:layout_marginTop="@dimen/dimen24">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*姓名"
+                    android:textColor="@color/ColorPrimaryText"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <EditText
+                    android:id="@+id/et_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="57dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="请输入真实姓名"
+                    android:maxLength="10"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <ImageView
+                    android:id="@+id/img_apply_name_frag"
+                    android:layout_width="40dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:gravity="right"
+                    android:src="@drawable/clean2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_apply_name_frg"
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_margin="12dp"
+                android:background="#000000"
+
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <!--手机号码-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:layout_marginTop="0dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*联系电话"
+                    android:textColor="@color/ColorPrimaryText"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <EditText
+                    android:id="@+id/et_tel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:maxLength="11"
+                    android:phoneNumber="true"
+                    android:hint="请输入联系电话"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <ImageView
+                    android:id="@+id/img_apply_phone_frag"
+                    android:layout_width="40dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:gravity="right"
+                    android:src="@drawable/clean2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_apply_phonbe_frg"
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_margin="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:background="#000000"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <!--/手机号码-->
+
+            <!--电子邮箱-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:layout_marginTop="0dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/ColorPrimaryText"
+                    android:text="电子邮箱"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <EditText
+                    android:id="@+id/et_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="32dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="请输入电子邮箱"
+                    android:maxLength="30"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <ImageView
+                    android:id="@+id/img_apply_email_frag"
+                    android:layout_width="40dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:gravity="right"
+                    android:visibility="gone"
+                    android:src="@drawable/clean2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_apply_email_frg"
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_margin="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:background="#000000"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <!--/电子邮箱-->
+            <!--报修密码-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:layout_marginTop="0dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*报修密码"
+                    android:textColor="@color/ColorPrimaryText"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <EditText
+                    android:id="@+id/et_apply_password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:maxLength="10"
+                    android:hint="输入用于评价的密码"
+                    android:textSize="@dimen/text_subtitle" />
+
+                <ImageView
+                    android:id="@+id/img_apply_password_frag"
+                    android:layout_width="40dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="@dimen/dimen16"
+                    android:gravity="right"
+                    android:visibility="gone"
+                    android:src="@drawable/clean2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_apply_password_frg"
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_margin="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:background="#000000"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <!--/报修密码-->
+
+            <!--分割-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="8dp"></LinearLayout>
+            <!--/分割-->
+
+
+            <!--故障地点-->
+
+            <LinearLayout
+                android:id="@+id/ll_apply_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp">
+
+                    <TextView
+                        android:id="@+id/textView18"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*故障地点"
+
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <EditText
+
+                        android:id="@+id/et_area"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen24"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:focusable="false"
+
+                        android:hint="请选择故障地点"
+                        android:text=""
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="@dimen/dimen16"
+                        android:gravity="right"
+                        android:src="@drawable/clean2"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_area_frg"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#000000"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!--/故障地点-->
+
+            <!--楼名-->
+
+            <LinearLayout
+                android:id="@+id/ll_apply_detail_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp">
+
+                    <TextView
+                        android:id="@+id/textView19"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="楼名"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <EditText
+                        android:id="@+id/et_detail_area"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="65dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:focusable="false"
+
+                        android:hint="请选择故障楼名"
+                        android:text=""
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="@dimen/dimen16"
+                        android:gravity="right"
+                        android:src="@drawable/clean2"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_place_frg"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#000000"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!--/楼名-->
+
+            <!--楼层-->
+            <LinearLayout
+                android:id="@+id/ll_apply_big_floor_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp">
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_floor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="12dp">
+
+                            <TextView
+                                android:id="@+id/textView17"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="楼层"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_subtitle" />
+
+                            <EditText
+
+                                android:id="@+id/et_floor"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="65dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:hint="请选择故障楼层"
+                                android:focusable="false"
+
+                                android:text=""
+                                android:textSize="@dimen/text_subtitle" />
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="20dp"
+                                android:layout_marginRight="@dimen/dimen16"
+                                android:gravity="right"
+                                android:src="@drawable/clean2"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_apply_flies_frg"
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#000000"
+                            android:orientation="horizontal">
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_apply_room"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:visibility="visible"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="12dp">
+
+                            <TextView
+                                android:id="@+id/textView16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="房间号"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_subtitle" />
+
+                            <EditText
+
+                                android:id="@+id/et_room"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="48dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:hint="请选择房间"
+                                android:focusable="false"
+
+                                android:text=""
+                                android:textSize="@dimen/text_subtitle" />
+
+                            <ImageView
+                                android:id="@+id/imageView"
+                                android:layout_width="40dp"
+                                android:layout_height="20dp"
+                                android:layout_marginRight="@dimen/dimen16"
+                                android:gravity="right"
+                                android:src="@drawable/clean2"
+                                android:visibility="gone" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_apply_room_frg"
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="#000000"
+                            android:orientation="horizontal">
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <!--故障地点描述-->
+
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp">
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="地点描述"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+
+                    <EditText
+                        android:id="@+id/et_apply_address_details"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="32dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="请输入故障地点描述"
+
+                        android:maxLength="25"
+                        android:text=""
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <ImageView
+                        android:id="@+id/img_apply_addressdet_frg"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                       android:visibility="gone"
+                        android:gravity="right"
+                        android:src="@drawable/clean2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_addressdeta_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#000000"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+            <!--/故障类型-->
+
+
+            <!--故障类型-->
+            <LinearLayout
+                android:id="@+id/ll_apply_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_margin="12dp">
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*故障"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <EditText
+                        android:id="@+id/et_apply_type"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="59dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+
+                        android:focusable="false"
+                        android:hint="请选择故障类型"
+                        android:text=""
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <ImageView
+                        android:layout_width="61dp"
+                        android:layout_height="24dp"
+                        android:layout_marginRight="@dimen/dimen24"
+                        android:gravity="right"
+                        android:src="@drawable/admin" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_class_frg"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#000000"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--/故障类型-->
+
+            <!--房间号-->
+
+            <LinearLayout
+                android:id="@+id/ll_apply_detail_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:layout_marginTop="0dp">
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="详情"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <EditText
+                        android:id="@+id/et_apply_detail_type"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="67dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="请选择故障详情"
+                        android:focusable="false"
+
+                        android:text=""
+                        android:textSize="@dimen/text_subtitle" />
+
+                    <ImageView
+
+                        android:layout_width="61dp"
+                        android:layout_height="24dp"
+                        android:layout_marginRight="@dimen/dimen24"
+                        android:gravity="right"
+                        android:src="@drawable/admin" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_apply_detailclass_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#000000"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--/类详-->
+
+
+            <!--故障描述-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen24"
+                android:layout_marginTop="0dp">
+
+                <EditText
+                    android:id="@+id/et_apply_describe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dimen24"
+                    android:layout_marginTop="10dp"
+                    android:background="@null"
+                    android:hint="请输入50字以内的故障描述"
+                    android:maxLength="50"
+                    android:minLines="3"
+                    android:text=""
+                    android:textSize="@dimen/text_subtitle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_apply_repairdetail_frg"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_margin="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:background="#000000"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <!--/故障描述-->
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="0dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/rl_img1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/iv_img1"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_margin="3dp"
+                        android:padding="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <ImageView
+                        android:id="@+id/iv_img_x1"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/x" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_img2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/iv_img2"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_margin="3dp"
+                        android:padding="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <ImageView
+                        android:id="@+id/iv_img_x2"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/x" />
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/rl_img3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+
+                    <ImageView
+                        android:id="@+id/iv_img3"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_margin="3dp"
+                        android:padding="8dp"
+                        android:scaleType="fitXY"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <ImageView
+                        android:id="@+id/iv_img_x3"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/x" />
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/iv_add"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/add_picture3" />
+
+            </LinearLayout>
+
+
+            <!--立即报修按钮-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:gravity="center">
+
+
+                <Button
+                    android:id="@+id/btn_apply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/button_submit"
+                    android:gravity="center"
+                    android:text="立即报修"
+                    android:textColor="#ffffff"
+                    tools:ignore="ButtonStyle" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.request.RequestCall;
@@ -37,6 +38,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 import camera.CalculateImage;
+import model.Admin;
 import model.Apply;
 import model.Category;
 import model.Flies;
@@ -47,7 +49,6 @@ import model.Room;
 import repair.com.repair.R;
 
 import static android.content.Context.MODE_PRIVATE;
-
 
 
 public class Util {
@@ -262,6 +263,28 @@ public class Util {
 
     }
 
+    public static void writeJsonAdmin(final Admin admin, final Context mContext) {
+
+        Log.d(TAG, "writeJsonAdmin: "+admin.getEmailPassword().toString());
+        Gson gson = new Gson();
+        String adminJson = gson.toJson(admin);
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("admin_inf", mContext.MODE_PRIVATE).edit();
+        editor.putString("admin_inf", adminJson);
+        editor.apply();
+        Log.d(TAG, "writeJsonAdmin: 成功将Admin信息的Json写入本地admin_inf文件中，key:admin_inf");
+    }
+
+    public static Admin loadWriteAdmin(Context mContext) {
+
+        SharedPreferences preferences = mContext.getSharedPreferences("admin_inf", mContext.MODE_PRIVATE);
+        String json = preferences.getString("admin_inf", null);
+        Admin admin=JsonUtil.jsonToAdmin(json);
+        Log.d(TAG, "loadWriteAdmin: "+admin.getEmailPassword().toString());
+        return admin;
+    }
+
+
+
     //将从服务器获取到的数据写入address_data文件中，key为address
     public static void writeAddressToLocal(final ResultBean resultBean, final Context mContext) {
         new Thread(new Runnable() {
@@ -422,6 +445,12 @@ public class Util {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
 
         postFormBuilder.addParams(paramsKey, paramsValues);
+        postFormBuilder.url(requestURL);
+        return postFormBuilder.build();
+    }
+
+    public static RequestCall submit(String requestURL) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
         postFormBuilder.url(requestURL);
         return postFormBuilder.build();
     }

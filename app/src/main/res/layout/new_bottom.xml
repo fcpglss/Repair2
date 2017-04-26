@@ -23,7 +23,7 @@
                 android:layout_height="22dp"
                 android:id="@+id/iv_home"
                 android:layout_gravity="center"
-                android:background="@drawable/home_light" />
+                android:background="@drawable/home_fill_light" />
 
             <TextView
                 android:id="@+id/tv_chat"
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="首页"
-                android:textColor="@color/ColorSecondaryText"
+                android:textColor="@color/ColorHeadColor"
                 android:textSize="11sp" />
 
         </LinearLayout>

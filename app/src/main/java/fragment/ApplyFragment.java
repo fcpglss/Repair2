@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -31,9 +32,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import application.MyApplication;
 import camera.FIleUtils;
+import cn.pedant.SweetAlert.SweetAlertDialog;
+import io.reactivex.functions.Consumer;
 import model.Apply;
 import model.Area;
 import model.Category;
@@ -50,6 +54,7 @@ import repari.com.adapter.DialogAdapter;
 import util.DialogUtil;
 import util.EdiTTouch;
 import util.JsonUtil;
+import util.RxBindingUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
@@ -61,7 +66,6 @@ import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.list_uri;
 import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
-import static util.NetworkUtils.isNetworkConnected;
 
 
 public class ApplyFragment extends LazyFragment2 implements View.OnClickListener, GetFragment, EdiTTouch, ResetVisable {
@@ -74,15 +78,22 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private EditText et_name, et_tel, et_describe;
 
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
-    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails,etAddressDetail;
+    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails, etAddressDetail;
     //对话框点击显示下一级
     private LinearLayout llApplyArea, llApplyDetailArea, llApplyBigFloorRoom, llApplyFloor, llApplyRoom, llApplyType, llApplyDetailType;
-    //记录区域ID
-    int AreaId;
-    int PlaceId;//楼号ID
-    int fliesId;//层号ID
-    // 添加层号 房间号
+
+    private LinearLayout  llPhoneLine,llNameLine,llPasswordLine,llEmailLine,llAreaLine,llPlaceLine,llFliesLine;
+
+    private LinearLayout llRoonLine,llAddressDetaiLine,llClassLine,llDetailClassLine,llDesctribeLine;
+
+
+    private ImageView imgPhone,imgName,imgPassword,imgEmail,imgAddressDetail;
+
+
+
     private EditText etFloor, etRoom;
+
+    private SweetAlertDialog sweetAlertDialog;
 
 
     private List<Area> newAreaList = new ArrayList<>();
@@ -96,43 +107,22 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     //滚动
     private ScrollView svBackground;
     private Button btn_apply;
-    private ImageView image_camera, img_add, img_1, img_2, img_3;
+    private ImageView  img_add, img_1, img_2, img_3;
 
     private RelativeLayout rl1, rl2, rl3;
+
     //打叉图片
     private ImageView ivX1, ivX2, ivX3;
     //显示大图
     private LinearLayout llBigImg;
     private ImageView ivBigImg;
 
-    private Button btn_clear;
 
-    private List<String> list_place = new ArrayList<>();
-    private List<String> list_category = new ArrayList<>();
     private List<ImageView> imageViewList = new ArrayList<>();
 
     private Apply apply = new Apply();
 
     public static ResultBean addressRes = null;
-
-//    ArrayAdapter categoryAdapter;
-//    ArrayAdapter placeAdapter;
-
-    //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
-    private List<String> listArea = new ArrayList<>();
-    private List<String> listDetailArea = new ArrayList<>();
-    private List<String> listFloor = new ArrayList<>();
-    private List<String> listRoom = new ArrayList<>();
-    //用于存放Id的list
-    private List<Integer> listAreaID = new ArrayList<>();
-    private List<Integer> listDetailAreaID = new ArrayList<>();
-    private List<Integer> listFloorID = new ArrayList<>();
-    private List<Integer> listRoomID = new ArrayList<>();
-    private List<Integer> listApplyTypeID = new ArrayList<>();
-    private List<Integer> listApplyDetailTypeID = new ArrayList<>();
-
-    private List<String> listApplyType = new ArrayList<>();
-    private List<String> listApplyDetailType = new ArrayList<>();
 
     private int areaId = 0;
     private int placeId = 0;
@@ -155,9 +145,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     List<String> newDetailClassStringList = new ArrayList<>();
 
 
-    //用来比较的list
-    List<Uri> list = new ArrayList<>();
-
     Uri[] arrayUri = new Uri[3];
 
     private Response response;
@@ -179,6 +166,38 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 case 5:
                     Toast.makeText(getActivity(), "请填写报修地址", Toast.LENGTH_SHORT).show();
                     break;
+                case 6:
+                    //申请成功提示
+                    sweetAlertDialog.setConfirmText("确定")
+                            .setTitleText("报修成功")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    clearAll();
+                                    sweetAlertDialog.dismiss();
+                                }
+                            }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    break;
+                case 7:
+                    sweetAlertDialog.setTitleText("网络异常")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismiss();
+                                }
+                            })
+                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    break;
+                case 8:
+                    sweetAlertDialog.setTitleText("提交失败")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismiss();
+                                }
+                            })
+                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    break;
             }
         }
     };
@@ -192,7 +211,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     @Override
     protected int getLayout() {
-        return R.layout.apply_fragment;
+        return R.layout.weixin_apply;
     }
 
     @Override
@@ -256,17 +275,18 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         //设置图片点击事件
         imgOnclick();
 
+
+
         imageViewList.add(img_1);
         imageViewList.add(img_2);
         imageViewList.add(img_3);
         btn_apply = (Button) view.findViewById(R.id.btn_apply);
-        btn_clear = (Button) view.findViewById(R.id.btn_clear);
-        btn_apply.setOnClickListener(this);
-        btn_clear.setOnClickListener(this);
+
 
         //滚动
         svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
 
+        sweetAlertDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE);
 
         //设置点击颜色
         btn_apply.setOnTouchListener(new View.OnTouchListener() {
@@ -282,19 +302,69 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 return false;
             }
         });
-        btn_clear.setOnTouchListener(new View.OnTouchListener() {
+        RxView.clicks(btn_apply).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Consumer<Object>() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_clear.setBackgroundResource(R.drawable.button_submit2);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    btn_clear.setBackgroundResource(R.drawable.button_submit);
-                }
-                return false;
+            public void accept(Object o) throws Exception {
+                Log.d(TAG, "accept: 提交了");
+                sweetAlertDialog
+                        .setConfirmClickListener(null)
+                        .setTitleText("确认提交？")
+                        .setConfirmText("确定")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                if (check()) {
+                                    sweetAlertDialog
+                                            .setTitleText("正在提交")
+                                            .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                    bindView();
+                                    upApply();
+                                } else {
+                                    sweetAlertDialog.setTitleText("* 标记为必填内容")
+                                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                @Override
+                                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                    sweetAlertDialog.dismiss();
+                                                }
+                                            });
+                                }
+                            }
+                        });
+                sweetAlertDialog.changeAlertType(SweetAlertDialog.WARNING_TYPE);
+                sweetAlertDialog.show();
+
             }
         });
+
+//        btn_clear.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    btn_clear.setBackgroundResource(R.drawable.button_submit2);
+//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    btn_clear.setBackgroundResource(R.drawable.button_submit);
+//                }
+//                return false;
+//            }
+//        });
+//
+//        RxView.clicks(btn_clear).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Consumer<Object>() {
+//            @Override
+//            public void accept(Object o) throws Exception {
+//                Log.d(TAG, "accept: 清空了");
+//                new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+//                        .setTitleText("确认清空？")
+//                        .setConfirmText("确定")
+//                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                            @Override
+//                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+//                                clearAll();
+//                                sweetAlertDialog.dismiss();
+//                            }
+//                        })
+//                        .show();
+//            }
+//        });
 
         llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
         llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
@@ -304,16 +374,93 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         llApplyType = (LinearLayout) view.findViewById(R.id.ll_apply_type);
         llApplyDetailType = (LinearLayout) view.findViewById(R.id.ll_apply_detail_type);
 
+        //初始化Line
+        llNameLine= (LinearLayout) view.findViewById(R.id.ll_apply_name_frg);
+        llPhoneLine= (LinearLayout) view.findViewById(R.id.ll_apply_phonbe_frg);
+        llPasswordLine= (LinearLayout) view.findViewById(R.id.ll_apply_password_frg);
+        llEmailLine= (LinearLayout) view.findViewById(R.id.ll_apply_email_frg);
+        llAreaLine= (LinearLayout) view.findViewById(R.id.ll_apply_area_frg);
+        llPlaceLine= (LinearLayout) view.findViewById(R.id.ll_apply_place_frg);
+        llFliesLine= (LinearLayout) view.findViewById(R.id.ll_apply_flies_frg);
+        llRoonLine= (LinearLayout) view.findViewById(R.id.ll_apply_room_frg);
+        llClassLine= (LinearLayout) view.findViewById(R.id.ll_apply_class_frg);
+
+        llAddressDetaiLine= (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
+
+        llDetailClassLine= (LinearLayout) view.findViewById(R.id.ll_apply_detailclass_name);
+        llDesctribeLine= (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
+
+        imgName= (ImageView) view.findViewById(R.id.img_apply_name_frag);
+        imgPhone= (ImageView) view.findViewById(R.id.img_apply_phone_frag);
+        imgEmail= (ImageView) view.findViewById(R.id.img_apply_email_frag);
+        imgPassword= (ImageView) view.findViewById(R.id.img_apply_password_frag);
+        imgAddressDetail= (ImageView) view.findViewById(R.id.img_apply_addressdet_frg);
+
 
         /**
          * 初始化dialog
          */
         setDialogAdapter();
         setDialog();
+        setClearEditText();
+        setEditTextBackground();
         setEditTextOnTouch();
+
 //        setAreaDialog();
 
     }
+
+    private boolean check() {
+        Log.d(TAG, "check: " + (getContent(et_tel)
+                && getContent(et_name)
+                && getContent(etApplyPassword)
+                && getContent(etArea)
+                && getContent(etApplyType)));
+
+        return getContent(et_tel)
+                && getContent(et_name)
+                && getContent(etApplyPassword)
+                && getContent(etArea)
+                && getContent(etApplyType);
+    }
+
+    private boolean getContent(EditText e) {
+        Log.d(TAG, "check getContent: " + e.getText().toString().equals(""));
+        return !e.getText().toString().equals("");
+    }
+
+
+
+    private void setEditTextBackground()
+    {
+        RxBindingUtil.changColorAndVisable(et_name,llNameLine,imgName);
+        RxBindingUtil.changColorAndVisable(et_tel,llPhoneLine,imgPhone);
+        RxBindingUtil.changColorAndVisable(etEmail,llEmailLine,imgEmail);
+        RxBindingUtil.changColorAndVisable(etApplyPassword,llPasswordLine,imgPassword);
+        RxBindingUtil.changColorAndVisable(etAddressDetail,llAddressDetaiLine,imgAddressDetail);
+
+        RxBindingUtil.changColorAndVisable(etArea,llAreaLine);
+        RxBindingUtil.changColorAndVisable(etDetailArea,llPlaceLine);
+        RxBindingUtil.changColorAndVisable(etFloor,llFliesLine);
+        RxBindingUtil.changColorAndVisable(etRoom,llRoonLine);
+
+
+        RxBindingUtil.changColorAndVisable(etApplyType,llClassLine);
+        RxBindingUtil.changColorAndVisable(etApplyTypeDetails,llDetailClassLine);
+
+        RxBindingUtil.changColorAndVisable(et_describe,llDesctribeLine);
+
+    }
+
+
+    private void setClearEditText() {
+        RxBindingUtil.setClearText(imgName,et_name);
+        RxBindingUtil.setClearText(imgPhone,et_tel);
+        RxBindingUtil.setClearText(imgPassword,etApplyPassword);
+        RxBindingUtil.setClearText(imgEmail,etEmail);
+        RxBindingUtil.setClearText(imgAddressDetail,etAddressDetail);
+    }
+
 
 
     private void imgOnclick() {
@@ -395,8 +542,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         apply.setRepair(et_name.getText().toString());
         apply.setTel(et_tel.getText().toString());
         apply.setEmail(etEmail.getText().toString());
-        String MD5  = Util.getMD5(etApplyPassword.getText().toString());
-        Log.d(TAG, "bindView: apply MD5: "+MD5);
+        String MD5 = Util.getMD5(etApplyPassword.getText().toString());
+        Log.d(TAG, "bindView: apply MD5: " + MD5);
         apply.setPassword(MD5);
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
@@ -434,13 +581,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     DialogPlus roomDialog;
     DialogPlus categoryDialog;
     DialogPlus detailClassDialog;
-    private void showId(){
-        Log.d(TAG, "showId: 区域id: "+areaId);
-        Log.d(TAG, "showId: 楼号id： "+placeId);
-        Log.d(TAG, "showId: 楼层id： "+flieId);
-        Log.d(TAG, "showId: 房间id： "+roomId);
-        Log.d(TAG, "showId: 类型id:  "+categoryId );
-        Log.d(TAG, "showId: 类详id： "+detailTypeID);
+
+    private void showId() {
+        Log.d(TAG, "showId: 区域id: " + areaId);
+        Log.d(TAG, "showId: 楼号id： " + placeId);
+        Log.d(TAG, "showId: 楼层id： " + flieId);
+        Log.d(TAG, "showId: 房间id： " + roomId);
+        Log.d(TAG, "showId: 类型id:  " + categoryId);
+        Log.d(TAG, "showId: 类详id： " + detailTypeID);
     }
 
     private void setDialog() {
@@ -479,7 +627,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         /**
          * 楼层
          */
-        fliesDialog = DialogUtil.getDialogBuilder(getActivity(),fliesAdapter,R.layout.dialog_head6,this)
+        fliesDialog = DialogUtil.getDialogBuilder(getActivity(), fliesAdapter, R.layout.dialog_head6, this)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -493,7 +641,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         /**
          * 房间
          */
-        roomDialog = DialogUtil.getDialogBuilder(getActivity(),roomAdapter,R.layout.dialog_head7,this)
+        roomDialog = DialogUtil.getDialogBuilder(getActivity(), roomAdapter, R.layout.dialog_head7, this)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -507,7 +655,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         /**
          * 类型
          */
-        categoryDialog = DialogUtil.getDialogBuilder(getActivity(),categoryAdapter,R.layout.dialog_head3,this)
+        categoryDialog = DialogUtil.getDialogBuilder(getActivity(), categoryAdapter, R.layout.dialog_head3, this)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -521,7 +669,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         /**
          * 详细类型
          */
-        detailClassDialog = DialogUtil.getDialogBuilder(getActivity(),detailClassAdapter,R.layout.dialog_head10 ,this)
+        detailClassDialog = DialogUtil.getDialogBuilder(getActivity(), detailClassAdapter, R.layout.dialog_head10, this)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -558,7 +706,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("place",String.valueOf(areaId),JSON_URL);
+                    queryFromServer("place", String.valueOf(areaId), JSON_URL);
                     setNextVisible(v, event);
                     placeDialog.show();
                 }
@@ -572,7 +720,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("flies",String.valueOf(placeId),JSON_URL);
+                    queryFromServer("flies", String.valueOf(placeId), JSON_URL);
                     setNextVisible(v, event);
                     fliesDialog.show();
                 }
@@ -586,7 +734,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("room",String.valueOf(flieId),JSON_URL);
+                    queryFromServer("room", String.valueOf(flieId), JSON_URL);
                     setNextVisible(v, event);
                     roomDialog.show();
                 }
@@ -600,8 +748,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         etApplyType.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP){
-                    setNextVisible(v,event);
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    setNextVisible(v, event);
                     categoryDialog.show();
                 }
                 return false;
@@ -613,9 +761,9 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         etApplyTypeDetails.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP){
-                    queryFromServer("detailClass",String.valueOf(categoryId),JSON_URL);
-                    setNextVisible(v,event);
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    queryFromServer("detailClass", String.valueOf(categoryId), JSON_URL);
+                    setNextVisible(v, event);
                     detailClassDialog.show();
                 }
                 return false;
@@ -700,7 +848,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 newPlaceStringList.clear();
                 newPlace.addAll(response.getResultBean().getPlaces());
                 Place.ComparatorPlace c = new Place.ComparatorPlace();
-                Collections.sort(newPlace,c);
+                Collections.sort(newPlace, c);
                 for (Place p : newPlace) {
                     newPlaceStringList.add(p.getP_name());
                 }
@@ -713,7 +861,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 newFliesStringList.clear();
                 newFlies.addAll(response.getResultBean().getFlies());
                 Flies.ComparatorFlies flies = new Flies.ComparatorFlies();
-                Collections.sort(newFlies,flies);
+                Collections.sort(newFlies, flies);
 
                 for (Flies f : newFlies) {
                     newFliesStringList.add(f.getFlies());
@@ -725,8 +873,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 newRoom.clear();
                 newRoomStringList.clear();
                 newRoom.addAll(response.getResultBean().getRooms());
-                Room.ComparatorRoom ro=new Room.ComparatorRoom();
-                Collections.sort(newRoom,ro);
+                Room.ComparatorRoom ro = new Room.ComparatorRoom();
+                Collections.sort(newRoom, ro);
                 for (Room r : newRoom) {
                     newRoomStringList.add(r.getRoomNumber());
                 }
@@ -738,8 +886,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 newCategoryStringList.clear();
                 newCategory.addAll(response.getResultBean().getCategory());
 
-                Category.ComparatorCategory ca=new Category.ComparatorCategory();
-                Collections.sort(newCategory,ca);
+                Category.ComparatorCategory ca = new Category.ComparatorCategory();
+                Collections.sort(newCategory, ca);
 
                 for (Category c :
                         newCategory) {
@@ -753,8 +901,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 newDetailClassStringList.clear();
                 newDetailClass.addAll(response.getResultBean().getDetailClasses());
 
-                DetailClass.ComparatorDetail deta=new DetailClass.ComparatorDetail();
-                Collections.sort(newDetailClass,deta);
+                DetailClass.ComparatorDetail deta = new DetailClass.ComparatorDetail();
+                Collections.sort(newDetailClass, deta);
                 for (DetailClass d : newDetailClass) {
                     newDetailClassStringList.add(d.getClassDetail());
                 }
@@ -795,10 +943,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 });
         return response;
     }
-
-
-
-
 
 
     @Override
@@ -979,48 +1123,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
 
-    private int getAreaID(String areaName) {
-        int areaID;
-        List<Area> areas = addressRes.getAreas();
-        for (Area area : areas) {
-            if (area.getArea().equals(areaName)) {
-                areaID = area.getId();
-                return areaID;
-            }
-        }
-        return -1;
-    }
-
-    private int getDetailId(String detailName) {
-        int id;
-        List<Place> list = addressRes.getPlaces();
-        for (Place p : list) {
-            if (p.getP_name().equals(detailName)) {
-                PlaceId = p.getP_id();
-                return PlaceId;
-            }
-        }
-        return -1;
-    }
-
-    private int getFloor(int placeId, String floorName) {
-
-        Log.d(TAG, "getFloor: floor  " + floorName);
-        int id = 0;
-        List<Flies> list = addressRes.getFlies();
-        for (Flies f : list) {
-            if (f.getaFloor() == placeId) {
-                if (f.getFlies().equals(floorName)) {
-                    id = f.getId();
-                    return id;
-                }
-            }
-
-        }
-        return -1;
-    }
-
-
     private void startGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -1031,28 +1133,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private void upApply() {
 
-
-        if (!isNetworkConnected(getActivity())) {
-            Toast.makeText(getActivity(), "请连接网络", Toast.LENGTH_SHORT).show();
-
-        } else {
-
-            if (true) {
-
-                if (apply.getArea().equals("0") || apply.getDetailArea().equals("0")) {
-                    mhandler.sendEmptyMessage(5);
-                    Log.d(TAG, "setApply: AreaId" + apply.getArea());
-                    Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-                    Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-                    Log.d(TAG, "setApply: roomId" + apply.getRoom());
-                    Log.d(TAG, "setApply: categoryId" + apply.getClasss());
-                    return;
-                }
-                Log.d(TAG, "setApply: AreaId" + apply.getArea());
-                Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-                Log.d(TAG, "setApply: roomId" + apply.getRoom());
-                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
+//
+//                Log.d(TAG, "setApply: AreaId" + apply.getArea());
+//                Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
+//                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
+//                Log.d(TAG, "setApply: roomId" + apply.getRoom());
+//                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
                 String json = JsonUtil.beanToJson(apply);
                 Log.d(TAG, "upApply: json " + json);
                 for (Uri u :
@@ -1064,27 +1150,24 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 Util.submit("apply", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onError: ");
+                        mhandler.sendEmptyMessage(7);
+//                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-
                     @Override
                     public void onResponse(String response, int id) {
                         //clearAll();
-                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
-                        if ("申请成功等待处理".equals(response.toString())) {
+                        Log.d(TAG, "onResponse: "+response);
+//                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
+                        if ("申请成功等待处理".equals(response)) {
                             Util.writePhoneToLocal(apply, MyApplication.getContext());
+                            mhandler.sendEmptyMessage(6);
+                        } else {
+                            mhandler.sendEmptyMessage(8);
                         }
                     }
                 });
-
-            } else {
-                Toast.makeText(MyApplication.getContext(), "请填写完整信息...", Toast.LENGTH_SHORT).show();
-            }
-
-
         }
-
-    }
 
 
     private void setApply() {
@@ -1135,6 +1218,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         etApplyPassword.setText("");
         etFloor.setText("");
         etRoom.setText("");
+        etAddressDetail.setText("");
+
 
         rl1.setVisibility(View.GONE);
         rl2.setVisibility(View.GONE);
@@ -1156,11 +1241,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     public void resetVisible() {
 
         //进来就全部不可见
-        llApplyDetailArea.setVisibility(View.INVISIBLE);
+        llApplyDetailArea.setVisibility(View.GONE);
         llApplyBigFloorRoom.setVisibility(View.GONE);
-        llApplyFloor.setVisibility(View.INVISIBLE);
-        llApplyRoom.setVisibility(View.INVISIBLE);
-        llApplyDetailType.setVisibility(View.INVISIBLE);
+        llApplyFloor.setVisibility(View.GONE);
+        llApplyRoom.setVisibility(View.GONE);
+        llApplyDetailType.setVisibility(View.GONE);
 
 
         //如果区域不为其他 楼号可见
@@ -1185,11 +1270,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private void resetVisableAlways() {
         //进来就全部不可见
-        llApplyDetailArea.setVisibility(View.INVISIBLE);
+        llApplyDetailArea.setVisibility(View.GONE);
         llApplyBigFloorRoom.setVisibility(View.GONE);
-        llApplyFloor.setVisibility(View.INVISIBLE);
-        llApplyRoom.setVisibility(View.INVISIBLE);
-        llApplyDetailType.setVisibility(View.INVISIBLE);
+        llApplyFloor.setVisibility(View.GONE);
+        llApplyRoom.setVisibility(View.GONE);
+        llApplyDetailType.setVisibility(View.GONE);
     }
 
 
