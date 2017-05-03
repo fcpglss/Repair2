@@ -107,12 +107,6 @@ public class JsonUtil {
 		{
 			if(json!=null&&json.length()>0)
 			{
-//
-//				GsonBuilder gb =new GsonBuilder();
-//				ResponseAdmin res =gb.create().fromJson(json,ResponseAdmin.class);
-
-
-
 				Gson gson =new Gson();
 				ResponseAdmin response =gson.fromJson(json, ResponseAdmin.class);
 				Log.d(TAG, "jsonToResponseAdmin: "+response.getAdmin().getAccount());
@@ -122,8 +116,7 @@ public class JsonUtil {
 			}
 		}
 		catch (Exception e) {
-
-			Log.d(TAG, "jsonToResponseAdmin "+e.getMessage().toString());
+			e.printStackTrace();
 		}
 		return null;
 	}

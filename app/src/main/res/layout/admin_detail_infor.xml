@@ -538,6 +538,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@null"
+                            android:inputType="textMultiLine"
+                            android:minLines="2"
+                            android:maxLines="2"
                             android:enabled="false"
                             android:textColor="@color/ColorPrimaryText"
                             android:hint="请添加维修人员"
@@ -569,7 +572,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/dimen4">
+                    android:paddingTop="@dimen/dimen4"
+                    android:visibility="gone">
 
 
                     <LinearLayout
@@ -621,7 +625,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/dimen32"
                         android:background="@drawable/button_submit2"
-                        android:text="提交"
+                        android:text="派工"
                         android:textColor="@color/ColorText_Icons"
                         android:textSize="@dimen/text_14sp"
                         android:layout_marginRight="@dimen/dimen4"/>

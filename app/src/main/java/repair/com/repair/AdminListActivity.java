@@ -59,6 +59,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
     private TextView tvHead;
 
+    public static String account;
 
     private Button btnEmail;
 
@@ -204,6 +205,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         switchButton = (SwitchButton) findViewById(R.id.switch_button);
         tvHead = (TextView) findViewById(R.id.tv_head);
         tvHead.setText(admin.getAccount());
+        account = admin.getAccount();
         tvImage = (TextView) findViewById(R.id.tv_image);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
         lvAdmin.setWaterDropListViewListener(this);

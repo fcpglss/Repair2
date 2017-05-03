@@ -7,7 +7,12 @@ package constant;
 public class RequestUrl {
 
 
-    private static final String project="http://192.168.43.128:8888/repairSystem/";
+   // private static final String project="http://192.168.43.128:8888/repairSystem/";
+
+
+//    private static final String project="http://192.168.31.201:8888/repairSystem/";
+    private static final String project="http://192.168.43.236:8080/repairSystem/";
+
 
 
     public static final String QUERYMYREPAIR = project+"QueryRepair";
@@ -41,7 +46,7 @@ public class RequestUrl {
     public static final String FRIST_URL = project+"FirstRequest";
     public static final String SENDMORE_URL = project+"sendmore";
 
-    public static final String TEXT_EMAIL_URL="http://192.168.31.180:80/SendMessage/SendEMail.ashx";
+    public static final String TEXT_EMAIL_URL="http://192.168.43.236:80/SendMessage/SendEMail.ashx";
 
 
 

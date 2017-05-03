@@ -294,7 +294,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        tvDetailCategory.setText(apply.getDetailClass());
 //        tv_place.setText(apply.getDetailArea());
 
-        tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail()));
+        tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -303,7 +303,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
 
-        tvCompensation.setText(apply.getCompensation());
+        String Compensation = "";
+        if (apply.getCompensation().equals("0")){
+            Compensation = "不收费";
+        }else {
+            Compensation = "收费";
+        }
+
+        tvCompensation.setText(Compensation);
         tvNeed.setText(apply.getMaterial());
         tvAdmin.setText(apply.getLogisticMan());
 
