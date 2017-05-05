@@ -318,7 +318,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="right"
                                 android:maxLines="5"
-                                android:text="水电"
+                                android:text=""
                                 android:textColor="#BF383838" />
                         </LinearLayout>
                     </LinearLayout>
@@ -419,8 +419,8 @@
 
                         <ImageView
                             android:id="@+id/img_status"
-                            android:layout_width="28dp"
-                            android:layout_height="20dp" />
+                            android:layout_width="@dimen/dimen32"
+                            android:layout_height="@dimen/dimen24" />
 
                         <TextView
                             android:id="@+id/tv_details_details"
@@ -610,7 +610,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="4dp">
+                        android:layout_margin="4dp"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="75dp"

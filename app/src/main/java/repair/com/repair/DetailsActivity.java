@@ -74,7 +74,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView img_category, img_status;
     private ImageView img1, img2, img3;
     private Apply apply = null;
-    private Employee employee=null;
+//    private Employee employee=null;
+    private List<Employee> employeeList = new ArrayList<>();
     private String repairId;
 
     private ResultBean detailRes = null;
@@ -160,7 +161,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 else {
                     detailRes = response.getResultBean();
                     apply=detailRes.getApplys().get(0);
-                    employee=detailRes.getEmployee().get(0);
+//                    employee=detailRes.getEmployee().get(0);
+                    employeeList = detailRes.getEmployee();
                     mhandler.sendEmptyMessage(3);
                 }
             }
@@ -333,10 +335,62 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         //直接设置员工信息 但是默认被隐藏
        // setEmployeeInf(apply.getLogisticMan());
-        if (employee!=null){
-            tv_details_employee1.setText(employee.getName());
-            tv_employee_phone.setText(employee.getE_tel());
-            tv_employee_can.setText(employee.getJob());
+//        if (employee!=null){
+//            tv_details_employee1.setText(employee.getName());
+//            tv_employee_phone.setText(employee.getE_tel());
+//            tv_employee_can.setText(employee.getJob());
+//        }
+
+
+        Log.d(TAG, "bindItem: "+apply.getServerMan());
+
+
+
+
+
+
+
+
+
+
+        StringBuilder sbEmployeeName = new StringBuilder();
+        StringBuilder sbEmployeePhone = new StringBuilder();
+        String employeeName ="";
+        String employeePhone = "";
+
+        List<Employee> employeeTempList  = new ArrayList<>();
+        //idArrayapply 是这个单号维修人员的 id String
+        String[] idArrayapply={""};
+        if (apply.getServerMan()!=null&&!apply.getServerMan().isEmpty()){
+            idArrayapply = apply.getServerMan().split(",");
+        }
+        //emloyeeList 是所有人员的信息
+
+
+        //遍历id  获取 维修人员信息
+        for (Employee e :
+                employeeList) {
+            for (int i = 0; i < idArrayapply.length; i++) {
+                if (e.getAccount().equals(idArrayapply[i])){
+                 employeeTempList.add(e);
+                }
+            }
+        }
+
+
+
+
+        if (employeeTempList.size()>0){
+
+            for (Employee e :
+                    employeeTempList) {
+                sbEmployeeName.append(e.getName()).append(",");
+                sbEmployeePhone.append(e.getE_tel()).append(",");
+            }
+            employeeName = sbEmployeeName.toString().substring(0,sbEmployeeName.length()-1);
+            employeePhone = sbEmployeePhone.toString().substring(0,sbEmployeePhone.length()-1);
+            tv_details_employee1.setText(employeeName);
+            tv_employee_phone.setText(employeePhone);
         }
 
 
@@ -416,7 +470,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 image = R.drawable.yiwanjie;
                 break;
             case 5:
-                image = R.drawable.dengdaicailiao;
+                image = R.drawable.weixiuzhong;
                 break;
             default:
                 image = R.drawable.weichuli;

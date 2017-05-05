@@ -1342,7 +1342,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-            sweetAlertDialog.dismiss();
+            if(sweetAlertDialog!=null){
+                sweetAlertDialog.dismiss();
+            }
 
             if (llBigImg.getVisibility() == View.VISIBLE) {
                 llBigImg.setVisibility(View.GONE);

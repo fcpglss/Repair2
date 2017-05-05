@@ -29,7 +29,7 @@ import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +51,7 @@ import util.JsonUtil;
 import util.UIUtil;
 import util.Util;
 
+//import static constant.RequestUrl.AdMINUPDATE;
 import static constant.RequestUrl.AdMINUPDATE;
 import static constant.RequestUrl.JSONEMPLOYEE;
 import static constant.RequestUrl.TEXT_EMAIL_URL;
@@ -76,7 +77,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     protected void onStop() {
         super.onStop();
 
-        if (sDialog!=null){
+        if (sDialog != null) {
             sDialog.dismiss();
         }
         Log.d(TAG, "onStop: ");
@@ -98,7 +99,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     //对话框
     private DialogPlus dialogChoose;
     private List<String> serverIDString = new ArrayList<>();
-    private Set<String> serverTempList = new HashSet<>();
+    private Set<String> serverTempList = new LinkedHashSet<>();
     private DialogAdapter dialogChooseAdapter;
 
     private TextView tvName, tvTel, tvTime, tvEmail, tvAdress, tvCategory;
@@ -191,20 +192,20 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
                     //获取维修工id字符串
                     StringBuilder s = new StringBuilder();
-                    for (String str:
+                    for (String str :
                             serverTempList) {
 
                         s.append(str).append(",");
                     }
-                    String tempString = s.toString().substring(0,s.length()-1);
+                    String tempString = s.toString().substring(0, s.length() - 1);
 
-                    Log.d(TAG, "handleMessage: "+tempString);
+//                    Log.d(TAG, "handleMessage: "+tempString);
 
                     applyTemp.setServerMan(tempString);
                     //后台人员
-                    Log.d(TAG, "handleMessage: account " + AdminListActivity.account);
+//                    Log.d(TAG, "handleMessage: account " + AdminListActivity.account);
                     applyTemp.setLogisticMan(AdminListActivity.account);
-                    Log.d(TAG, "handleMessage: account " + adminFromJson.getAccount());
+//                    Log.d(TAG, "handleMessage: account " + adminFromJson.getAccount());
                     //状态 改为 2 已派工
                     applyTemp.setState(2);
                     //物料
@@ -457,6 +458,10 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onDestroy() {
+        if (sDialog != null) {
+            sDialog.dismiss();
+            sDialog = null;
+        }
         super.onDestroy();
     }
 
@@ -500,7 +505,21 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object o) throws Exception {
-                        upApply(apply.getClasss());
+                        if (serverTempList.size() > 4) {
+                            new SweetAlertDialog(AdminDetailActivity.this, SweetAlertDialog.WARNING_TYPE)
+                                    .setTitleText("最多五个人员")
+                                    .setContentText("请清空后重新添加")
+                                    .setConfirmText("OK")
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            sweetAlertDialog.dismiss();
+                                        }
+                                    })
+                                    .show();
+                        } else {
+                            upApply(apply.getClasss());
+                        }
                     }
                 });
 
@@ -508,11 +527,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object o) throws Exception {
+
                         etServerMan.setText("");
-                        etMatrial.setText("");
-                        if (serverTempList.size()>0){
-                            serverTempList.clear();
-                        }
+                        serverTempList.clear();
                         setMatrial();
                     }
                 });
@@ -762,8 +779,8 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                                     @Override
                                     public void onError(Call call, Exception e, int id) {
                                         Log.d(TAG, "onError: ->联网失败");
-                                        Log.d(TAG, "onError: "+e.toString());
-                                        Log.d(TAG, "onError: "+id);
+                                        Log.d(TAG, "onError: " + e.toString());
+                                        Log.d(TAG, "onError: " + id);
                                         mhandler.sendEmptyMessage(11);
                                     }
 
@@ -817,7 +834,6 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         }
         return imgName;
     }
-
 
 
 }

@@ -105,7 +105,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     //先清后填
                     setFirstApply(myRespon.getResultBean());
                     ishasData=myRespon.isEnd();
-                    adapter.notifyDataSetChanged();
+                    if (adapter!=null){
+                        adapter.notifyDataSetChanged();
+                    }
                     break;
 
                 case 5:

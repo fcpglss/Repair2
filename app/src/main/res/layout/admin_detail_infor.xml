@@ -535,7 +535,7 @@
                         <EditText
                             android:id="@+id/et_admin_serverman"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/dimen48"
                             android:layout_weight="1"
                             android:background="@null"
                             android:inputType="textMultiLine"
