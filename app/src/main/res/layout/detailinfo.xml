@@ -214,7 +214,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:layout_width="100dp"
+                            android:layout_width="75dp"
                             android:layout_height="wrap_content"
                             android:text="故障地点"
                             android:textColor="@color/ColorPrimaryText"

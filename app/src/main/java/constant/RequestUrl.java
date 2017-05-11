@@ -13,7 +13,9 @@ public class RequestUrl {
 //    private static final  String IP = "http://1711p20y55.iask.in";
 //    private static final  String IP = "http://huangshipeng.in.8866.org";
 //    private static final  String IP = "http://huangshipeng.f3322.net";
-        private static final  String IP = "http://10.0.11.244";
+       // private static final  String IP = "http://10.0.11.244";
+
+    private static final  String IP = "http://192.168.31.201";
 
     //    private static final String duankou = ":8080";
     private static final String duankou = ":8888";
@@ -26,7 +28,7 @@ public class RequestUrl {
 
     //发送邮件的ip 上面为我们的 下面是他们的
 //    public static final String TEXT_EMAIL_URL = project+"AdminUpdate";
-    public static final String TEXT_EMAIL_URL=IP+duankou+"/SendMessage/SendEMail.ashx";
+    public static final String TEXT_EMAIL_URL=IP+":80"+"/SendMessage/SendEMail.ashx";
 
     public static final String QUERYMYREPAIR = project+"QueryRepair";
 

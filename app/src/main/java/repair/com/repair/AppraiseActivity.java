@@ -197,6 +197,7 @@ public class AppraiseActivity extends AppCompatActivity {
                         Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                         Intent intent= new Intent(AppraiseActivity.this,DetailsActivity.class);
                         intent.putExtra("repairId",apply.getId());
+                        intent.putExtra("appraiseIntent",true);
                         startActivity(intent);
 
                     }

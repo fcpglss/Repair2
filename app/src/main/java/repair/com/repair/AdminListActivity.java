@@ -22,6 +22,7 @@ import com.suke.widget.SwitchButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Admin;
 import model.Apply;
@@ -76,12 +77,12 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
     private List<Apply> moreList = new ArrayList<>();
 
-
+    private SweetAlertDialog sweetAlertDialog;
     private Admin admin;
 
     public static String onResumeValue = "Init";
 
-    public static boolean hasPic = true;
+    public static boolean hasPic = false;
 
     private WaterDropListView lvAdmin;
     AdminListAdapter adminListAdapter;
@@ -89,10 +90,11 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     public static DialogPlus admindialogPlus;
 
     private ResultBean refrushRes;
+    private Button button;
 
     private static boolean moreFlag = false;
 
-    private static boolean ishasData = false;
+   // private static boolean ishasData = false;
 
     private static boolean isMore=false;
 
@@ -110,7 +112,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
                     break;
                 case 3:
                     closeReflush();
-                    ishasData=adminResponse.isEnd();
+                    //ishasData=adminResponse.isEnd();
                     Toast.makeText(AdminListActivity.this, "第一次加载", Toast.LENGTH_SHORT).show();
                     updateView(0, hasPic);
                     break;
@@ -205,12 +207,14 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         switchButton = (SwitchButton) findViewById(R.id.switch_button);
         tvHead = (TextView) findViewById(R.id.tv_head);
         tvHead.setText(admin.getAccount());
+        button= (Button) findViewById(R.id.btn_zhuxiao);
         account = admin.getAccount();
         tvImage = (TextView) findViewById(R.id.tv_image);
         lvAdmin = (WaterDropListView) findViewById(R.id.lv_admin_list);
         lvAdmin.setWaterDropListViewListener(this);
         lvAdmin.setPullLoadEnable(true);
         setSwitchButton();
+        setZhuxiao();
 
     }
 
@@ -232,6 +236,34 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         });
     }
 
+    private void setZhuxiao()
+    {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog=new SweetAlertDialog(AdminListActivity.this,SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText(account+",是否选择注销")
+                        .setConfirmText("注销")
+                        .setCancelText("取消")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.setConfirmText(null);
+                                sweetAlertDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                sweetAlertDialog.setTitle("注销成功，退出登录");
+                                start = 0;
+                                end = fenye;
+                                moreFlag = false;
+                                hasPic=false;
+                                sweetAlertDialog.dismiss();
+                                Intent intent=new Intent(AdminListActivity.this,MainActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                sweetAlertDialog.show();
+            }
+        });
+    }
 
     public void queryFromServer(String url, final int isRefrush) {
         HttpUtil.sendHttpRequest(url, new HttpCallbackListener() {
@@ -361,7 +393,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
     @Override
     public void onLoadMore() {
         isMore=true;
-        if (moreFlag||ishasData) {
+        if (moreFlag) {
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
@@ -434,6 +466,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent intent = new Intent(this, MainActivity.class);
+            hasPic=false;
             startActivity(intent);
             Log.d(TAG, "onKeyDown: 返回了main");
             this.finish();
@@ -446,7 +479,9 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         start = 0;
         end = fenye;
         moreFlag = false;
-        ishasData=false;
+        hasPic=false;
+        //ishasData=false;
         super.onDestroy();
     }
+
 }

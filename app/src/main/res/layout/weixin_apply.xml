@@ -206,7 +206,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:maxLength="10"
-                    android:hint="请输入用于评价的密码"
+                    android:hint="请输入报修密码,用于评价"
                     android:textSize="@dimen/text_button_text" />
 
                 <ImageView

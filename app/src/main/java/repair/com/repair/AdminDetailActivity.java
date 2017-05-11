@@ -237,10 +237,13 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
                 case 11:
-                    sDialog.setTitleText("网络异常,请检查网络")
-                            .setContentText("")
-                            .setConfirmClickListener(null)
-                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    if(sDialog!=null)
+                    {
+                        sDialog.setTitleText("网络异常,请检查网络")
+                                .setContentText("")
+                                .setConfirmClickListener(null)
+                                .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    }
                     break;
                 case 12:
                     sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -404,8 +407,10 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         tvTel.setText(apply.getTel());
         tvEmail.setText(apply.getEmail());
         //设置故障信息
-        tvAdress.setText(Util.setAddress(apply) + "," + apply.getAddressDetail());
-        tvCategory.setText(apply.getClasss() + " " + ("" + apply.getDetailClass() + "") + "," + apply.getRepairDetails());
+
+        tvAdress.setText(Util.setAddress(apply,16,false));
+
+        tvCategory.setText(Util.setClass(apply,16,false));
 
         tvTime.setText(Util.getDealTime(apply.getRepairTime()));
         //设置类型图标
@@ -675,7 +680,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
         StringBuilder sb = new StringBuilder();
 
-        String tvNames = Util.setNameXX(apply.getRepair());
+        String tvNames =apply.getRepair();
         String guzhang = tvCategory.getText().toString().trim();
         String address = tvAdress.getText().toString().trim();
         String cailiao = etMatrial.getText().toString().trim();

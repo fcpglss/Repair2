@@ -199,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
             responseAdmin.setEnd(false);
             responseAdmin.setErrorMessage("账户或者密码错误");
             //请求网络失败
-            mhandler.sendEmptyMessage(2);
+            mhandler.sendEmptyMessage(4);
         }
     }
 }

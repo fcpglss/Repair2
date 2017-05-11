@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -79,13 +80,16 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private String repairId;
 
     private ResultBean detailRes = null;
-    private Category category = null;
+
+    private boolean isAppraisePage=false;
 
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
     private List<ImageView> star_list=new ArrayList<ImageView>();
     private List<String> list_imageView = new ArrayList<>();
     private Response response;
+
+
 
     private Handler mhandler = new Handler() {
         @Override
@@ -125,6 +129,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         initView();
 
         repairId=getIntent().getStringExtra("repairId");
+        isAppraisePage=getIntent().getBooleanExtra("appraiseIntent",false);
 
         Log.d(TAG, "onCreate: 获取repairId="+repairId);
         if(apply==null)
@@ -286,8 +291,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private void bindItem() {
 //        getCategory();
         Log.d(TAG, "bindItem: "+apply.getRepair());
-        tvName.setText(apply.getRepair());
-        setNameXXX();
+        tvName.setText(Util.setNameXX(apply.getRepair()));
+
 //        tv_tel.setText(apply.getTel());
 //        setTelXXXX();
 //        tv_email.setText(apply.getEmail());
@@ -296,10 +301,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        tvDetailCategory.setText(apply.getDetailClass());
 //        tv_place.setText(apply.getDetailArea());
 
-        tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
+     //   tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
+     //   String area=Util.setAddress(apply)+","+Util.getAdressDetalil(apply.getAddressDetail());
+        String area=Util.setAddress(apply,20,false);
+        Log.d(TAG, "bindItem: "+area);
+        tvArea.setText(area);
 
         tv_date.setText(Util.getDealTime(apply.getRepairTime()));
 
@@ -319,7 +326,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         visibaleFinishTime();
 
-        tv_describe.setText(apply.getClasss()+"("+apply.getDetailClass()+")\n"+apply.getRepairDetails());
+//        String describe=apply.getClasss()+checkDetailClas(apply.getDetailClass())+","+apply.getRepairDetails();
+//        String destemp=changeRow(describe);
+//        tv_describe.setText(destemp);
+        String destemp=Util.setClass(apply,20,false);
+        tv_describe.setText(destemp);
         img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
         getApplyImages();
@@ -402,16 +413,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void setNameXXX()
-    {
-        if(tvName.getText()!=null&&!tvName.getText().equals(" "))
-        {
-            String name=  tvName.getText().toString();
-            int len=name.length();
-            name=name.replace(name.substring(1,len),"**");
-            tvName.setText(name);
-        }
-    }
+
 
     //获取到apply中LogisticMan字段，（员工姓名)的对象
     private Employee getEmploye(String employeeName) {
@@ -577,11 +579,23 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 showBigImg.setVisibility(View.GONE);
                 linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
             }else{
-                Intent intent = new Intent(this,MainActivity.class);
-                intent.putExtra("appraise","ok");
-                startActivity(intent);
-                Log.d(TAG, "onKeyDown: 返回了main");
-                this.finish();
+
+                if(isAppraisePage)
+                {
+                    Intent intent = new Intent(this,MainActivity.class);
+                    intent.putExtra("appraise","ok");
+                    startActivity(intent);
+                    Log.d(TAG, "onKeyDown: 返回了main");
+                    this.finish();
+                }
+                else {
+                    Intent intent = new Intent(this,MainActivity.class);
+                    intent.putExtra("appraise","false");
+                    startActivity(intent);
+                    Log.d(TAG, "onKeyDown: 返回了main");
+                    this.finish();
+                }
+
             }
         }
 

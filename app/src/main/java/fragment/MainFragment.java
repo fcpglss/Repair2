@@ -55,7 +55,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     private static int end = fenye;
 
     private static boolean moreFlag = false;
-    private static boolean ishasData = false;
+ //   private static boolean ishasData = false;
 
     private static final int ERROR = 2; //第一次网络不同标志
 
@@ -105,7 +105,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                 case 3:
                   //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
                     closeReflush();;
-                    ishasData=response.isEnd();
+                 //   ishasData=response.isEnd();
                     applysAdapter = getBeanFromJson(res, applysAdapter);
                     Log.d(TAG, "handleMessage: 3");
                     updateView(0);
@@ -378,7 +378,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
     public void onLoadMore() {
         isMore=true;
 
-        if (moreFlag||ishasData) {
+        if (moreFlag) {
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
@@ -487,7 +487,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         start = 0;
         end = fenye;
         moreFlag=false;
-        ishasData=false;
+      //  ishasData=false;
         super.onDestroy();
         Log.d(TAG, "Main_onDestroy");
     }

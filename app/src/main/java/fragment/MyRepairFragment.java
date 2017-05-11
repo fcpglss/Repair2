@@ -341,11 +341,11 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     @Override
     public void onResume() {
 
-        appraise= getActivity().getIntent().getStringExtra("appraise");
-        Log.d(TAG, "onResume: appraise :"+appraise);
+        String appraise2= getActivity().getIntent().getStringExtra("appraise");
+        Log.d(TAG, "onResume: appraise :"+appraise2);
 
-        if (appraise!=null&&appraise.equals("ok")){
-            appraise="false";
+        if (appraise2!=null&&appraise2.equals("ok")){
+            appraise2="false";
             queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
         }
         super.onResume();

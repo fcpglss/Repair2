@@ -17,8 +17,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:layout_weight="1"
             android:text="管理"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_appbar_text" />
+
+        <Button
+            android:id="@+id/btn_zhuxiao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:layout_weight="1"
+            android:background="@color/ColorHeadColor"
+            android:text="注销"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_appbar_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=","
             android:textColor="#ffffff"
             android:textSize="@dimen/text_appbar_text" />
 
@@ -49,14 +67,6 @@
         android:padding="@dimen/dimen4"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dimen8"
-            android:text="待处理单号"
-            android:layout_weight="1"
-            android:textColor="@color/ColorPrimaryText"
-            android:textSize="@dimen/text_subtitle" />
         <Button
             android:layout_width="@dimen/dimen64"
             android:layout_height="28dp"
@@ -67,6 +77,16 @@
             android:textColor="@color/ColorLightPrimaryColor"
             android:text="设置邮箱"
             android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dimen8"
+            android:layout_weight="1"
+            android:text="待处理单号"
+            android:textColor="@color/ColorPrimaryText"
+            android:textSize="@dimen/text_subtitle" />
 
     </LinearLayout>
 

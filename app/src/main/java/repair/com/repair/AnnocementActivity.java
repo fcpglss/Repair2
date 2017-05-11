@@ -41,7 +41,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     private static boolean moreFlag = false;
 
-    private static boolean ishasData=false;
+   // private static boolean ishasData=false;
 
     private static boolean isRefrush=false;
     private static boolean isMore=false;
@@ -84,7 +84,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 case 3:
                     closeDiag();
                     closeReflush();
-                    ishasData=annoceResponse.isEnd();
+                    //ishasData=annoceResponse.isEnd();
                     adapter.notifyDataSetChanged();
                     Log.d(TAG, "handleMessage: 3");
                     break;
@@ -275,7 +275,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     public void onLoadMore() {
         Log.d(TAG, "onLoadMore: " + moreFlag);
         isMore=true;
-        if (moreFlag||ishasData) {
+        if (moreFlag) {
             annoceResponse.setErrorMessage("下边没有数据了");
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
@@ -332,7 +332,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         start = 0;
         end = fenye;
         moreFlag=false;
-        ishasData=false;
+        //ishasData=false;
         super.onDestroy();
     }
 

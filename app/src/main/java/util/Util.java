@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -31,6 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -173,29 +176,39 @@ public class Util {
         }
     }
 
-    //为放置flies层号，房间号为null设置
-    public static String setTitle(Apply apply) {
-        String address = "";
-        String flies = apply.getFlies();
-        String room = apply.getRoom();
-        if (flies != null && !flies.equals("")) {
-            address = apply.getArea() + " " + apply.getDetailArea() + flies;
-            if (room != null && !room.equals("")) {
-                address = apply.getArea() + " " + apply.getDetailArea() + flies + apply.getRoom();
-            }
-        } else {
-            address = apply.getArea() + " " + apply.getDetailArea(); //没有层号的时候 可在后面加其他地址
-        }
-        return address;
-    }
+//    //为放置flies层号，房间号为null设置
+//    public static String setTitle(Apply apply) {
+//        String address = "";
+//        String detailAr=apply.getDetailArea();
+//        if(TextUtils.isEmpty(detailAr)||detailAr.equals("null"))
+//        {
+//            detailAr="";
+//        }
+//        String flies = apply.getFlies();
+//        String room = apply.getRoom();
+//        if (flies != null && !flies.equals("")) {
+//            address = apply.getArea() + " " + detailAr + flies;
+//            if (room != null && !room.equals("")) {
+//                address = apply.getArea() + " " + detailAr + flies + apply.getRoom();
+//            }
+//        } else {
+//            address = apply.getArea() + " " + detailAr; //没有层号的时候 可在后面加其他地址
+//        }
+//        return address;
+//    }
 
-    public static String setAddress(Apply apply) {
+    public static String setAddress(Apply apply,int length,boolean isTitle) {
         String address = "";
+        String detailAr=apply.getDetailArea();
+        if(TextUtils.isEmpty(detailAr)||detailAr.equals("null"))
+        {
+            detailAr="";
+        }
         String flies = apply.getFlies();
         String room = apply.getRoom();
-        String place = apply.getDetailArea();
-        if (place==null||"null".equals(place)||"".equals(place)){
-            return apply.getArea()+getAdressDetalil(apply.getAddressDetail());
+        String addressDetail=apply.getAddressDetail();
+        if (detailAr==null||"null".equals(detailAr)||"".equals(detailAr)){
+          address=apply.getArea();
         }else {
             if (flies != null && !flies.equals("")) {
                 address = apply.getDetailArea() + flies;
@@ -206,47 +219,94 @@ public class Util {
                 address = apply.getArea() + apply.getDetailArea(); //没有层号的时候 可在后面加其他地址
             }
         }
+        if(addressDetail!=null)
+        {
+            if(addressDetail.equals("null")||addressDetail.equals(""))
+            {
+
+            }
+            else
+            {
+                address=address+","+addressDetail;
+            }
+        }
+        if(isTitle)
+        {
+            if(address.length()>length)
+            {
+                String temp=address.substring(0,length-2);
+                String end="...";
+                address=temp+end;
+            }
+        }
+        else
+        {
+            if(address.length()>length)
+            {
+                String temp=address.substring(0,length-1);
+                String end=address.substring(length-1,address.length());
+                address=temp+"\n"+end;
+            }
+        }
         return address;
     }
 
-    public static String getAdressDetalil(String s){
-        Log.d(TAG, "getAdressDetalil: 1");
-        Log.d(TAG, "getAdressDetalil: ss: "+s);
-        if (s==null||"null".equals(s)||"".equals(s)){
-            Log.d(TAG, "getAdressDetalil: 2");
-            s="";
-        }else {
-            Log.d(TAG, "getAdressDetalil: 3");
-            s = ","+s;
+    public static String setClass(Apply apply,int length,boolean isTitle)
+    {
+        String result="";
+        String classs=apply.getClasss();
+        String detailClas=apply.getDetailClass();
+        String repairDetail=apply.getRepairDetails();
+        boolean isNull=false;
+        if(detailClas==null||detailClas.equals(""))
+        {
+            isNull=true;
+           result=classs;
+        }
+        else
+        {
+            String temp=detailClas;
+                temp="("+temp+")";
+                result=classs+temp;
         }
 
-        return s;
-    }
+        if(repairDetail!=null)
+        {
+            if(repairDetail.equals("null")||repairDetail.equals(""))
+            {
 
-    public static String errorMessage(Response response) {
-        switch (response.getErrorType()) {
-            case -1:
-                return "连接服务器超时或者网络不通";
-            case -2:
-                return "连接成功，但是服务器返回数据为空或异常";
-            default:
-                return "";
-        }
-
-    }
-
-    public static void writeJsonToLocal(final String jsonString, final Context mContext) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String json = jsonString;
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
-                editor.putString("json", json);
-                editor.commit();
             }
-        }).start();
+            else
+            {
+                Log.d(TAG, "setClass: "+repairDetail);
+                    result=result+","+repairDetail;
+            }
 
+        }
+        if(isTitle)
+        {
+            if(result.length()>length)
+            {
+                String temp=result.substring(0,length-2);
+                String end="...";
+                result=temp+end;
+            }
+        }
+        else
+        {
+            if(result.length()>length)
+            {
+                String temp=result.substring(0,length-1);
+                String end=result.substring(length-1,result.length());
+                result=temp+"\n"+end;
+            }
+        }
+        return result;
     }
+
+
+
+
 
     //将服务器第一次获取到的数据，写到文件json_data中，key为json
     public static void writeJsonToLocal(final ResultBean resultBean, final Context mContext) {
@@ -705,7 +765,23 @@ public class Util {
     }
 
 
+    public static boolean isPhoneNumberValid(String phoneNumber) {
+        boolean isValid = false;
 
+        String expression = "((^(13|15|18)[0-9]{9}$)|(^0[1,2]{1}\\d{1}-?\\d{8}$)|(^0[3-9] {1}\\d{2}-?\\d{7,8}$)|(^0[1,2]{1}\\d{1}-?\\d{8}-(\\d{1,4})$)|(^0[3-9]{1}\\d{2}-? \\d{7,8}-(\\d{1,4})$))";
+        CharSequence inputStr = phoneNumber;
+
+        Pattern pattern = Pattern.compile(expression);
+
+        Matcher matcher = pattern.matcher(inputStr);
+
+        if (matcher.matches() ) {
+            isValid = true;
+        }
+
+        return isValid;
+
+    }
 
 
 }

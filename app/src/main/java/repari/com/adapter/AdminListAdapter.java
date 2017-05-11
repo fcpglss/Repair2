@@ -2,6 +2,8 @@ package repari.com.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +76,7 @@ public class AdminListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
 
             viewHolder.tvAdress = (TextView) view.findViewById(R.id.tv_admin_item_address);
-            viewHolder.tvcategory = (TextView) view.findViewById(R.id.tv_admin_item_category);
+        //    viewHolder.tvcategory = (TextView) view.findViewById(R.id.tv_admin_item_category);
             viewHolder.tvName = (TextView) view.findViewById(R.id.tv_admin_item_name);
 
             viewHolder.tvTime = (TextView) view.findViewById(R.id.tv_admin_item_time);
@@ -85,10 +89,12 @@ public class AdminListAdapter extends BaseAdapter {
         }
         viewHolder.tvName.setText(apply.getRepair());
         viewHolder.tvTime.setText(Util.getDealTime(apply.getRepairTime()));
-        viewHolder.tvcategory.setText(apply.getClasss());
-        viewHolder.tvAdress.setText(Util.setTitle(apply));
+      //  viewHolder.tvcategory.setText(apply.getClasss());
+        String addressTemp=Util.setAddress(apply,11,true);
+        viewHolder.tvAdress.setText(addressTemp);
         viewHolder.tvTel.setText(apply.getTel());
-        viewHolder.tvDescribe.setText(apply.getRepairDetails());
+        String describeTemp=Util.setClass(apply,11,true);
+        viewHolder.tvDescribe.setText(describeTemp);
 
         ImageView imageView = viewHolder.imgView;
         final String tag = (String) imageView.getTag();
@@ -132,10 +138,9 @@ public class AdminListAdapter extends BaseAdapter {
 
 
     class ViewHolder {
-        TextView tvName, tvTime, tvAdress, tvcategory, tvDescribe, tvTel;
+        TextView tvName, tvTime, tvAdress, tvDescribe, tvTel;
         ImageView imgView;
     }
-
 
 }
 

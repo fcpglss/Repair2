@@ -122,7 +122,7 @@ public class MyRepairAdapter extends BaseAdapter {
         }
 
         categoryName = apply.getClasss();
-        a_details = Util.setTitle(apply);
+        a_details = Util.setAddress(apply,20,false);
         final String uri = photoUrl;
 
         if (!uri.equals(tag)) {
@@ -140,8 +140,8 @@ public class MyRepairAdapter extends BaseAdapter {
 
         int status = myRes.getApplys().get(position).getState();
         viewHolder.ivState.setImageResource(UIUtil.getStatusIcon(status));
-        viewHolder.tvAddress.setText(area_name + a_details);
-        viewHolder.tvType.setText(categoryName+" ("+apply.getDetailClass()+")");
+        viewHolder.tvAddress.setText(Util.setAddress(apply,18,true));
+        viewHolder.tvType.setText(Util.setClass(apply,18,true));
 
         //判断是否能修改和评价然后跳转
         JumpApprise(viewHolder.tvAppraise, apply.getState(), position);
@@ -299,7 +299,6 @@ public class MyRepairAdapter extends BaseAdapter {
     class ViewHolder {
         TextView tvName, tvTime, tvAddress, tvType;
         ImageView ivPhoto, ivState;
-
         //评价和修改
         TextView tvAppraise, tvChange;
 
