@@ -252,36 +252,6 @@ public class MyRepairAdapter extends BaseAdapter {
         return "";
     }
 
-
-
-
-    private int getState(int position, ResultBean rs) {
-        int image = 0;
-        int a_status = rs.getApplys().get(position).getState();
-        switch (a_status) {
-            case 1:
-                image = R.drawable.weichuli;
-                break;
-            case 2:
-
-                image = R.drawable.yipaigong;
-                break;
-            case 3:
-                image = R.drawable.yizuofei;
-                break;
-
-            case 4:
-                image = R.drawable.yiwanjie;
-                break;
-            case 5:
-                image = R.drawable.dengdaicailiao;
-                break;
-            default:
-                image = R.drawable.weichuli;
-        }
-        return image;
-    }
-
     private ResultBean getAddressRes() {
         ResultBean addressRes = ApplyFragment.addressRes;
         if (addressRes == null) {
@@ -292,9 +262,6 @@ public class MyRepairAdapter extends BaseAdapter {
         return addressRes;
     }
 
-    public void setList_Applys(List<Apply> apply) {
-        myRes.setApplys(apply);
-    }
 
     class ViewHolder {
         TextView tvName, tvTime, tvAddress, tvType;

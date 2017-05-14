@@ -29,6 +29,7 @@ import util.Util;
 
 import static constant.RequestUrl.ANNCOUCEMENT;
 import static constant.RequestUrl.ANNCOUCEMENTMORE;
+import static constant.RequestUrl.REFRESH_URL;
 
 /**
  * Created by Administrator on 2016-11-29.
@@ -41,7 +42,9 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     private static boolean moreFlag = false;
 
-   // private static boolean ishasData=false;
+    private static boolean ishasData=false;
+
+    private static boolean isDelete=false;
 
     private static boolean isRefrush=false;
     private static boolean isMore=false;
@@ -58,7 +61,6 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     private static final String TAG = "AnnocementActivity";
     Response annoceResponse;
-    ResultBean annoceResult;
     WaterDropListView lvAnnocment;
     List<Announcement> annoucementList;
     AnnocmentListAdapter adapter;
@@ -84,7 +86,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 case 3:
                     closeDiag();
                     closeReflush();
-                    //ishasData=annoceResponse.isEnd();
+                    setFirstApply(refrushRes);
                     adapter.notifyDataSetChanged();
                     Log.d(TAG, "handleMessage: 3");
                     break;
@@ -96,7 +98,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 case 5:
                     moreList = moreRes.getAnnouncements();
                     setMoreApply(moreList);
-                    lvAnnocment.setSelection(start);
+                   // lvAnnocment.setSelection(start);
                     Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
                     moreFlag = moreResponse.isEnd();
                     Log.d(TAG, "handleMessage: " + moreFlag);
@@ -107,7 +109,12 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                     Log.d(TAG, "handleMessage: 6");
                     closeReflush();
                     break;
-
+                case 8:
+                    closeReflush();
+                    setFirstApply(refrushRes);
+                    adapter.notifyDataSetChanged();
+                    Log.d(TAG, "handleMessage: 5");
+                    break;
 
 
             }
@@ -130,6 +137,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         lvAnnocment = (WaterDropListView) findViewById(R.id.lv_annocement_list);
         lvAnnocment.setWaterDropListViewListener(this);
         lvAnnocment.setPullLoadEnable(true);
+
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("加载中");
         adapter = new AnnocmentListAdapter(annoucementList,this);
@@ -149,7 +157,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
 
     private void closeDiag() {
-        if (svProgressHUD.isShowing()){
+        if (svProgressHUD!=null&&svProgressHUD.isShowing()){
             svProgressHUD.dismiss();
         }
     }
@@ -198,15 +206,18 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 {
                     annoceResponse=new Response();
                     annoceResponse.setErrorMessage("服务器维护");
+                    moreFlag=moreResponse.isEnd();
                     mhandler.sendEmptyMessage(4);
                     return;
                 }
+                ishasData=annoceResponse.isEnd();
                 if(annoceResponse.getResultBean()==null||annoceResponse.getResultBean().getAnnouncements().size()<=0)
                 {
                     annoceResponse.setErrorMessage("没有公告");
                     mhandler.sendEmptyMessage(4);
                     return ;
                 }
+
                 postMessage(annoceResponse);
             }
         });
@@ -219,9 +230,8 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     private void postMessage(Response response) {
 
             refrushRes=response.getResultBean();
-            Log.d(TAG, "postMessage: -> 4");
-            setFirstApply(refrushRes);
-            if (annoucementList != null&&annoucementList.size()>0) {
+
+            if (refrushRes != null) {
                mhandler.sendEmptyMessage(3);
             }
             else
@@ -236,14 +246,31 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     private void setFirstApply(ResultBean resultBean) {
 
-        for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
-            if (annoucementList.size() > i) {
-                annoucementList.remove(i);
-                annoucementList.add(i, resultBean.getAnnouncements().get(i));
-                continue;
+        if (annoucementList != null && annoucementList.size() > 0) {
+            if (ishasData||isDelete) {
+                annoucementList.clear();
+                moreFlag=false;
+                start=0;
+                end=fenye;
+                for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
+                    annoucementList.add(resultBean.getAnnouncements().get(i));
+                }
             }
-            annoucementList.add(i, resultBean.getAnnouncements().get(i));
+            else
+            {
+                annoucementList.clear();
+                for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
+                    annoucementList.add(resultBean.getAnnouncements().get(i));
+                }
+            }
         }
+        else
+        {
+            for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
+                annoucementList.add(resultBean.getAnnouncements().get(i));
+            }
+        }
+        Log.d(TAG, "setFirstApply: "+annoucementList.toString());
 
     }
 
@@ -268,14 +295,39 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     @Override
     public void onRefresh() {
         isRefrush=true;
-        queryFromServer(ANNCOUCEMENT);
+        //queryFromServer(ANNCOUCEMENT);
+        String id="";
+        if(annoucementList!=null&&annoucementList.size()>0)
+        {
+
+            id=annoucementList.get(annoucementList.size()-1).getCreate_at();
+        }
+        Util.submit("annoucement",id,REFRESH_URL)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Response re=new Response();
+                        re.setErrorMessage("网络异常");
+                        mhandler.sendEmptyMessage(4);
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Log.d(TAG, "onResponse: onrefresh ->"+response);
+                        Response responses=JsonUtil.jsonToResponse(response);
+                        isDelete=responses.isEnd();
+                        refrushRes=responses.getResultBean();
+                        mhandler.sendEmptyMessage(8);
+                    }
+                });
+
     }
 
     @Override
     public void onLoadMore() {
         Log.d(TAG, "onLoadMore: " + moreFlag);
         isMore=true;
-        if (moreFlag) {
+        if (moreFlag||ishasData) {
             annoceResponse.setErrorMessage("下边没有数据了");
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
@@ -310,6 +362,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 {
                     moreResponse.setErrorMessage("下边没有更多数据了");
                     annoceResponse.setErrorMessage(moreResponse.getErrorMessage());
+                    moreFlag=moreResponse.isEnd();
                     mhandler.sendEmptyMessage(6);
                 }
             }
@@ -332,7 +385,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         start = 0;
         end = fenye;
         moreFlag=false;
-        //ishasData=false;
+        ishasData=false;
         super.onDestroy();
     }
 

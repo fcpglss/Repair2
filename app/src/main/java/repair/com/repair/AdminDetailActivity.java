@@ -88,8 +88,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         super.onResume();
     }
 
-
-    private static boolean isFirst = true;
+    private int index=-1;
 
 
     //大图片
@@ -250,7 +249,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                     Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
                         public void accept(Long aLong) throws Exception {
-                            AdminListActivity.onResumeValue = "OK";
+                            AdminListActivity.onResumeValue = index;
                             Intent intentToList = new Intent(AdminDetailActivity.this, AdminListActivity.class);
                             startActivity(intentToList);
                         }
@@ -272,6 +271,8 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         Log.d(TAG, "onCreate: ");
         setContentView(R.layout.admin_detail_infor);
         adminInf = Util.loadWriteAdmin(this);
+        index=getIntent().getIntExtra("index",-2);
+        Log.d(TAG, "onCreate: index -> "+index);
         Log.d(TAG, "onCreate: " + adminInf.getEmailPassword());
         initView();
 

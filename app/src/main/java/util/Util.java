@@ -310,16 +310,13 @@ public class Util {
 
     //将服务器第一次获取到的数据，写到文件json_data中，key为json
     public static void writeJsonToLocal(final ResultBean resultBean, final Context mContext) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
                 String json = JsonUtil.beanToResultBean(resultBean);
                 SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
                 editor.putString("json", json);
                 editor.apply();
                 Log.d(TAG, "writeJsonToLocal: 成功将FirstRequest的Json写入本地json_data文件中，key:json");
-            }
-        }).start();
+
 
     }
 

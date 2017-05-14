@@ -14,6 +14,7 @@ import java.util.List;
 
 import model.Announcement;
 import repair.com.repair.R;
+import util.Util;
 
 /**
  * Created by hsp on 2017/3/27.
@@ -23,8 +24,8 @@ public class AnnocmentListAdapter extends BaseAdapter {
     private static final String TAG = "AnnocmentListAdapter";
 
     LayoutInflater layoutInflater;
-    public List<Announcement> list = new ArrayList<>();
     ViewHolder viewHolder = null;
+    public List<Announcement> list = new ArrayList<>();
 
     public AnnocmentListAdapter(List<Announcement> list, Context context) {
         this.list = list;
@@ -49,25 +50,27 @@ public class AnnocmentListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View view = convertView;
 
-        if (null == view) {
-            view = layoutInflater.inflate(R.layout.annocment_list_item, parent, false);
+
+        if (convertView == null) {
+            viewHolder =new ViewHolder();
+            convertView = layoutInflater.inflate(R.layout.annocment_list_item, null);
             viewHolder = new ViewHolder();
-            viewHolder.tvTitle = (TextView) view.findViewById(R.id.tv_annocment_title);
-            viewHolder.tvTime = (TextView) view.findViewById(R.id.tv_annocment_time);
-            viewHolder.tvContent = (TextView) view.findViewById(R.id.tv_annocment_content);
-            viewHolder.llTitle = (LinearLayout) view.findViewById(R.id.ll_annocement_title);
-            viewHolder.llContent = (LinearLayout) view.findViewById(R.id.ll_annocement_content);
-            view.setTag(viewHolder);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_annocment_title);
+            viewHolder.tvTime = (TextView) convertView.findViewById(R.id.tv_annocment_time);
+            viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_annocment_content);
+            viewHolder.llTitle = (LinearLayout) convertView.findViewById(R.id.ll_annocement_title);
+            viewHolder.llContent = (LinearLayout) convertView.findViewById(R.id.ll_annocement_content);
+            viewHolder.tvAdmin= (TextView) convertView.findViewById(R.id.tv_annocment_admin);
+            convertView.setTag(viewHolder);
         } else {
-            view.getTag();
+           viewHolder= (ViewHolder) convertView.getTag();
         }
 
-        assert viewHolder != null;
         viewHolder.tvTitle.setText(list.get(position).getTitle());
         viewHolder.tvTime.setText(list.get(position).getCreate_at());
         viewHolder.tvContent.setText(list.get(position).getContent());
+        viewHolder.tvAdmin.setText(list.get(position).getAdmin_name());
         viewHolder.llTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,25 +78,15 @@ public class AnnocmentListAdapter extends BaseAdapter {
                 viewHolder.llContent.setVisibility(View.VISIBLE);
             }
         });
-        return view;
+        return convertView;
     }
-
-    public void setAnnouncemnetList(List<Announcement> announcemnetList) {
-       if(list!=null)
-       {
-           for(int i=0;i<list.size();i++)
-           {
-               list.remove(i);
-               list.add(announcemnetList.get(i));
-           }
-       }
-    }
-
 
 
     private static class ViewHolder {
-        TextView tvTitle, tvTime, tvContent;
+        TextView tvTitle, tvTime, tvContent,tvAdmin;
         LinearLayout llTitle, llContent;
-
     }
+
+
+
 }

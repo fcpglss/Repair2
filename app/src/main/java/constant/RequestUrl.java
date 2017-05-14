@@ -48,7 +48,7 @@ public class RequestUrl {
 
     public static final String ANNCOUCEMENT = project+"SendAnnoucement?annoucementFirst";
 
-    public static final String ANNCOUCEMENTMORE = project+"SendAnnoucement?annoucementMore";
+    public static final String ANNCOUCEMENTMORE = project+"SendAnnoucement";
 
     public static final String UPDATESERVER = project+"updateServer";
 
@@ -60,6 +60,7 @@ public class RequestUrl {
     public static final String GET_JSON = project+"ResponseClient";
     public static final String FRIST_URL = project+"FirstRequest";
     public static final String SENDMORE_URL = project+"sendmore";
+    public static final String REFRESH_URL=project+"RefreshServer";
 
 
 

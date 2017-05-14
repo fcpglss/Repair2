@@ -117,7 +117,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     Log.d(TAG, "handleMessage: 5");
                     break;
                 case 6:
-                    Toast.makeText(getActivity(), "下边已经没有数据了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "没有记录", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "handleMessage: 6");
                     lvMyList.stopLoadMore();
                     break;
