@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -36,7 +35,6 @@ import repari.com.adapter.ApplysAdapter;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
-import util.LocalImageHolderView;
 import util.Util;
 import util.WaterListViewListener;
 
@@ -222,6 +220,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                         startActivity(intent);
                     }
                 });
+
     }
 
     /**
@@ -262,12 +261,11 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             response.setErrorType(-2);
             response.setError(false);
             response.setErrorMessage("服务器维护");
+            this.response=response;
             Log.d(TAG, "queryFromServer请求成功：但res没有值，抛到到主线程尝试从本地加载res更新UI,messages=4");
             mhandler.sendEmptyMessage(2);
         } else {
             firstRes = response.getResultBean();
-
-            //setFirstApply(firstRes);
             if (firstRes != null) {
                 Util.writeJsonToLocal(res, MyApplication.getContext());
                 mhandler.sendEmptyMessage(3);
@@ -293,8 +291,9 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Response response=new Response();
-                        response.setErrorMessage("网络异常,刷新失败");
+                        Response responses=new Response();
+                        responses.setErrorMessage("网络异常,刷新失败");
+                        response=responses;
                         mhandler.sendEmptyMessage(2);
                     }
 

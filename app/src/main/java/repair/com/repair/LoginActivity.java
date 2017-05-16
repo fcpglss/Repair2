@@ -143,6 +143,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveUser() {
+
+
         String username = etAdminName.getText().toString();
         String password = etAdminPassword.getText().toString();
         Log.d(TAG, "saveUser: " + username);
@@ -200,6 +202,14 @@ public class LoginActivity extends AppCompatActivity {
             responseAdmin.setErrorMessage("账户或者密码错误");
             //请求网络失败
             mhandler.sendEmptyMessage(4);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sweetAlertDialog!=null&&sweetAlertDialog.isShowing()){
+            sweetAlertDialog.dismiss();
         }
     }
 }

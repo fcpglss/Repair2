@@ -191,14 +191,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     private void loadData() {
         adapter = new MyRepairAdapter(myRes, getActivity());
         lvMyList.setAdapter(adapter);
-        lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), DetailsActivity.class);
-                intent.putExtra("repairId", myRes.getApplys().get(position - 1).getId());
-                startActivity(intent);
-            }
-        });
+
     }
 
 
@@ -209,6 +202,14 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         lvMyList = (WaterDropListView) view.findViewById(R.id.lv_my_lv);
         lvMyList.setWaterDropListViewListener(MyRepairFragment.this);
         lvMyList.setPullLoadEnable(true);
+        lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), DetailsActivity.class);
+                intent.putExtra("repairId", myRes.getApplys().get(position - 1).getId());
+                startActivity(intent);
+            }
+        });
 //        llEmpty = (LinearLayout) view.findViewById(R.id.lL_my_empty);
         llContain = (LinearLayout) view.findViewById(R.id.ll_my_contain);
         etName = (EditText) view.findViewById(R.id.et_my_name);

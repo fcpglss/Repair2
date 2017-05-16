@@ -1,7 +1,7 @@
 package fragment;
 
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 /**
  * Created by hsp on 2017/4/11.
@@ -9,4 +9,6 @@ import android.widget.RelativeLayout;
 
 public interface GetFragment {
     public LinearLayout RlIsVisable();
+
+    ImageView bigImageView();
 }

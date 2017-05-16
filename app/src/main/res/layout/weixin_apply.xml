@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
 
     android:orientation="vertical">
-
     <LinearLayout
         android:id="@+id/ll_big_img"
         android:layout_width="match_parent"
@@ -20,8 +19,6 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,10 +26,11 @@
 
 
         <LinearLayout
-            android:background="@color/ColorText_Icons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/ColorText_Icons"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
@@ -67,10 +65,10 @@
                     android:id="@+id/img_apply_name_frag"
                     android:layout_width="40dp"
                     android:layout_height="20dp"
-                    android:visibility="gone"
                     android:layout_marginRight="@dimen/dimen16"
                     android:gravity="center"
-                    android:src="@drawable/cleanx" />
+                    android:src="@drawable/cleanx"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -107,25 +105,24 @@
                     android:layout_marginLeft="24dp"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:maxLength="11"
-                    android:phoneNumber="true"
                     android:hint="请输入真实号码便于联系"
+                    android:maxLength="13"
                     android:textSize="@dimen/text_button_text" />
 
                 <ImageView
                     android:id="@+id/img_apply_phone_frag"
                     android:layout_width="40dp"
                     android:layout_height="20dp"
-                    android:visibility="gone"
                     android:layout_marginRight="@dimen/dimen16"
                     android:gravity="right"
-                    android:src="@drawable/cleanx" />
+                    android:src="@drawable/cleanx"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_apply_phonbe_frg"
                 android:layout_width="match_parent"
-               android:layout_height="1dp"
+                android:layout_height="1dp"
                 android:layout_margin="12dp"
 
                 android:background="#000000"
@@ -146,8 +143,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/ColorPrimaryText"
                     android:text="电子邮箱"
+                    android:textColor="@color/ColorPrimaryText"
                     android:textSize="@dimen/text_subtitle" />
 
                 <EditText
@@ -167,8 +164,8 @@
                     android:layout_height="20dp"
                     android:layout_marginRight="@dimen/dimen16"
                     android:gravity="right"
-                    android:visibility="gone"
-                    android:src="@drawable/cleanx" />
+                    android:src="@drawable/cleanx"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -205,8 +202,8 @@
                     android:layout_marginLeft="24dp"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:maxLength="10"
-                    android:hint="请输入报修密码,用于评价"
+                    android:hint="请4位报修密码，用于评价"
+                    android:maxLength="4"
                     android:textSize="@dimen/text_button_text" />
 
                 <ImageView
@@ -215,8 +212,8 @@
                     android:layout_height="20dp"
                     android:layout_marginRight="@dimen/dimen16"
                     android:gravity="right"
-                    android:visibility="gone"
-                    android:src="@drawable/cleanx" />
+                    android:src="@drawable/cleanx"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -310,8 +307,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -367,10 +364,10 @@
                 android:id="@+id/ll_apply_big_floor_room"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
                 android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp">
+                android:layout_marginRight="12dp"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/ll_apply_floor"
@@ -384,8 +381,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:visibility="visible"
-                        >
+                        android:visibility="visible">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -408,8 +404,8 @@
                                 android:layout_marginLeft="65dp"
                                 android:layout_weight="1"
                                 android:background="@null"
-                                android:hint="请选择故障楼层"
                                 android:focusable="false"
+                                android:hint="请选择故障楼层"
 
                                 android:text=""
                                 android:textSize="@dimen/text_button_text" />
@@ -440,8 +436,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
-                        android:visibility="visible"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -464,8 +460,8 @@
                                 android:layout_marginLeft="48dp"
                                 android:layout_weight="1"
                                 android:background="@null"
-                                android:hint="请选择房间"
                                 android:focusable="false"
+                                android:hint="请选择房间"
 
                                 android:text=""
                                 android:textSize="@dimen/text_button_text" />
@@ -497,12 +493,12 @@
 
             <LinearLayout
 
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="12dp"
                 android:layout_marginLeft="12dp"
-                android:layout_marginTop="0dp">
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="0dp"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -525,7 +521,7 @@
                         android:layout_marginLeft="32dp"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="如需补充相关信息,在此填写"
+                        android:hint="如需补充相关地址信息在此填写"
                         android:maxLength="25"
                         android:text=""
                         android:textSize="@dimen/text_button_text" />
@@ -534,9 +530,9 @@
                         android:id="@+id/img_apply_addressdet_frg"
                         android:layout_width="40dp"
                         android:layout_height="20dp"
-                       android:visibility="gone"
                         android:gravity="right"
-                        android:src="@drawable/cleanx" />
+                        android:src="@drawable/cleanx"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -550,7 +546,6 @@
             </LinearLayout>
 
 
-
             <!--/故障类型-->
 
 
@@ -559,16 +554,16 @@
                 android:id="@+id/ll_apply_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_margin="12dp">
+                    android:layout_margin="12dp"
+                    android:layout_marginTop="0dp">
 
                     <TextView
                         android:id="@+id/textView7"
@@ -642,11 +637,11 @@
                         android:id="@+id/et_apply_detail_type"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="67dp"
+                        android:layout_marginLeft="35dp"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="请选择故障详情"
                         android:focusable="false"
+                        android:hint="请选择故障详情"
 
                         android:text=""
                         android:textSize="@dimen/text_button_text" />
@@ -801,13 +796,13 @@
             </LinearLayout>
 
             <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_margin="12dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="8dp"
-            android:background="#000000"
-            android:orientation="horizontal"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="8dp"
+                android:background="#000000"
+                android:orientation="horizontal" />
 
 
             <!--立即报修按钮-->
@@ -815,8 +810,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="@dimen/dimen16"
+                android:layout_marginTop="8dp"
                 android:gravity="center">
 
 
@@ -836,5 +831,20 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/ll_big_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/iv_big_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
 
 </LinearLayout>

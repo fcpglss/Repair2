@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,13 +17,11 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import application.MyApplication;
 import model.Apply;
-import model.Category;
 import model.Employee;
 import model.Response;
 import model.ResultBean;
@@ -39,7 +36,6 @@ import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
 
 
-
 /**
  * Created by hsp on 2016/12/1.
  */
@@ -52,7 +48,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     boolean visible = false;//员工详细页面默认不可见
 
     //评价星星
-    private ImageView star1,star2,star3,star4,star5;
+    private ImageView star1, star2, star3, star4, star5;
     //评价文字
     private TextView appraise;
     //大图片
@@ -63,43 +59,42 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView  tvName, tv_date, tv_describe,tvDealTime,tvCompensation,tvNeed,tvAdmin;
+    private TextView tvName, tv_date, tv_describe, tvDealTime, tvCompensation, tvNeed, tvAdmin;
 
     private TextView tv_details_employee1;
 
     private TextView tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details,llDetailDeal;
+    private LinearLayout ll_employee_details, llDetailDeal;
 
 
     private ImageView img_category, img_status;
     private ImageView img1, img2, img3;
     private Apply apply = null;
-//    private Employee employee=null;
+    //    private Employee employee=null;
     private List<Employee> employeeList = new ArrayList<>();
     private String repairId;
 
     private ResultBean detailRes = null;
 
-    private boolean isAppraisePage=false;
+    private boolean isAppraisePage = false;
 
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
-    private List<ImageView> star_list=new ArrayList<ImageView>();
+    private List<ImageView> star_list = new ArrayList<ImageView>();
     private List<String> list_imageView = new ArrayList<>();
     private Response response;
-
 
 
     private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.d(TAG, "msg="+msg.what);
+            Log.d(TAG, "msg=" + msg.what);
             switch (msg.what) {
                 case 2:
                     Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
-                    Toast.makeText(MyApplication.getContext(),response.getErrorMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 case 3:
                     if (apply.getLogisticMan() != null) {
@@ -111,7 +106,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     bindItem();
                     break;
                 case 4:
-                    Toast.makeText(DetailsActivity.this,"连接服务器成功,但是服务器返回数据错误",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DetailsActivity.this, "连接服务器成功,但是服务器返回数据错误", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "handleMessage4 ");
                     break;
 
@@ -128,16 +123,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         initView();
 
-        repairId=getIntent().getStringExtra("repairId");
-        isAppraisePage=getIntent().getBooleanExtra("appraiseIntent",false);
+        repairId = getIntent().getStringExtra("repairId");
+        isAppraisePage = getIntent().getBooleanExtra("appraiseIntent", false);
 
-        Log.d(TAG, "onCreate: 获取repairId="+repairId);
-        if(apply==null)
-        {
-            queryFromServer(URL,repairId);
-        }
-        else
-        {
+        Log.d(TAG, "onCreate: 获取repairId=" + repairId);
+        if (apply == null) {
+            queryFromServer(URL, repairId);
+        } else {
             if (apply.getLogisticMan() != null) {
                 iv_employee_arr.setVisibility(View.VISIBLE);
             } else {
@@ -147,7 +139,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         }
 
     }
-    public void queryFromServer(String url,String repairId) {
+
+    public void queryFromServer(String url, String repairId) {
 
         String jsonurl = url + "?detail=" + repairId;
         Log.d(TAG, "queryFromServer: " + jsonurl);
@@ -165,7 +158,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 //连接成功，抛到主线程更新UI
                 else {
                     detailRes = response.getResultBean();
-                    apply=detailRes.getApplys().get(0);
+                    apply = detailRes.getApplys().get(0);
 //                    employee=detailRes.getEmployee().get(0);
                     employeeList = detailRes.getEmployee();
                     mhandler.sendEmptyMessage(3);
@@ -216,15 +209,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_details_employee1 = (TextView) findViewById(R.id.tv_details_employee1);
 
 
-
         tvName = (TextView) findViewById(R.id.tv_details_name);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
-        tvDealTime= (TextView) findViewById(R.id.tv_details_deal_date);
-       /// tv_place = (TextView) findViewById(R.id.tv_details_place);
+        tvDealTime = (TextView) findViewById(R.id.tv_details_deal_date);
+        /// tv_place = (TextView) findViewById(R.id.tv_details_place);
 //        tv_email= (TextView) findViewById(R.id.tv_details_email);
 
         tvArea = (TextView) findViewById(R.id.tv_details_area);
-
 
 
         // tv_employee= (TextView) findViewById(R.id.tv_details_employee);
@@ -234,9 +225,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         img_category = (ImageView) findViewById(R.id.img_category);
 
-        tvNeed= (TextView) findViewById(R.id.tv_details_need);
-        tvCompensation= (TextView) findViewById(R.id.tv_details_compensation);
-        tvAdmin= (TextView) findViewById(R.id.tv_details_admin);
+        tvNeed = (TextView) findViewById(R.id.tv_details_need);
+        tvCompensation = (TextView) findViewById(R.id.tv_details_compensation);
+        tvAdmin = (TextView) findViewById(R.id.tv_details_admin);
         llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
 
 
@@ -260,20 +251,17 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void visibaleFinishTime()
-    {
-        if(!tvDealTime.getText().equals("尚未处理"))
-        {
+    private void visibaleFinishTime() {
+        if (!tvDealTime.getText().equals("尚未处理")) {
             llDetailDeal.setVisibility(View.VISIBLE);
         }
     }
 
 
-
-
-    private void clickPic(View v){
+    private void clickPic(View v) {
         ImageView iV = (ImageView) v;
-        showBigImg.setImageDrawable(iV.getDrawable());
+//        showBigImg.setImageDrawable(iV.getDrawable());
+        showBigImg.setBackground(iV.getDrawable());
         showBigImg.setVisibility(View.VISIBLE);
         //设置背景
         linearLayoutDetail.setBackgroundColor(Color.BLACK);
@@ -281,8 +269,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         showBigImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showBigImg.setBackground(null);
                 showBigImg.setVisibility(View.GONE);
-                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+                linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
             }
         });
     }
@@ -290,7 +279,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void bindItem() {
 //        getCategory();
-        Log.d(TAG, "bindItem: "+apply.getRepair());
+        Log.d(TAG, "bindItem: " + apply.getRepair());
         tvName.setText(Util.setNameXX(apply.getRepair()));
 
 //        tv_tel.setText(apply.getTel());
@@ -301,11 +290,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        tvDetailCategory.setText(apply.getDetailClass());
 //        tv_place.setText(apply.getDetailArea());
 
-     //   tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
+        //   tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
 
-     //   String area=Util.setAddress(apply)+","+Util.getAdressDetalil(apply.getAddressDetail());
-        String area=Util.setAddress(apply,20,false);
-        Log.d(TAG, "bindItem: "+area);
+        //   String area=Util.setAddress(apply)+","+Util.getAdressDetalil(apply.getAddressDetail());
+        String area = Util.setAddress(apply, 20, false);
+        Log.d(TAG, "bindItem: " + area);
         tvArea.setText(area);
 
         tv_date.setText(Util.getDealTime(apply.getRepairTime()));
@@ -313,9 +302,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
 
         String Compensation = "";
-        if (apply.getCompensation().equals("0")){
+        if (apply.getCompensation().equals("0")) {
             Compensation = "不收费";
-        }else {
+        } else {
             Compensation = "收费";
         }
 
@@ -329,7 +318,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        String describe=apply.getClasss()+checkDetailClas(apply.getDetailClass())+","+apply.getRepairDetails();
 //        String destemp=changeRow(describe);
 //        tv_describe.setText(destemp);
-        String destemp=Util.setClass(apply,20,false);
+        String destemp = Util.setClass(apply, 20, false);
         tv_describe.setText(destemp);
         img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
@@ -345,7 +334,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         //直接设置员工信息 但是默认被隐藏
-       // setEmployeeInf(apply.getLogisticMan());
+        // setEmployeeInf(apply.getLogisticMan());
 //        if (employee!=null){
 //            tv_details_employee1.setText(employee.getName());
 //            tv_employee_phone.setText(employee.getE_tel());
@@ -353,26 +342,18 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        }
 
 
-        Log.d(TAG, "bindItem: "+apply.getServerMan());
-
-
-
-
-
-
-
-
+        Log.d(TAG, "bindItem: " + apply.getServerMan());
 
 
         StringBuilder sbEmployeeName = new StringBuilder();
         StringBuilder sbEmployeePhone = new StringBuilder();
-        String employeeName ="";
+        String employeeName = "";
         String employeePhone = "";
 
-        List<Employee> employeeTempList  = new ArrayList<>();
+        List<Employee> employeeTempList = new ArrayList<>();
         //idArrayapply 是这个单号维修人员的 id String
-        String[] idArrayapply={""};
-        if (apply.getServerMan()!=null&&!apply.getServerMan().isEmpty()){
+        String[] idArrayapply = {""};
+        if (apply.getServerMan() != null && !apply.getServerMan().isEmpty()) {
             idArrayapply = apply.getServerMan().split(",");
         }
         //emloyeeList 是所有人员的信息
@@ -382,45 +363,41 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         for (Employee e :
                 employeeList) {
             for (int i = 0; i < idArrayapply.length; i++) {
-                if (e.getAccount().equals(idArrayapply[i])){
-                 employeeTempList.add(e);
+                if (e.getAccount().equals(idArrayapply[i])) {
+                    employeeTempList.add(e);
                 }
             }
         }
 
 
-
-
-        if (employeeTempList.size()>0){
+        if (employeeTempList.size() > 0) {
 
             for (Employee e :
                     employeeTempList) {
                 sbEmployeeName.append(e.getName()).append(",");
                 sbEmployeePhone.append(e.getE_tel()).append(",");
             }
-            employeeName = sbEmployeeName.toString().substring(0,sbEmployeeName.length()-1);
-            employeePhone = sbEmployeePhone.toString().substring(0,sbEmployeePhone.length()-1);
+            employeeName = sbEmployeeName.toString().substring(0, sbEmployeeName.length() - 1);
+            employeePhone = sbEmployeePhone.toString().substring(0, sbEmployeePhone.length() - 1);
             tv_details_employee1.setText(employeeName);
             tv_employee_phone.setText(employeePhone);
         }
 
 
-        Log.d(TAG, "bindItem: "+Integer.parseInt(apply.getEvaluate()));
+        Log.d(TAG, "bindItem: " + Integer.parseInt(apply.getEvaluate()));
         //设置星星
-       setStarColor(Integer.parseInt(apply.getEvaluate()));
+        setStarColor(Integer.parseInt(apply.getEvaluate()));
         //设置评价内容
         appraise.setText(apply.getEvalText());
 
     }
 
 
-
     //获取到apply中LogisticMan字段，（员工姓名)的对象
     private Employee getEmploye(String employeeName) {
 
-        Employee employee=new Employee();
-        if(employeeName!=null && !employeeName.equals(""))
-        {
+        Employee employee = new Employee();
+        if (employeeName != null && !employeeName.equals("")) {
             List<Employee> list_employee = detailRes.getEmployee();
             for (Employee e : list_employee) {
                 if (e.getName().equals(employeeName)) {
@@ -433,24 +410,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-
-
-    private String getState()
-    {
-       switch (apply.getState())
-       {
-           case 1 :
-               return "正在处理";
-           case 2:
-               return "派员中";
-           case 3:
-               return "已完工";
-           case 4:
-               return "已失效";
-       }
-       return "正在审核";
+    private String getState() {
+        switch (apply.getState()) {
+            case 1:
+                return "正在处理";
+            case 2:
+                return "派员中";
+            case 3:
+                return "已完工";
+            case 4:
+                return "已失效";
+        }
+        return "正在审核";
     }
-
 
 
     private int getRightIcon() {
@@ -482,7 +454,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void getApplyImages() {
         list_imageView = apply.getA_imaes();
-        if (list_imageView!=null&&list_imageView.size() > 0) {
+        if (list_imageView != null && list_imageView.size() > 0) {
             if (list_imageView.size() > 3) {
                 int length = list_imageView.size() - 3;
                 for (int i = 0; i < length; i++) {
@@ -492,12 +464,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             for (int i = 0; i < list_imageView.size(); i++) {
 //                mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
                 Picasso.with(this).load(list_imageView.get(i)).into(imageviewList.get(i));
-
                 LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
-                layout.height = windowHeigth/4;
-                layout.width = (int) (windowWitch/3.3);
+                layout.height = windowHeigth / 4;
+                layout.width = (int) (windowWitch / 3.3);
                 imageviewList.get(i).setLayoutParams(layout);
-                Log.d(TAG, "执行了一次bindBitmap "+list_imageView.get(i));
+                Log.d(TAG, "执行了一次bindBitmap " + list_imageView.get(i));
             }
 
         } else {
@@ -505,9 +476,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         }
 
     }
-
-
-
 
 
     @Override
@@ -527,7 +495,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.iv_employee_arr:
 
-                if (apply.getLogisticMan()!=null){
+                if (apply.getLogisticMan() != null) {
 
                     if (visible == false) {
                         ll_employee_details.setVisibility(View.VISIBLE);
@@ -536,8 +504,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         ll_employee_details.setVisibility(View.GONE);
                         visible = false;
                     }
-                }
-                else {
+                } else {
                     visible = false;
                     tv_paigong.setVisibility(View.VISIBLE);
                     iv_employee_arr.setVisibility(View.GONE);
@@ -559,12 +526,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    private void setStarColor(int appraise)
-    {
-        if(appraise>0)
-        {
-            for(int i=0;i<appraise;i++)
-            {
+    private void setStarColor(int appraise) {
+        if (appraise > 0) {
+            for (int i = 0; i < appraise; i++) {
                 star_list.get(i).setColorFilter(getResources().getColor(R.color.starColor));
             }
         }
@@ -572,25 +536,23 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode==KeyEvent.KEYCODE_BACK){
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-            if (showBigImg.getVisibility() == View.VISIBLE){
+            if (showBigImg.getVisibility() == View.VISIBLE) {
+                showBigImg.setBackground(null);
                 showBigImg.setVisibility(View.GONE);
-                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
-            }else{
-
-                if(isAppraisePage)
-                {
-                    Intent intent = new Intent(this,MainActivity.class);
-                    intent.putExtra("appraise","ok");
+                linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
+            } else {
+                if (isAppraisePage) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("appraise", "ok");
                     startActivity(intent);
                     Log.d(TAG, "onKeyDown: 返回了main");
                     this.finish();
-                }
-                else {
-                    Intent intent = new Intent(this,MainActivity.class);
-                    intent.putExtra("appraise","false");
+                } else {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("appraise", "false");
                     startActivity(intent);
                     Log.d(TAG, "onKeyDown: 返回了main");
                     this.finish();

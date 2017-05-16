@@ -2,19 +2,10 @@ package util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-
 import application.MyApplication;
-import medusa.theone.waterdroplistview.view.WaterDropListView;
-import model.Apply;
-import model.Category;
 import model.ResultBean;
 import repair.com.repair.DetailsActivity;
 
@@ -37,9 +28,9 @@ public class WaterListViewListener implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-        Log.d(TAG, "onItemClick: "+(res==null));
-        Log.d(TAG, "onItemClick: "+res.getApplys().size());
-        Log.d(TAG, "onItemClick: "+(position-1));
+//        Log.d(TAG, "onItemClick: "+(res==null));
+//        Log.d(TAG, "onItemClick: "+res.getApplys().size());
+//        Log.d(TAG, "onItemClick: "+(position-1));
         String  repairID = res.getApplys().get(position - 1).getId();
 
         Intent intent = new Intent(MyApplication.getContext(), DetailsActivity.class);

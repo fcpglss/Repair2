@@ -164,8 +164,7 @@
                 android:layout_marginBottom="4dp"
                 android:background="#ffffff"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/dimen8"
-                android:paddingRight="@dimen/dimen8">
+                android:paddingLeft="@dimen/dimen8">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -220,20 +219,13 @@
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-
-                        </LinearLayout>
-
                         <TextView
                             android:id="@+id/tv_details_area"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
+                            android:layout_weight="1"
                             android:gravity="right"
-
+                            android:layout_marginRight="@dimen/dimen16"
                             android:textSize="@dimen/text_button_text" />
 
                     </LinearLayout>
@@ -316,9 +308,11 @@
                                 android:id="@+id/tv_details_describe"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="right"
                                 android:maxLines="5"
                                 android:text=""
+                                android:layout_weight="1"
+                                android:gravity="right"
+                                android:layout_marginRight="@dimen/dimen16"
                                 android:textColor="#BF383838" />
                         </LinearLayout>
                     </LinearLayout>

@@ -1,7 +1,6 @@
 package repair.com.repair;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,13 +50,13 @@ import util.JsonUtil;
 import util.UIUtil;
 import util.Util;
 
-//import static constant.RequestUrl.AdMINUPDATE;
-import static constant.RequestUrl.AdMINUPDATE;
 import static constant.RequestUrl.JSONEMPLOYEE;
 import static constant.RequestUrl.TEXT_EMAIL_URL;
 import static constant.RequestUrl.URL;
 import static repair.com.repair.MainActivity.windowHeigth;
 import static repair.com.repair.MainActivity.windowWitch;
+
+//import static constant.RequestUrl.AdMINUPDATE;
 
 /**
  * Created by Administrator on 2017-4-15.
@@ -88,7 +87,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         super.onResume();
     }
 
-    private int index=-1;
+    private int index = -1;
 
 
     //大图片
@@ -175,60 +174,67 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
                 case 9:
-                    sDialog.setTitleText("提交成功,正在派发。")
+                    sDialog.setTitleText("已成功派工")
                             .setContentText("")
                             .setConfirmClickListener(null)
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    SharedPreferences preferences = AdminDetailActivity.this.getSharedPreferences("admin_data", MODE_PRIVATE);
-                    String json = preferences.getString("admin", "");
-                    Log.d(TAG, "handleMessage: account " + json);
-                    Admin adminFromJson = JsonUtil.jsonToAdmin(json);
-
-
-                    Apply applyTemp = new Apply();
-                    applyTemp.setId(apply.getId());
-//                    维修工
-
-                    //获取维修工id字符串
-                    StringBuilder s = new StringBuilder();
-                    for (String str :
-                            serverTempList) {
-
-                        s.append(str).append(",");
-                    }
-                    String tempString = s.toString().substring(0, s.length() - 1);
-
-//                    Log.d(TAG, "handleMessage: "+tempString);
-
-                    applyTemp.setServerMan(tempString);
-                    //后台人员
-//                    Log.d(TAG, "handleMessage: account " + AdminListActivity.account);
-                    applyTemp.setLogisticMan(AdminListActivity.account);
-//                    Log.d(TAG, "handleMessage: account " + adminFromJson.getAccount());
-                    //状态 改为 2 已派工
-                    applyTemp.setState(2);
-                    //物料
-                    applyTemp.setMaterial(etMatrial.getText().toString());
-
-                    String applyJson = JsonUtil.beanToJson(applyTemp);
-                    Util.submit("deal", applyJson, AdMINUPDATE).execute(new StringCallback() {
+                    Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
-                        public void onError(Call call, Exception e, int id) {
-
-                        }
-
-                        @Override
-                        public void onResponse(String response, int id) {
-                            if (response.equals("OK")) {
-                                mhandler.sendEmptyMessage(12);
-                                Log.d(TAG, "onResponse:  handler 12 " + response);
-                            } else {
-                                mhandler.sendEmptyMessage(13);
-                            }
+                        public void accept(Long aLong) throws Exception {
+                            AdminListActivity.onResumeValue = "OK";
+                            Intent intentToList = new Intent(AdminDetailActivity.this, AdminListActivity.class);
+                            startActivity(intentToList);
                         }
                     });
-
                     break;
+//                    SharedPreferences preferences = AdminDetailActivity.this.getSharedPreferences("admin_data", MODE_PRIVATE);
+//                    String json = preferences.getString("admin", "");
+//                    Log.d(TAG, "handleMessage: account " + json);
+//                    Admin adminFromJson = JsonUtil.jsonToAdmin(json);
+//
+//
+//                    Apply applyTemp = new Apply();
+//                    applyTemp.setId(apply.getId());
+////                    维修工
+//
+//                    //获取维修工id字符串
+//                    StringBuilder s = new StringBuilder();
+//                    for (String str :
+//                            serverTempList) {
+//
+//                        s.append(str).append(",");
+//                    }
+//                    String tempString = s.toString().substring(0, s.length() - 1);
+//
+////                    Log.d(TAG, "handleMessage: "+tempString);
+//
+//                    applyTemp.setServerMan(tempString);
+//                    //后台人员
+////                    Log.d(TAG, "handleMessage: account " + AdminListActivity.account);
+//                    applyTemp.setLogisticMan(AdminListActivity.account);
+////                    Log.d(TAG, "handleMessage: account " + adminFromJson.getAccount());
+//                    //状态 改为 2 已派工
+//                    applyTemp.setState(2);
+//                    //物料
+//                    applyTemp.setMaterial(etMatrial.getText().toString());
+//
+//                    String applyJson = JsonUtil.beanToJson(applyTemp);
+//                    Util.submit("deal", applyJson, AdMINUPDATE).execute(new StringCallback() {
+//                        @Override
+//                        public void onError(Call call, Exception e, int id) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onResponse(String response, int id) {
+//                            if (response.equals("OK")) {
+//                                mhandler.sendEmptyMessage(12);
+//                                Log.d(TAG, "onResponse:  handler 12 " + response);
+//                            } else {
+//                                mhandler.sendEmptyMessage(13);
+//                            }
+//                        }
+//                    });
                 case 10:
                     sDialog.setTitleText("服务器维护,邮件派工失败。")
                             .setContentText("")
@@ -236,8 +242,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
                 case 11:
-                    if(sDialog!=null)
-                    {
+                    if (sDialog != null) {
                         sDialog.setTitleText("网络异常,请检查网络")
                                 .setContentText("")
                                 .setConfirmClickListener(null)
@@ -249,7 +254,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                     Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
                         public void accept(Long aLong) throws Exception {
-                            AdminListActivity.onResumeValue = index;
+                            //AdminListActivity.onResumeValue = index;
                             Intent intentToList = new Intent(AdminDetailActivity.this, AdminListActivity.class);
                             startActivity(intentToList);
                         }
@@ -271,8 +276,8 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         Log.d(TAG, "onCreate: ");
         setContentView(R.layout.admin_detail_infor);
         adminInf = Util.loadWriteAdmin(this);
-        index=getIntent().getIntExtra("index",-2);
-        Log.d(TAG, "onCreate: index -> "+index);
+        //   index=getIntent().getIntExtra("index",-2);
+        Log.d(TAG, "onCreate: index -> " + index);
         Log.d(TAG, "onCreate: " + adminInf.getEmailPassword());
         initView();
 
@@ -386,8 +391,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void clickPic(View v) {
-        ImageView iV = (ImageView) v;
-        showBigImg.setImageDrawable(iV.getDrawable());
+        final ImageView iV = (ImageView) v;
+//        showBigImg.setImageDrawable(iV.getDrawable());
+        showBigImg.setBackground(iV.getDrawable());
         showBigImg.setVisibility(View.VISIBLE);
         //设置背景
         linearLayoutDetail.setBackgroundColor(Color.BLACK);
@@ -395,6 +401,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         showBigImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showBigImg.setBackground(null);
                 showBigImg.setVisibility(View.GONE);
                 linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
             }
@@ -409,9 +416,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
         tvEmail.setText(apply.getEmail());
         //设置故障信息
 
-        tvAdress.setText(Util.setAddress(apply,16,false));
+        tvAdress.setText(Util.setAddress(apply, 16, false));
 
-        tvCategory.setText(Util.setClass(apply,16,false));
+        tvCategory.setText(Util.setClass(apply, 16, false));
 
         tvTime.setText(Util.getDealTime(apply.getRepairTime()));
         //设置类型图标
@@ -489,10 +496,11 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             if (showBigImg.getVisibility() == View.VISIBLE) {
+                showBigImg.setBackground(null);
                 showBigImg.setVisibility(View.GONE);
                 linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
             } else {
@@ -681,7 +689,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
 
         StringBuilder sb = new StringBuilder();
 
-        String tvNames =apply.getRepair();
+        String tvNames = Util.setNameXX(apply.getRepair());
         String guzhang = tvCategory.getText().toString().trim();
         String address = tvAdress.getText().toString().trim();
         String cailiao = etMatrial.getText().toString().trim();
@@ -697,9 +705,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private List<String> getEmail(String serverMan) {
+    private List<String> getAccount(String serverMan) {
         Log.d(TAG, "getEmail: " + serverMan);
-        List<String> emails = new ArrayList<>();
+        List<String> accounts = new ArrayList<>();
         if (serverMan != null && !"".equals(serverMan)) {
             String temp2[] = serverMan.split(",");
             Log.d(TAG, "getEmail: temp[]2的长度" + temp2.length);
@@ -710,15 +718,15 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 for (int j = 0; j < employees.size(); j++) {
                     Log.d(TAG, "getEmail: employees.size=" + employees.get(j));
                     if (temp2[i].equals(employees.get(j).getName())) {
-                        emails.add(employees.get(j).getE_email());
+                        accounts.add(employees.get(j).getAccount());
                         break;
                     }
                 }
             }
-            return emails;
+            return accounts;
         } else {
             Toast.makeText(this, "请先添加维修人员", Toast.LENGTH_SHORT).show();
-            return emails;
+            return accounts;
         }
     }
 
@@ -731,6 +739,7 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                 //String email = preferences.getString("email", "");
                 String email = adminInf.getE_email();
                 String password = adminInf.getEmailPassword();
+                String account = adminInf.getAccount();
                 Log.d(TAG, "onClick: " + email);
                 Log.d(TAG, "onClick: " + password);
                 //password=Util.encryptStr("LBY681love","R9k1d0?j");
@@ -756,18 +765,18 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                     btnSubmit.setBackgroundResource(R.drawable.button_submit);
                     Util.setOnClickBackgroundColor(btnSubmit);
                     String temp = etServerMan.getText().toString();
-                    List<String> emails = getEmail(temp);
-                    if (emails.size() > 0) {
-                        String serverEmail = getServerEmail(emails);
-                        final String contentString = getCOntentString();
+                    List<String> servManAccount = getAccount(temp);
+                    if (servManAccount.size() > 0) {
+                        String serverAccounts = getServerAccount(servManAccount);
+//                        final String contentString = getCOntentString();
                         String applyId = apply.getId();
                         String imgPath = getImgName();
-                        Log.d(TAG, "onClick: adminEmail ->" + email);
-                        Log.d(TAG, "onClick: password ->" + password);
-                        Log.d(TAG, "onClick: serverEmailString ->" + serverEmail);
-                        Log.d(TAG, "onClick: contentSTring ->" + contentString);
-                        Log.d(TAG, "onClick: imgPath ->" + imgPath);
-                        Log.d(TAG, "onClick: applyId ->" + applyId);
+                        Log.d(TAG, "onClick: URL ->" + TEXT_EMAIL_URL);
+                        Log.d(TAG, "onClick: FLAGW ->" + email);
+                        Log.d(TAG, "onClick: ID ->" + applyId);
+                        Log.d(TAG, "onClick: serverMan ->" + serverAccounts);
+                        Log.d(TAG, "onClick: AD ->" + account);
+                        //Log.d(TAG, "onClick: imgPath ->" + imgPath);
 
                         //应该放在Util。submit下方
 
@@ -776,8 +785,9 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                                 .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                         sDialog.show();
                         //提交维修单
-                        Util.submit("adminEmail", email, "password", password, "content", contentString,
-                                "serverEmail", serverEmail, "ID", apply.getId(), "imgPath", imgPath, TEXT_EMAIL_URL)
+//                        Util.submit("adminEmail", email, "password", password, "content", contentString,
+//                                "serverEmail", serverEmail, "ID", apply.getId(), "imgPath", imgPath, TEXT_EMAIL_URL)
+                        Util.submits("FLAGW", "sendEmail", "ID", applyId, "serverMan", serverAccounts, "AD", account, TEXT_EMAIL_URL)
                                 .readTimeOut(100000L)
                                 .writeTimeOut(100000L)
                                 .connTimeOut(100000L)
@@ -793,12 +803,11 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
                                     @Override
                                     public void onResponse(String response, int id) {
                                         Log.d(TAG, "onResponse:  ->" + response);
-                                        if ("Success".equals(response)) {
+                                        if ("发送成功".equals(response)) {
                                             Log.d(TAG, "onResponse: 获取 " + response);
                                             //发送邮件成功
                                             mhandler.sendEmptyMessage(9);
                                         } else {
-                                            Log.d(TAG, "onResponse: 获取 " + response);
                                             //发送邮件失败
                                             mhandler.sendEmptyMessage(10);
                                         }
@@ -814,17 +823,17 @@ public class AdminDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private String getServerEmail(List<String> emails) {
-        String serverEmail = "";
-        for (String s : emails) {
-            if (serverEmail.equals("")) {
-                serverEmail = s;
+    private String getServerAccount(List<String> accounts) {
+        String serverAcount = "";
+        for (String s : accounts) {
+            if (serverAcount.equals("")) {
+                serverAcount = s;
                 continue;
             }
-            serverEmail = serverEmail + "," + s;
+            serverAcount = serverAcount + "," + s;
         }
-        Log.d(TAG, "setServerEmail: " + serverEmail);
-        return serverEmail;
+        Log.d(TAG, "getServerAccount: " + serverAcount);
+        return serverAcount;
     }
 
     private String getImgName() {

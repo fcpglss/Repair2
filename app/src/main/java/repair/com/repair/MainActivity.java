@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
     ImageView ivRepair;
     @BindView(R.id.iv_my)
     ImageView ivMy;
-
-
 
 
     private ViewPager mviewPager;
@@ -103,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
         initData();
         TabListener();
 
+
     }
+
 
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
@@ -248,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private class LinearLayoutListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -290,24 +292,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
+//                applyFragment.RlIsVisable().setVisibility(View.GONE);
+////                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+//            } else {
+//                Log.d(TAG, "onKeyDown: 返回了main");
+//                this.finish();
+//            }
+//        }
+////        return super.onKeyDown(keyCode,event);
+//        return true;
+//    }
+
+
+    /**
+     * 第一种解决办法 通过监听keyUp
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    //记录用户首次点击返回键的时间
+    private long firstTime = 0;
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
 
-
+            //图片放大 变小
             if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
+                if (applyFragment.bigImageView() != null) {
+                    applyFragment.bigImageView().setBackground(null);
+                }
                 applyFragment.RlIsVisable().setVisibility(View.GONE);
-//                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+                return true;
             } else {
-                Log.d(TAG, "onKeyDown: 返回了main");
-                this.finish();
+
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 2000) {
+                    Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                    firstTime = secondTime;
+                    return true;
+                } else {
+                    this.finish();
+                    System.exit(0);
+                }
             }
         }
 
-
-//        return super.onKeyDown(keyCode,event);
-        return true;
+        return super.onKeyUp(keyCode, event);
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {

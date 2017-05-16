@@ -670,10 +670,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        flieId = newFlies.get(position).getId();
-                        showId();
-                        etFloor.setText(newFlies.get(position).getFlies());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            flieId = newFlies.get(position).getId();
+                            showId();
+                            etFloor.setText(newFlies.get(position).getFlies());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -684,10 +686,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        roomId = newRoom.get(position).getId();
-                        showId();
-                        etRoom.setText(newRoom.get(position).getRoomNumber());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            roomId = newRoom.get(position).getId();
+                            showId();
+                            etRoom.setText(newRoom.get(position).getRoomNumber());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -698,10 +702,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        categoryId = newCategory.get(position).getC_id();
-                        showId();
-                        etApplyType.setText(newCategory.get(position).getC_name());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            categoryId = newCategory.get(position).getC_id();
+                            showId();
+                            etApplyType.setText(newCategory.get(position).getC_name());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -712,10 +718,12 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        detailTypeID = newDetailClass.get(position).getId();
-                        showId();
-                        etApplyTypeDetails.setText(newDetailClass.get(position).getClassDetail());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            detailTypeID = newDetailClass.get(position).getId();
+                            showId();
+                            etApplyTypeDetails.setText(newDetailClass.get(position).getClassDetail());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();

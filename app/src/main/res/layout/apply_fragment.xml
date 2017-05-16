@@ -7,19 +7,19 @@
     android:background="#d3d3d3"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_big_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000"
-        android:visibility="gone"
-        >
+    <!--<LinearLayout-->
+        <!--android:id="@+id/ll_big_img"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#000000"-->
+        <!--android:visibility="gone"-->
+        <!--&gt;-->
 
-        <ImageView
-            android:id="@+id/iv_big_img"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        <!--<ImageView-->
+            <!--android:id="@+id/iv_big_img"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
+    <!--</LinearLayout>-->
 
     <!--<LinearLayout-->
     <!--android:layout_width="match_parent"-->

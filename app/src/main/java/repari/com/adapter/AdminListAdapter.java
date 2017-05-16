@@ -2,8 +2,6 @@ package repari.com.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import model.Apply;
 import model.ResultBean;
@@ -36,7 +29,7 @@ public class AdminListAdapter extends BaseAdapter {
     private Context context;
     private ResultBean resultBean;
     private LayoutInflater inflater;
-    private List<Apply> list = new ArrayList<>();
+
 
     private boolean mCanGetBitmapFromNetWork = true;
 
@@ -47,13 +40,12 @@ public class AdminListAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
         this.resultBean = resultBean;
-        list = resultBean.getApplys();
         isLoadImages = hasPic;
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return resultBean.getApplys().size();
     }
 
     @Override
@@ -70,7 +62,7 @@ public class AdminListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         View view = convertView;
-        Apply apply = list.get(position);
+        Apply apply = resultBean.getApplys().get(position);
         if (null == view) {
             view = inflater.inflate(R.layout.admin_item_list, null);
             viewHolder = new ViewHolder();

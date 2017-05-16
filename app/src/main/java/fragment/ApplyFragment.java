@@ -1,5 +1,6 @@
 package fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -54,12 +55,15 @@ import repari.com.adapter.DialogAdapter;
 import util.DialogUtil;
 import util.EdiTTouch;
 import util.JsonUtil;
+import util.PermissionUtil;
 import util.RxBindingUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
 import static constant.RequestUrl.GET_JSON;
 import static constant.RequestUrl.JSON_URL;
+import static constant.RequestUrl.REQUEST_CODE_CAMERA;
+import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
 import static constant.RequestUrl.UP_APPLY;
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
@@ -73,6 +77,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private static final String TAG = "ApplyFragment";
 
 
+
     private boolean isFirst = true;
 
     private EditText et_name, et_tel, et_describe;
@@ -82,13 +87,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     //对话框点击显示下一级
     private LinearLayout llApplyArea, llApplyDetailArea, llApplyBigFloorRoom, llApplyFloor, llApplyRoom, llApplyType, llApplyDetailType;
 
-    private LinearLayout  llPhoneLine,llNameLine,llPasswordLine,llEmailLine,llAreaLine,llPlaceLine,llFliesLine;
+    private LinearLayout llPhoneLine, llNameLine, llPasswordLine, llEmailLine, llAreaLine, llPlaceLine, llFliesLine;
 
-    private LinearLayout llRoonLine,llAddressDetaiLine,llClassLine,llDetailClassLine,llDesctribeLine;
+    private LinearLayout llRoonLine, llAddressDetaiLine, llClassLine, llDetailClassLine, llDesctribeLine;
 
 
-    private ImageView imgPhone,imgName,imgPassword,imgEmail,imgAddressDetail;
-
+    private ImageView imgPhone, imgName, imgPassword, imgEmail, imgAddressDetail;
 
 
     private EditText etFloor, etRoom;
@@ -107,7 +111,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     //滚动
     private ScrollView svBackground;
     private Button btn_apply;
-    private ImageView  img_add, img_1, img_2, img_3;
+    private ImageView img_add, img_1, img_2, img_3;
 
     private RelativeLayout rl1, rl2, rl3;
 
@@ -276,7 +280,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         imgOnclick();
 
 
-
         imageViewList.add(img_1);
         imageViewList.add(img_2);
         imageViewList.add(img_3);
@@ -314,11 +317,25 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 if (check()) {
-                                    sweetAlertDialog
-                                            .setTitleText("正在提交")
-                                            .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-                                    bindView();
-                                    upApply();
+                                    if(Util.isPhoneNumberValid(et_tel.getText().toString()))
+                                    {
+                                        sweetAlertDialog
+                                                .setTitleText("正在提交")
+                                                .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                        bindView();
+                                        upApply();
+                                    }
+                                    else
+                                    {
+                                        sweetAlertDialog.setTitleText("请填写真实电话号码")
+                                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                    @Override
+                                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                        sweetAlertDialog.dismiss();
+                                                    }
+                                                });
+                                    }
+
                                 } else {
                                     sweetAlertDialog.setTitleText("* 标记为必填内容")
                                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -375,26 +392,26 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         llApplyDetailType = (LinearLayout) view.findViewById(R.id.ll_apply_detail_type);
 
         //初始化Line
-        llNameLine= (LinearLayout) view.findViewById(R.id.ll_apply_name_frg);
-        llPhoneLine= (LinearLayout) view.findViewById(R.id.ll_apply_phonbe_frg);
-        llPasswordLine= (LinearLayout) view.findViewById(R.id.ll_apply_password_frg);
-        llEmailLine= (LinearLayout) view.findViewById(R.id.ll_apply_email_frg);
-        llAreaLine= (LinearLayout) view.findViewById(R.id.ll_apply_area_frg);
-        llPlaceLine= (LinearLayout) view.findViewById(R.id.ll_apply_place_frg);
-        llFliesLine= (LinearLayout) view.findViewById(R.id.ll_apply_flies_frg);
-        llRoonLine= (LinearLayout) view.findViewById(R.id.ll_apply_room_frg);
-        llClassLine= (LinearLayout) view.findViewById(R.id.ll_apply_class_frg);
+        llNameLine = (LinearLayout) view.findViewById(R.id.ll_apply_name_frg);
+        llPhoneLine = (LinearLayout) view.findViewById(R.id.ll_apply_phonbe_frg);
+        llPasswordLine = (LinearLayout) view.findViewById(R.id.ll_apply_password_frg);
+        llEmailLine = (LinearLayout) view.findViewById(R.id.ll_apply_email_frg);
+        llAreaLine = (LinearLayout) view.findViewById(R.id.ll_apply_area_frg);
+        llPlaceLine = (LinearLayout) view.findViewById(R.id.ll_apply_place_frg);
+        llFliesLine = (LinearLayout) view.findViewById(R.id.ll_apply_flies_frg);
+        llRoonLine = (LinearLayout) view.findViewById(R.id.ll_apply_room_frg);
+        llClassLine = (LinearLayout) view.findViewById(R.id.ll_apply_class_frg);
 
-        llAddressDetaiLine= (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
+        llAddressDetaiLine = (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
 
-        llDetailClassLine= (LinearLayout) view.findViewById(R.id.ll_apply_detailclass_name);
-        llDesctribeLine= (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
+        llDetailClassLine = (LinearLayout) view.findViewById(R.id.ll_apply_detailclass_name);
+        llDesctribeLine = (LinearLayout) view.findViewById(R.id.ll_apply_addressdeta_name);
 
-        imgName= (ImageView) view.findViewById(R.id.img_apply_name_frag);
-        imgPhone= (ImageView) view.findViewById(R.id.img_apply_phone_frag);
-        imgEmail= (ImageView) view.findViewById(R.id.img_apply_email_frag);
-        imgPassword= (ImageView) view.findViewById(R.id.img_apply_password_frag);
-        imgAddressDetail= (ImageView) view.findViewById(R.id.img_apply_addressdet_frg);
+        imgName = (ImageView) view.findViewById(R.id.img_apply_name_frag);
+        imgPhone = (ImageView) view.findViewById(R.id.img_apply_phone_frag);
+        imgEmail = (ImageView) view.findViewById(R.id.img_apply_email_frag);
+        imgPassword = (ImageView) view.findViewById(R.id.img_apply_password_frag);
+        imgAddressDetail = (ImageView) view.findViewById(R.id.img_apply_addressdet_frg);
 
 
         /**
@@ -430,37 +447,34 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
 
+    private void setEditTextBackground() {
+        RxBindingUtil.changColorAndVisable(et_name, llNameLine, imgName);
+        RxBindingUtil.changColorAndVisable(et_tel, llPhoneLine, imgPhone);
+        RxBindingUtil.changColorAndVisable(etEmail, llEmailLine, imgEmail);
+        RxBindingUtil.changColorAndVisable(etApplyPassword, llPasswordLine, imgPassword);
+        RxBindingUtil.changColorAndVisable(etAddressDetail, llAddressDetaiLine, imgAddressDetail);
 
-    private void setEditTextBackground()
-    {
-        RxBindingUtil.changColorAndVisable(et_name,llNameLine,imgName);
-        RxBindingUtil.changColorAndVisable(et_tel,llPhoneLine,imgPhone);
-        RxBindingUtil.changColorAndVisable(etEmail,llEmailLine,imgEmail);
-        RxBindingUtil.changColorAndVisable(etApplyPassword,llPasswordLine,imgPassword);
-        RxBindingUtil.changColorAndVisable(etAddressDetail,llAddressDetaiLine,imgAddressDetail);
-
-        RxBindingUtil.changColorAndVisable(etArea,llAreaLine);
-        RxBindingUtil.changColorAndVisable(etDetailArea,llPlaceLine);
-        RxBindingUtil.changColorAndVisable(etFloor,llFliesLine);
-        RxBindingUtil.changColorAndVisable(etRoom,llRoonLine);
+        RxBindingUtil.changColorAndVisable(etArea, llAreaLine);
+        RxBindingUtil.changColorAndVisable(etDetailArea, llPlaceLine);
+        RxBindingUtil.changColorAndVisable(etFloor, llFliesLine);
+        RxBindingUtil.changColorAndVisable(etRoom, llRoonLine);
 
 
-        RxBindingUtil.changColorAndVisable(etApplyType,llClassLine);
-        RxBindingUtil.changColorAndVisable(etApplyTypeDetails,llDetailClassLine);
+        RxBindingUtil.changColorAndVisable(etApplyType, llClassLine);
+        RxBindingUtil.changColorAndVisable(etApplyTypeDetails, llDetailClassLine);
 
-        RxBindingUtil.changColorAndVisable(et_describe,llDesctribeLine);
+        RxBindingUtil.changColorAndVisable(et_describe, llDesctribeLine);
 
     }
 
 
     private void setClearEditText() {
-        RxBindingUtil.setClearText(imgName,et_name);
-        RxBindingUtil.setClearText(imgPhone,et_tel);
-        RxBindingUtil.setClearText(imgPassword,etApplyPassword);
-        RxBindingUtil.setClearText(imgEmail,etEmail);
-        RxBindingUtil.setClearText(imgAddressDetail,etAddressDetail);
+        RxBindingUtil.setClearText(imgName, et_name);
+        RxBindingUtil.setClearText(imgPhone, et_tel);
+        RxBindingUtil.setClearText(imgPassword, etApplyPassword);
+        RxBindingUtil.setClearText(imgEmail, etEmail);
+        RxBindingUtil.setClearText(imgAddressDetail, etAddressDetail);
     }
-
 
 
     private void imgOnclick() {
@@ -485,14 +499,17 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
     private void setBigImg(View v) {
+        Log.d(TAG, "setBigImg: 图片点击了");
         ImageView iv = (ImageView) v;
         llBigImg.setVisibility(View.VISIBLE);
-        ivBigImg.setImageDrawable(iv.getDrawable());
+//        ivBigImg.setImageDrawable(iv.getDrawable());
+        ivBigImg.setBackground(iv.getDrawable());
         ivBigImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 llBigImg.setVisibility(View.GONE);
-                ivBigImg.setImageDrawable(null);
+//                ivBigImg.setImageDrawable(null);
+                ivBigImg.setBackground(null);
             }
         });
     }
@@ -631,10 +648,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        flieId = newFlies.get(position).getId();
-                        showId();
-                        etFloor.setText(newFlies.get(position).getFlies());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            flieId = newFlies.get(position).getId();
+                            showId();
+                            etFloor.setText(newFlies.get(position).getFlies());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -645,10 +664,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        roomId = newRoom.get(position).getId();
-                        showId();
-                        etRoom.setText(newRoom.get(position).getRoomNumber());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            roomId = newRoom.get(position).getId();
+                            showId();
+                            etRoom.setText(newRoom.get(position).getRoomNumber());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -659,10 +680,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        categoryId = newCategory.get(position).getC_id();
-                        showId();
-                        etApplyType.setText(newCategory.get(position).getC_name());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            categoryId = newCategory.get(position).getC_id();
+                            showId();
+                            etApplyType.setText(newCategory.get(position).getC_name());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -673,10 +696,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        detailTypeID = newDetailClass.get(position).getId();
-                        showId();
-                        etApplyTypeDetails.setText(newDetailClass.get(position).getClassDetail());
-                        dialog.dismiss();
+                        if (position != -1) {
+                            detailTypeID = newDetailClass.get(position).getId();
+                            showId();
+                            etApplyTypeDetails.setText(newDetailClass.get(position).getClassDetail());
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .create();
@@ -1058,8 +1083,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     }
 
+    private void getPermission() {
+        PermissionUtil.justGetpermission(getActivity(), Manifest.permission.CAMERA,REQUEST_CODE_CAMERA);
+        PermissionUtil.justGetpermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE,REQUEST_CODE_SD_CARD);
+    }
+
 
     private void addPic() {
+        getPermission();
         List<String> list = new ArrayList<>();
         list.add("打开相机");
         list.add("选择本地图片");
@@ -1105,6 +1136,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     }
 
+
+
     private String getRealPathFromURI(Uri contentURI) {
         String result;
         Cursor cursor = getActivity().getContentResolver().query(contentURI, null, null, null, null);
@@ -1139,35 +1172,36 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 //                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
 //                Log.d(TAG, "setApply: roomId" + apply.getRoom());
 //                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
-                String json = JsonUtil.beanToJson(apply);
-                Log.d(TAG, "upApply: json " + json);
-                for (Uri u :
-                        list_uri) {
-                    Log.d(TAG, "upApply: " + u.toString());
-                }
-                List<File> files = getFiles(list_uri);
-
-                Util.submit("apply", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.d(TAG, "onError: ");
-                        mhandler.sendEmptyMessage(7);
-//                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onResponse(String response, int id) {
-                        //clearAll();
-                        Log.d(TAG, "onResponse: "+response);
-//                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
-                        if ("申请成功等待处理".equals(response)) {
-                            Util.writePhoneToLocal(apply, MyApplication.getContext());
-                            mhandler.sendEmptyMessage(6);
-                        } else {
-                            mhandler.sendEmptyMessage(8);
-                        }
-                    }
-                });
+        String json = JsonUtil.beanToJson(apply);
+        Log.d(TAG, "upApply: json " + json);
+        for (Uri u :
+                list_uri) {
+            Log.d(TAG, "upApply: " + u.toString());
         }
+        List<File> files = getFiles(list_uri);
+
+        Util.submit("apply", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Log.d(TAG, "onError: ");
+                mhandler.sendEmptyMessage(7);
+//                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                //clearAll();
+                Log.d(TAG, "onResponse: " + response);
+//                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
+                if ("申请成功等待处理".equals(response)) {
+                    Util.writePhoneToLocal(apply, MyApplication.getContext());
+                    mhandler.sendEmptyMessage(6);
+                } else {
+                    mhandler.sendEmptyMessage(8);
+                }
+            }
+        });
+    }
 
 
     private void setApply() {
@@ -1236,6 +1270,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         return null;
     }
 
+    @Override
+    public ImageView bigImageView() {
+        return ivBigImg;
+    }
 
     @Override
     public void resetVisible() {
@@ -1282,4 +1320,26 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     public void setVisable() {
 
     }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//
+//        Log.d(TAG, "onRequestPermissionsResult: requestCode:"+requestCode);
+//        switch (requestCode) {
+//            case REQUEST_CODE_CAMERA:
+//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Log.d(TAG, "onRequestPermissionsResult: requestCode: "+requestCode+"接收了数据并且启动相机");
+//                    startCamera();
+//                }
+//                break;
+//            case REQUEST_CODE_SD_CARD:
+//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Log.d(TAG, "onRequestPermissionsResult: requestCode: "+requestCode+"接收了数据并且启动相册");
+//                    startGallery();
+//                }
+//                break;
+//            default:
+//                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        }
+//    }
 }

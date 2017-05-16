@@ -46,7 +46,6 @@ import model.Apply;
 import model.Category;
 import model.Flies;
 import model.Place;
-import model.Response;
 import model.ResultBean;
 import model.Room;
 import repair.com.repair.R;
@@ -535,6 +534,20 @@ public class Util {
         postFormBuilder.url(URL);
         return postFormBuilder.build();
     }
+
+    public static RequestCall submits(String FLAGW, String adminEmailVules, String ID, String repairID,
+                                     String servserMan ,String serverAccountVules ,String AD,String adminAccount,
+                                     String URL) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
+        postFormBuilder.addParams(FLAGW, adminEmailVules);
+        postFormBuilder.addParams(ID, repairID);
+        postFormBuilder.addParams(servserMan, serverAccountVules);
+        postFormBuilder.addParams(AD, adminAccount);
+        postFormBuilder.url(URL);
+        return postFormBuilder.build();
+    }
+
+
 
 
 
