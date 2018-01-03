@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -226,7 +227,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     @Override
     protected void onFragmentVisibleChange(boolean isVisible) {
-        super.onFragmentVisibleChange(isVisible);
+
         if (isVisible) {
             loadData();
         }
@@ -317,17 +318,26 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 if (check()) {
-                                    if(Util.isPhoneNumberValid(et_tel.getText().toString()))
-                                    {
-                                        sweetAlertDialog
-                                                .setTitleText("正在提交")
-                                                .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-                                        bindView();
-                                        upApply();
-                                    }
-                                    else
-                                    {
-                                        sweetAlertDialog.setTitleText("请填写真实电话号码")
+
+                                    if(checkValidate()) {
+
+                                        if (Util.isPhoneNumberValid(et_tel.getText().toString())) {
+                                            sweetAlertDialog
+                                                    .setTitleText("正在提交")
+                                                    .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                            bindView();
+                                            upApply();
+                                        } else {
+                                            sweetAlertDialog.setTitleText("请填写真实电话号码")
+                                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                        @Override
+                                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                            sweetAlertDialog.dismiss();
+                                                        }
+                                                    });
+                                        }
+                                    } else{
+                                        sweetAlertDialog.setTitleText("不能输入特殊字符")
                                                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                                     @Override
                                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -428,22 +438,26 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
     private boolean check() {
-        Log.d(TAG, "check: " + (getContent(et_tel)
-                && getContent(et_name)
-                && getContent(etApplyPassword)
-                && getContent(etArea)
-                && getContent(etApplyType)));
 
-        return getContent(et_tel)
+        boolean notNull =getContent(et_tel)
                 && getContent(et_name)
                 && getContent(etApplyPassword)
                 && getContent(etArea)
                 && getContent(etApplyType);
+        return notNull;
     }
+
+    private boolean checkValidate(){
+        boolean ok=Util.validateString(et_name.getText().toString())&&
+                Util.validateString(etAddressDetail.getText().toString())&&
+                Util.validateString(et_describe.getText().toString());
+        return ok;
+    }
+
 
     private boolean getContent(EditText e) {
         Log.d(TAG, "check getContent: " + e.getText().toString().equals(""));
-        return !e.getText().toString().equals("");
+        return !e.getText().toString().equals("") ;
     }
 
 
@@ -1127,12 +1141,16 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     public static File fileUri;
 
     private void startCamera() {
+
         fileUri = FIleUtils.createImageFile();
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileUri));
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            getActivity().startActivityForResult(intent, TAKE_PHOTO_RAW);
-        }
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri photoUri = FileProvider.getUriForFile(
+                getActivity(),
+                getActivity().getPackageName(),
+                fileUri);
+      //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        getActivity().startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
 
     }
 

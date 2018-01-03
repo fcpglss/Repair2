@@ -194,6 +194,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         if (isFirst) {
             svProgressHUD = new SVProgressHUD(getActivity());
             svProgressHUD.showWithStatus("正在加载");
+            Log.d(TAG, "loadData: "+FRIST_URL);
             queryFromServer(FRIST_URL, SUCCESS, 0);
 
             Log.d(TAG, "第一次载入");
@@ -423,6 +424,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
 
             @Override
             public void onError(Exception e) {
+                Log.d(TAG, "onError: "+e.getMessage());
                 Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);

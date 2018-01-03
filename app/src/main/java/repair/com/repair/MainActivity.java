@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         mList.add(applyFragment);
         mList.add(myRepairFragment);
 
+
         mpagerAdapter = new FragmentAdapter(mList, getSupportFragmentManager());
 
         mchat = (TextView) findViewById(R.id.tv_chat);

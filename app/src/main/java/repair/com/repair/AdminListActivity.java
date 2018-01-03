@@ -154,6 +154,7 @@ public class AdminListActivity extends AppCompatActivity implements WaterDropLis
         admin = Util.loadWriteAdmin(this);
         Log.d(TAG, "onCreate: " + admin.getPassword());
         Log.d(TAG, "onCreate: " + admin.getEmailPassword());
+
         init();
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("加载中");

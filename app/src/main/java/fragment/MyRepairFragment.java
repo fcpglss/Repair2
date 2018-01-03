@@ -365,6 +365,8 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         queryFromServer("phone",etPhone.getText().toString(),"name",etName.getText().toString(),QUERYMYREPAIR);
     }
 
+
+
     @Override
     public void onLoadMore() {
         isMore=true;

@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +62,18 @@ public class Util {
 
 
     private EdiTTouch ed;
+
+
+    public static boolean validateString(String validateString){
+        boolean illegality =false;
+        Log.d(TAG, "validateString: "+validateString);
+        String regEx = "[`~@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(validateString);
+        illegality=m.find();
+        Log.d(TAG, "validateString: "+illegality);
+        return !illegality;
+    }
 
     public static int convertToInt(Object value, int defaultValue) {
         if (value != null || "".equals(value.toString().trim())) {
@@ -726,18 +739,46 @@ public class Util {
 
 
     public static String getMD5(String mingwen){
+        String salt=",>?<>(?>j(%&$#%U)(gh_^&*$^&*(_+";
 
+        MessageDigest md=null;
         try {
-            // 生成一个MD5加密计算摘要
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            // 计算md5函数
-            md.update(mingwen.getBytes());
-            // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
-            // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
-            return new  BigInteger(1, md.digest()).toString(16);
-        } catch (Exception e) {
-            throw new RuntimeException("MD5加密出现错误");
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+
+        String first =salt+mingwen;
+        byte[] bytValue, bytHash;
+        byte[] bytValueTwo, bytHashTwo;
+        bytValue =first.getBytes();
+//		        System.out.println("bytValue :" +bytValue);
+        md.update(bytValue);
+        bytHash=md.digest();
+//		        System.out.println("bytHash :" +bytHash);
+        //清理
+        // md.reset();
+
+        bytValueTwo = mingwen.getBytes();
+//		        System.out.println("bytValueTwo :" +bytValueTwo);
+        md.update(bytValueTwo);
+        bytHashTwo =md.digest();
+//		        System.out.println("bytHashTwo :" +bytHashTwo);
+        String sTemp = "";
+        String sTwoTemp = "";
+
+
+
+
+        sTemp=new  BigInteger(1, bytHash).toString(16);
+        System.out.println("sTemp :" +sTemp);
+        sTwoTemp= new   BigInteger(1, bytHashTwo).toString(16);
+//		        System.out.println("sTwoTemp :" +sTwoTemp);
+        String totalTemp = sTemp + sTwoTemp;
+        return totalTemp;
+
+//	         System.out.println("totalTemp :"+totalTemp.toLowerCase());
     }
 
 
@@ -784,6 +825,12 @@ public class Util {
         Pattern pattern = Pattern.compile(expression);
 
         Matcher matcher = pattern.matcher(inputStr);
+
+
+        Pattern pattern2 = Pattern.compile(expression);
+
+        Matcher matcher2 = pattern.matcher(inputStr);
+
 
         if (matcher.matches() ) {
             isValid = true;

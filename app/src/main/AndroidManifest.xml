@@ -17,6 +17,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="icon">
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="repair.com.repair"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+
+
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
@@ -41,8 +55,10 @@
         </activity>
         <activity android:name=".AppraiseActivity"/>
         <activity android:name=".ChangeActivity"/>
+
         <activity android:name=".AdminListActivity"
             android:launchMode="singleTask"/>
+
         <activity android:name=".LoginActivity"/>
         <activity android:name=".AdminDetailActivity"/>
         <activity android:name=".AnnonceDetailActivity"/>

@@ -31,15 +31,12 @@ import static repair.com.repair.AdminListActivity.admindialogPlus;
 
 public class SaveEmailAdapter extends BaseAdapter {
     LayoutInflater layoutInflater;
-    Apply apply;
+
     Context context;
     int position;
     int layout;
     SVProgressHUD svProgressHUD;
-//    DialogPlus dialogPlus;
 
-    String email;
-    String emailPassword;
     private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -60,12 +57,7 @@ public class SaveEmailAdapter extends BaseAdapter {
         }
     };
 
-    public SaveEmailAdapter(Context context, int layout, DialogPlus dialogPlus) {
-        this.layout = layout;
-        this.context = context;
 
-        layoutInflater = LayoutInflater.from(context);
-    }
 
     public SaveEmailAdapter(Context context, int layout) {
         this.context = context;

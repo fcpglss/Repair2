@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -350,11 +351,32 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 if (check()) {
-                                    sweetAlertDialog
-                                            .setTitleText("正在提交")
-                                            .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-                                    bindView();
-                                    upApply();
+                                    if(checkValidate()) {
+
+                                        if (Util.isPhoneNumberValid(et_tel.getText().toString())) {
+                                            sweetAlertDialog
+                                                    .setTitleText("正在提交")
+                                                    .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                            bindView();
+                                            upApply();
+                                        } else {
+                                            sweetAlertDialog.setTitleText("请填写真实电话号码")
+                                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                        @Override
+                                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                            sweetAlertDialog.dismiss();
+                                                        }
+                                                    });
+                                        }
+                                    } else{
+                                        sweetAlertDialog.setTitleText("不能输入特殊字符")
+                                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                    @Override
+                                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                        sweetAlertDialog.dismiss();
+                                                    }
+                                                });
+                                    }
                                 } else {
                                     sweetAlertDialog.setTitleText("* 标记为必填内容")
                                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -1022,9 +1044,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onDestroy() {
-
-
-        sweetAlertDialog.dismiss();
+        if(sweetAlertDialog!=null){
+            sweetAlertDialog.dismiss();
+        }
         changeUriList.clear();
         super.onDestroy();
 
@@ -1149,12 +1171,16 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private void startCamera() {
         startCamarea = true;
         cameraFile = FIleUtils.createImageFile();
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
-        if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivityForResult(intent, TAKE_PHOTO_RAW);
-        }
 
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        Uri photoUri = FileProvider.getUriForFile(
+                this,
+                getPackageName(),
+                cameraFile);
+      //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -1411,6 +1437,14 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 && getContent(etApplyPassword)
                 && getContent(etArea)
                 && getContent(etApplyType);
+    }
+
+
+    private boolean checkValidate(){
+        boolean ok=Util.validateString(et_name.getText().toString())&&
+                Util.validateString(et_details.getText().toString())&&
+                Util.validateString(et_describe.getText().toString());
+        return ok;
     }
 
     private boolean getContent(EditText e) {

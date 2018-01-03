@@ -13,14 +13,15 @@ public class RequestUrl {
 //    private static final  String IP = "http://1711p20y55.iask.in";
 //    private static final  String IP = "http://huangshipeng.in.8866.org";
 //    private static final  String IP = "http://huangshipeng.f3322.net";
-        private static final  String IP = "http://10.0.11.244";
+//       private static final  String IP = "http://10.0.11.244";
+   private static final  String IP = "http://116.13.193.8";
 
-    //    private static final String duankou = ":8080";
+       // private static final String duankou = ":8080";
     private static final String duankou = ":8888";
 
 
-    private static final String project=IP+duankou+"/repairSystem/";
-//    private static final String project="http://192.168.43.236:8080/repairSystem/";
+    private static final String project="http://192.168.1.107:8080/repairSystem/";
+   // private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
 
 
 
