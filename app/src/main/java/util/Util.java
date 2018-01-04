@@ -1066,24 +1066,19 @@ public class Util {
     public static boolean isPhoneNumberValid(String phoneNumber) {
         boolean isValid = false;
 
-        String expression = "((^(13|15|18)[0-9]{9}$)|(^0[1,2]{1}\\d{1}-?\\d{8}$)|(^0[3-9] {1}\\d{2}-?\\d{7,8}$)|(^0[1,2]{1}\\d{1}-?\\d{8}-(\\d{1,4})$)|(^0[3-9]{1}\\d{2}-? \\d{7,8}-(\\d{1,4})$))";
+        String regx="^(0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8})|(400|800|0771)([0-9\\\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$";
         CharSequence inputStr = phoneNumber;
 
-        Pattern pattern = Pattern.compile(expression);
+        Pattern pattern = Pattern.compile(regx);
 
         Matcher matcher = pattern.matcher(inputStr);
-
-
-        Pattern pattern2 = Pattern.compile(expression);
-
-        Matcher matcher2 = pattern.matcher(inputStr);
-
-
-        if (matcher.matches() ) {
+        if (matcher.matches()) {
             isValid = true;
         }
 
         return isValid;
+
+
 
     }
 
