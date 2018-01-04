@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
 
     public void queryFromServer(String url) {
-        Util.submit(url).execute(new StringCallback() {
+        Util.submit(url,this).execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 Response rp = new Response();
@@ -386,6 +387,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
         end = fenye;
         moreFlag=false;
         ishasData=false;
+
         super.onDestroy();
     }
 

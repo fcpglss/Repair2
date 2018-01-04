@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
@@ -159,7 +160,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
-                    Toast.makeText(getActivity(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                //    Toast.makeText(getActivity(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 case 3:
                     break;
@@ -178,7 +179,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    clearAll();
+                                  //  clearAll();
                                     sweetAlertDialog.dismiss();
                                 }
                             }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -194,6 +195,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     break;
                 case 8:
+
                     sweetAlertDialog.setTitleText("提交失败")
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
@@ -1017,8 +1019,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
 
+        super.onDestroy();
         list_uri.clear();
         Log.d(TAG, "onDestroy: ");
     }
@@ -1210,10 +1212,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         }
         List<File> files = getFiles(list_uri);
 
-        Util.submit("apply", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
+        Util.submit("apply", json, GET_JSON, UP_APPLY, files,getContext())
+                .connTimeOut(20000)
+                .readTimeOut(20000)
+                .readTimeOut(20000)
+                .execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                Log.d(TAG, "onError: ");
+                Log.d(TAG, "onError: " +e.getMessage());
                 mhandler.sendEmptyMessage(7);
 //                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -1227,6 +1233,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                     Util.writePhoneToLocal(apply, MyApplication.getContext());
                     mhandler.sendEmptyMessage(6);
                 } else {
+
                     mhandler.sendEmptyMessage(8);
                 }
             }

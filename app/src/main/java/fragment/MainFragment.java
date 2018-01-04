@@ -2,6 +2,7 @@ package fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import application.MyApplication;
+import constant.RequestUrl;
 import io.reactivex.functions.Consumer;
 import medusa.theone.waterdroplistview.view.WaterDropListView;
 import model.Apply;
@@ -32,6 +35,7 @@ import okhttp3.Call;
 import repair.com.repair.AnnocementActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
+import util.AppUpdate;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -192,12 +196,46 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
          */
 
         if (isFirst) {
+
             svProgressHUD = new SVProgressHUD(getActivity());
             svProgressHUD.showWithStatus("正在加载");
             Log.d(TAG, "loadData: "+FRIST_URL);
             queryFromServer(FRIST_URL, SUCCESS, 0);
 
             Log.d(TAG, "第一次载入");
+
+//            try {
+//                String currentVersion = AppUpdate.getVerisonName(getActivity());
+//                Log.d(TAG, "loadData: " +currentVersion);
+//                Util.submit("version",currentVersion, RequestUrl.updateApp)
+//                        .execute(new StringCallback() {
+//                            @Override
+//                            public void onError(Call call, Exception e, int id) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onResponse(String response, int id) {
+//                                if("true".equals(response)) {
+//                                    //执行更新
+//                                } else {
+//
+//                                    svProgressHUD = new SVProgressHUD(getActivity());
+//                                    svProgressHUD.showWithStatus("正在加载");
+//                                    Log.d(TAG, "loadData: "+FRIST_URL);
+//                                    queryFromServer(FRIST_URL, SUCCESS, 0);
+//
+//                                    Log.d(TAG, "第一次载入");
+//                                }
+//                            }
+//                        });
+//            } catch (PackageManager.NameNotFoundException e) {
+//                e.printStackTrace();
+//                Log.d(TAG, "onCreate:  获取版本错误");
+//            }
+
+
+
         }
 
     }
@@ -336,7 +374,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             res = JsonUtil.jsonToBean(json);
             applysAdapter = getBeanFromJson(res, applysAdapter);
             if (applysAdapter == null) {
-                Toast.makeText(getActivity(), "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "网络异常，本地也没有数据,重新请求", Toast.LENGTH_SHORT).show();
                 queryFromServer(FRIST_URL, SUCCESS, isRefrush);
             } else {
                 Toast.makeText(getActivity(), "网络异常，使用本地数据", Toast.LENGTH_SHORT).show();
@@ -364,6 +402,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             isMore = false;
         }
     }
+
 
 
     //设置View属性
@@ -504,6 +543,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             end = fenye;
             moreFlag = false;
             ishasData = false;
+
             super.onDestroy();
             Log.d(TAG, "Main_onDestroy");
         }

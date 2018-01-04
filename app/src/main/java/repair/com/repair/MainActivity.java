@@ -1,6 +1,7 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,18 +20,27 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.Callback;
+import com.zhy.http.okhttp.callback.StringCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import constant.RequestUrl;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.MyRepairFragment;
+import okhttp3.Call;
 import repari.com.adapter.FragmentAdapter;
+import util.AppUpdate;
+import util.DownloadUtil;
+import util.Util;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDownloadListener {
     private static final String TAG = "MainActivity";
 
 
@@ -98,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         //获取屏幕宽高
         setWitchAndHeigth();
+
         init();
         initData();
         TabListener();
@@ -105,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
 
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
@@ -149,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -247,6 +263,21 @@ public class MainActivity extends AppCompatActivity {
         mfriend.setTextColor(Color.parseColor("#757575"));
         mcontact.setTextColor(Color.parseColor("#757575"));
 
+
+    }
+
+    @Override
+    public void onDownloadSuccess() {
+
+    }
+
+    @Override
+    public void onDownloading(int progress) {
+
+    }
+
+    @Override
+    public void onDownloadFailed() {
 
     }
 

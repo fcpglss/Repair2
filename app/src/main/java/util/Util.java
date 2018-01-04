@@ -731,8 +731,9 @@ public class Util {
      * @param files        文件集合
      * @return 用于回调onResponse和onError方法
      */
-    public static RequestCall submit(String paramsKey, String paramsValues, String requestURL, String requestImgURL, List<File> files) {
+    public static RequestCall submit(String paramsKey, String paramsValues, String requestURL, String requestImgURL, List<File> files,Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
+
         for (int i = 0; i < files.size(); i++) {
             postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
             Log.d(TAG, "submit: " + files.get(i).getPath());
@@ -765,7 +766,7 @@ public class Util {
         return postFormBuilder.build();
     }
 
-    public static RequestCall submit(String requestURL) {
+    public static RequestCall submit(String requestURL,Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         postFormBuilder.url(requestURL);
         return postFormBuilder.build();

@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import model.Apply;
 import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
+import okhttp3.Request;
 import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
 import repari.com.adapter.MyRepairAdapter;
@@ -92,7 +94,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
             switch (msg.what) {
                 case 2:
                     closeReflush();
-                    Toast.makeText(MyApplication.getContext(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(MyApplication.getContext(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     closeDiag();
                     Log.d(TAG, "handleMessage: 2");
                     //  updateView(0);
@@ -131,7 +133,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     closeReflush();
                     break;
                 case 8:
-                    Toast.makeText(getActivity(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getActivity(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     closeDiag();
                     break;
             }
@@ -334,6 +336,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         end = 5;
         moreFlag = false;
         ishasData=false;
+
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
@@ -370,8 +373,8 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
     @Override
     public void onLoadMore() {
-        isMore=true;
-        if (moreFlag||ishasData) {
+        isMore = true;
+        if (moreFlag || ishasData) {
             mhandler.sendEmptyMessage(6);
             Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
@@ -380,41 +383,85 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
             start = start + 5;
             end = end + 5;
         }
-        String request = SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString();
-        Log.d(TAG, "onLoadMore: ->" + request);
+        // String request = SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString();
+//        Log.d(TAG, "onLoadMore: ->" + request);
 
-        HttpUtil.sendHttpRequest(SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString() ,new HttpCallbackListener() {
-            @Override
-            public void onFinish(String responseString) {
-                //请求成功后获取到json
-                final String responseJson = responseString.toString();
-                Log.d(TAG, "onFinish: " + responseJson);
-                //解析json获取到Response;
-                moreResponse = JsonUtil.jsonToResponse(responseJson);
-                moreRes = moreResponse.getResultBean();
-             if (moreRes != null&&moreRes.getApplys()!=null&&moreRes.getApplys().size()>0) {
-                    mhandler.sendEmptyMessage(7);
+        String request = SendMyRepairMore;
+
+        OkHttpUtils.get().
+                url(request).
+                addParams("start", String.valueOf(start)).
+                addParams("end", String.valueOf(end)).
+                addParams("phone", String.valueOf(etPhone.getText().toString())).
+                addParams("name", etName.getText().toString())
+                .tag(this)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Response rp = new Response();
+                        rp.setErrorType(-1);
+                        rp.setError(true);
+                        rp.setErrorMessage("网络异常，返回空值");
+                        myRespon = rp;
+                        Log.d(TAG, " onEnrror调用:" + e.getMessage());
+                        mhandler.sendEmptyMessage(2);
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        final String responseJson = response.toString();
+                        Log.d(TAG, "onFinish: " + responseJson);
+                        //解析json获取到Response;
+                        moreResponse = JsonUtil.jsonToResponse(responseJson);
+                        moreRes = moreResponse.getResultBean();
+                        if (moreRes != null && moreRes.getApplys() != null && moreRes.getApplys().size() > 0) {
+                            mhandler.sendEmptyMessage(7);
 //
-                } else {
-                    myRespon.setErrorType(-2);
-                    myRespon.setError(false);
-                    myRespon.setErrorMessage("没有数据");
+                        } else {
+                            myRespon.setErrorType(-2);
+                            myRespon.setError(false);
+                            myRespon.setErrorMessage("没有数据");
 
-                    mhandler.sendEmptyMessage(2);
-                }
-            }
+                            mhandler.sendEmptyMessage(2);
+                        }
+                    }
+                });
 
-            @Override
-            public void onError(Exception e) {
-                Response rp = new Response();
-                rp.setErrorType(-1);
-                rp.setError(true);
-                rp.setErrorMessage("网络异常，返回空值");
-                myRespon = rp;
-                Log.d(TAG, " onEnrror调用:" + e.getMessage());
-                mhandler.sendEmptyMessage(2);
-            }
-        });
+
+//        HttpUtil.sendHttpRequest(SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString() ,new HttpCallbackListener() {
+//            @Override
+//            public void onFinish(String responseString) {
+//                //请求成功后获取到json
+//                final String responseJson = responseString.toString();
+//                Log.d(TAG, "onFinish: " + responseJson);
+//                //解析json获取到Response;
+//                moreResponse = JsonUtil.jsonToResponse(responseJson);
+//                moreRes = moreResponse.getResultBean();
+//             if (moreRes != null&&moreRes.getApplys()!=null&&moreRes.getApplys().size()>0) {
+//                    mhandler.sendEmptyMessage(7);
+////
+//                } else {
+//                    myRespon.setErrorType(-2);
+//                    myRespon.setError(false);
+//                    myRespon.setErrorMessage("没有数据");
+//
+//                    mhandler.sendEmptyMessage(2);
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Response rp = new Response();
+//                rp.setErrorType(-1);
+//                rp.setError(true);
+//                rp.setErrorMessage("网络异常，返回空值");
+//                myRespon = rp;
+//                Log.d(TAG, " onEnrror调用:" + e.getMessage());
+//                mhandler.sendEmptyMessage(2);
+//            }
+//        });
+//    }
     }
 
 

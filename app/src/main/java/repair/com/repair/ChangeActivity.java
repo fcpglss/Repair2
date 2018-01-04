@@ -30,6 +30,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
+import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.BufferedOutputStream;
@@ -513,6 +514,11 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 //        categoryId = getCategoryID(etApplyType.getText().toString());
 //        detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
 
+        if(changeApply.getA_imaes()!=null){
+            for (String s : changeApply.getA_imaes()) {
+                Log.d(TAG, "changApply ImgList  :" +s);
+            }
+        }
         changeImgUrl = changeApply.getA_imaes();
 
         //赋值之后 设定可见性
@@ -531,7 +537,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 imgFileList = new ArrayList<File>();
                 File imgFile = null;
                 FileOutputStream out = null;
-                Log.d(TAG, "doInBackground: changeImageUrl" + changeImgUrl.size());
+                Log.d(TAG, "doInBackground: changeImageUrl " + changeImgUrl.size());
                 if (changeImgUrl != null && changeImgUrl.size() > 0) {
                     for (int i = 0; i < changeImgUrl.size(); i++) {
 //                        Bitmap bitmap = imageLoader.loadBitmap(changeImgUrl.get(i), 0, 0);
@@ -541,7 +547,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        imgFile = FIleUtils.createImageFile();
+                        imgFile = FIleUtils.createImageFile(ChangeActivity.this);
                         try {
 //                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
                             out = new FileOutputStream(imgFile);
@@ -550,6 +556,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
                                 imgFileList.add(imgFile);
                             }
+                            out.flush();
                             out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -1060,6 +1067,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             sweetAlertDialog.dismiss();
         }
         changeUriList.clear();
+
         super.onDestroy();
 
 
@@ -1182,7 +1190,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     private void startCamera() {
         startCamarea = true;
-        cameraFile = FIleUtils.createImageFile();
+        cameraFile = FIleUtils.createImageFile(this);
 
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -1233,7 +1241,11 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         }
         List<File> files = getFiles(changeUriList);
 
-        Util.submit("update", json, GET_JSON, UP_APPLY, files).execute(new StringCallback() {
+        Util.submit("update", json, GET_JSON, UP_APPLY, files,this)
+                .connTimeOut(20000)
+                .readTimeOut(20000)
+                .writeTimeOut(20000)
+                .execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 mhandler.sendEmptyMessage(8);
@@ -1450,6 +1462,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 && getContent(etArea)
                 && getContent(etApplyType);
     }
+
+
 
 
     private boolean checkValidate(){

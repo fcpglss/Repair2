@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import model.Apply;
 import model.Employee;
 import model.Response;
 import model.ResultBean;
+import okhttp3.Call;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -147,39 +150,78 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     public void queryFromServer(String url, String repairId) {
 
-        String jsonurl = url + "?detail=" + repairId;
+        String jsonurl = url;
         Log.d(TAG, "queryFromServer: " + jsonurl);
-        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String responseString) {
-                //请求成功后获取到json
-                final String responseJson = responseString.toString();
-                Log.d(TAG, "请求成功onFinish: " + responseJson);
-                response = JsonUtil.jsonToResponse(responseJson);
-                if (response.getErrorType() != 0) {
-                    //连接成功，但读取数据失败
-                    mhandler.sendEmptyMessage(4);
-                }
-                //连接成功，抛到主线程更新UI
-                else {
-                    detailRes = response.getResultBean();
-                    apply = detailRes.getApplys().get(0);
-//                    employee=detailRes.getEmployee().get(0);
-                    employeeList = detailRes.getEmployee();
-                    mhandler.sendEmptyMessage(3);
-                }
-            }
 
-            @Override
-            public void onError(Exception e) {
-                Response rp = new Response();
-                rp.setErrorType(-1);
-                rp.setError(true);
-                rp.setErrorMessage("网络异常，返回空值");
-                response = rp;
-                mhandler.sendEmptyMessage(2);
-            }
-        });
+        OkHttpUtils.get().
+                url(jsonurl).
+                addParams("detail", repairId)
+                .tag(this)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Response rp = new Response();
+                        rp.setErrorType(-1);
+                        rp.setError(true);
+                        rp.setErrorMessage("网络异常，返回空值");
+                        response = rp;
+                        mhandler.sendEmptyMessage(2);
+                    }
+
+                    @Override
+                    public void onResponse(String responses, int id) {
+                        //请求成功后获取到json
+                        final String responseJson = responses.toString();
+                        Log.d(TAG, "请求成功onFinish: " + responseJson);
+                        response = JsonUtil.jsonToResponse(responseJson);
+                        if (response.getErrorType() != 0) {
+                            //连接成功，但读取数据失败
+                            mhandler.sendEmptyMessage(4);
+                        }
+                        //连接成功，抛到主线程更新UI
+                        else {
+                            detailRes = response.getResultBean();
+                            apply = detailRes.getApplys().get(0);
+//                    employee=detailRes.getEmployee().get(0);
+                            employeeList = detailRes.getEmployee();
+                            mhandler.sendEmptyMessage(3);
+                        }
+                    }
+                });
+
+
+//        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
+//            @Override
+//            public void onFinish(String responseString) {
+//                //请求成功后获取到json
+//                final String responseJson = responseString.toString();
+//                Log.d(TAG, "请求成功onFinish: " + responseJson);
+//                response = JsonUtil.jsonToResponse(responseJson);
+//                if (response.getErrorType() != 0) {
+//                    //连接成功，但读取数据失败
+//                    mhandler.sendEmptyMessage(4);
+//                }
+//                //连接成功，抛到主线程更新UI
+//                else {
+//                    detailRes = response.getResultBean();
+//                    apply = detailRes.getApplys().get(0);
+////                    employee=detailRes.getEmployee().get(0);
+//                    employeeList = detailRes.getEmployee();
+//                    mhandler.sendEmptyMessage(3);
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Response rp = new Response();
+//                rp.setErrorType(-1);
+//                rp.setError(true);
+//                rp.setErrorMessage("网络异常，返回空值");
+//                response = rp;
+//                mhandler.sendEmptyMessage(2);
+//            }
+//        });
     }
 
     private void initView() {
@@ -492,6 +534,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     protected void onDestroy() {
+        OkHttpUtils.getInstance().cancelTag(this);
         super.onDestroy();
     }
 

@@ -9,7 +9,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-public class MyTextView extends TextView {
+public class MyTextView extends android.support.v7.widget.AppCompatTextView {
 
     private int mLineY = 0; //总行高
 
