@@ -230,6 +230,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 }
                 phone=etPhone.getText().toString();
                 name=etName.getText().toString();
+                Log.d(TAG, "onClick: " + phone +" ,"+ name);
                 queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
 
             }

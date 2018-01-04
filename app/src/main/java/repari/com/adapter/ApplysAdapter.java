@@ -90,7 +90,7 @@ public class ApplysAdapter extends BaseAdapter {
             imageView.setTag(c_url);
 //            Picasso.with(context).load(c_url).into(imageView);
         }
-        viewHolder.tvTitle.setText(a_details);
+        viewHolder.tvTitle.setText(Util.setContentTitle(apply));
         viewHolder.tvContent.setText(Util.setClass(apply,22,true));
 
         String temp = res.getApplys().get(position).getRepairTime();

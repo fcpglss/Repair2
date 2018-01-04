@@ -28,6 +28,7 @@ import model.ResultBean;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
+import util.MyTextView;
 import util.UIUtil;
 import util.Util;
 
@@ -59,13 +60,17 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private TextView tvArea;
 
-    private TextView tvName, tv_date, tv_describe, tvDealTime, tvCompensation, tvNeed, tvAdmin;
+    private TextView tv_describe;
+
+    private TextView tvName, tv_date, tvDealTime, tvCompensation, tvNeed, tvAdmin;
 
     private TextView tv_details_employee1;
 
     private TextView tv_employee_phone, tv_employee_can, tv_paigong;
     private ImageView iv_employee_arr;
     private LinearLayout ll_employee_details, llDetailDeal;
+
+//    private LinearLayout llBreakDown;
 
 
     private ImageView img_category, img_status;
@@ -229,7 +234,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvCompensation = (TextView) findViewById(R.id.tv_details_compensation);
         tvAdmin = (TextView) findViewById(R.id.tv_details_admin);
         llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
-
+    //    llBreakDown= (LinearLayout) findViewById(R.id.ll_break_down);
 
         img_status = (ImageView) findViewById(R.id.img_status);
 
@@ -293,9 +298,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         //   tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
 
         //   String area=Util.setAddress(apply)+","+Util.getAdressDetalil(apply.getAddressDetail());
-        String area = Util.setAddress(apply, 20, false);
-        Log.d(TAG, "bindItem: " + area);
-        tvArea.setText(area);
+        //设置故障地点
+         Util.formatArea(apply, tvArea);
+
+
 
         tv_date.setText(Util.getDealTime(apply.getRepairTime()));
 
@@ -318,8 +324,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //        String describe=apply.getClasss()+checkDetailClas(apply.getDetailClass())+","+apply.getRepairDetails();
 //        String destemp=changeRow(describe);
 //        tv_describe.setText(destemp);
-        String destemp = Util.setClass(apply, 20, false);
-        tv_describe.setText(destemp);
+        //设置故障描述
+        Util.formatBreakDown(apply,tv_describe);
+       // tv_describe.setText(destemp);
         img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
         getApplyImages();

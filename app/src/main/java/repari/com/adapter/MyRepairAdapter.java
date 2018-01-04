@@ -140,7 +140,7 @@ public class MyRepairAdapter extends BaseAdapter {
 
         int status = myRes.getApplys().get(position).getState();
         viewHolder.ivState.setImageResource(UIUtil.getStatusIcon(status));
-        viewHolder.tvAddress.setText(Util.setAddress(apply,18,true));
+        viewHolder.tvAddress.setText(Util.setContentTitle(apply));
         viewHolder.tvType.setText(Util.setClass(apply,18,true));
 
         //判断是否能修改和评价然后跳转

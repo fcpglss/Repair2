@@ -98,7 +98,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private EditText etFloor, etRoom;
 
-    private SweetAlertDialog sweetAlertDialog;
+    public SweetAlertDialog sweetAlertDialog;
 
 
     private List<Area> newAreaList = new ArrayList<>();
@@ -310,10 +310,19 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public void accept(Object o) throws Exception {
                 Log.d(TAG, "accept: 提交了");
+                //禁止返回键
+                sweetAlertDialog.setCancelable(false);
                 sweetAlertDialog
                         .setConfirmClickListener(null)
                         .setTitleText("确认提交？")
+                        .setCancelText("取消")
                         .setConfirmText("确定")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -578,7 +587,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         apply.setPassword(MD5);
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
-        apply.setAddressDetail(etAddressDetail.getText().toString());
+        String etDescribe = et_describe.getText().toString().replaceAll("\r|\n", "");
+        apply.setRepairDetails(etDescribe);
+        String addresDetail = etAddressDetail.getText().toString().replaceAll("\r|\n", "");
+        apply.setAddressDetail(addresDetail);
     }
 
 

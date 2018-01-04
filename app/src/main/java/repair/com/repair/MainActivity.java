@@ -296,16 +296,21 @@ public class MainActivity extends AppCompatActivity {
 //    @Override
 //    public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
-//                applyFragment.RlIsVisable().setVisibility(View.GONE);
-////                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
-//            } else {
-//                Log.d(TAG, "onKeyDown: 返回了main");
-//                this.finish();
+//            Log.d(TAG, "onKeyDown: 1 ");
+//            if(applyFragment.sweetAlertDialog!=null &&applyFragment.sweetAlertDialog.isShowing()){
+//                applyFragment.sweetAlertDialog.dismiss();
 //            }
 //        }
-////        return super.onKeyDown(keyCode,event);
-//        return true;
+////            if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
+////                applyFragment.RlIsVisable().setVisibility(View.GONE);
+//////                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
+////            } else {
+////                Log.d(TAG, "onKeyDown: 返回了main");
+////                this.finish();
+////            }
+////        }
+//        return super.onKeyDown(keyCode,event);
+////        return true;
 //    }
 
 
@@ -322,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-
+            Log.d(TAG, "onKeyUp:  1");
             //图片放大 变小
             if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
                 if (applyFragment.bigImageView() != null) {
@@ -342,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
                     System.exit(0);
                 }
             }
+
         }
 
         return super.onKeyUp(keyCode, event);

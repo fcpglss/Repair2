@@ -13,8 +13,12 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -67,7 +71,7 @@ public class Util {
     public static boolean validateString(String validateString){
         boolean illegality =false;
         Log.d(TAG, "validateString: "+validateString);
-        String regEx = "[`~@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        String regEx = "[@#$%^&*\\[\\]/@#￥%……&*——{}【]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(validateString);
         illegality=m.find();
@@ -263,6 +267,80 @@ public class Util {
         return address;
     }
 
+    public static String setContentTitle(Apply apply) {
+        String address = apply.getArea();
+        String detailAr=apply.getDetailArea();
+
+        String flies = apply.getFlies();
+        String room = apply.getRoom();
+        String addressDetail=apply.getAddressDetail();
+
+        StringBuffer sb =new StringBuffer(address);
+
+        String result="";
+
+        int rawLineLen = 18;
+
+
+        Log.d(TAG, "formatArea: "+flies);
+
+        //检查楼名是否为空
+        if(TextUtils.isEmpty(detailAr) || "null".equals(detailAr) ) {
+            sb.append("，");
+        } else {
+            if("其它".equals(detailAr)) {
+                sb.append("，");
+            } else {
+                sb.append(detailAr);
+
+                //检查层数是否为空
+                if(TextUtils.isEmpty(flies) || "null".equals(flies)){
+                    sb.append("，");
+                } else {
+
+                    if("其它".equals(flies)) {
+
+                        sb.append("，");
+                    } else {
+
+                        sb.append(flies);
+                        Log.d(TAG, "formatArea: " +sb.toString());
+                        //检查房间数
+                        if(TextUtils.isEmpty(room) || "null".equals(room)){
+                            sb.append("，");
+                        } else {
+                            if("其它".equals(room)) {
+                                sb.append("，");
+                            } else {
+                                sb.append(room).append("，");
+                            }
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+        }
+        if(!(TextUtils.isEmpty(addressDetail))){
+            sb.append(addressDetail);
+            result=sb.toString();
+        } else {
+            result= sb.substring(0,sb.length()-1);
+        }
+        Log.d(TAG, "setContentTitle: "+result);
+
+
+        if(result.length()>18){
+            result=result.substring(0,18)+"...";
+        }
+        Log.d(TAG, "setContentTitle: "+result);
+        return result;
+    }
+
     public static String setClass(Apply apply,int length,boolean isTitle)
     {
         String result="";
@@ -316,7 +394,176 @@ public class Util {
         return result;
     }
 
+    /**
+     * 获取字符双字节的长度
+     * @param str
+     * @return
+     */
+    private static int checkStringNumberLen(String str) {
+        String regx ="[^\\x00-\\xff]";
+        Pattern p = Pattern.compile(regx);
+        Matcher m = p.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while(m.find()) {
+            sb.append(m.group());
 
+        }
+
+        System.out.println(sb.toString());
+
+        int sbLen =sb.length();
+
+        return sbLen;
+    }
+
+
+    public static void formatBreakDown(Apply apply , TextView textView ){
+
+        String classs=apply.getClasss();
+        String detailClas=apply.getDetailClass();
+        String repairDetail=apply.getRepairDetails();
+
+        int rawLineLen = 18;
+
+        StringBuffer sb =new StringBuffer();
+        sb.append(classs);
+
+        //拼装 故障 和 故障类别 如: 电(空调)
+        if(!(TextUtils.isEmpty(detailClas))) {
+            sb.append("（").append(detailClas).append("）");
+        }
+        //拼装 故障描述
+        if((!(TextUtils.isEmpty(repairDetail))) && !("null".equals(repairDetail))) {
+            sb.append("，").append(repairDetail);
+        }
+        int len = sb.length();
+
+        String results =sb.toString();
+
+        Log.d(TAG, "formatBreakDown: "+results);
+
+        int sbLen =checkStringNumberLen(results);
+
+        int numberLen =len-sbLen;
+
+        float resulteLen =0;
+
+        if(len%2==0){
+            resulteLen=sbLen+numberLen/2;
+        } else {
+            resulteLen=sbLen+(numberLen/2)+0.5f;
+        }
+
+
+        //如果字符不超过rawLineLen 单行显示
+        if ( resulteLen<=rawLineLen) {
+            textView.setText(results);
+            textView.setGravity(Gravity.RIGHT);
+        } else {
+            //数字少,字符多情况
+            if(numberLen<=6 && resulteLen<=20){
+
+                textView.setGravity(Gravity.RIGHT);
+            }
+            textView.setText(results);
+        }
+
+
+
+
+    }
+
+    public static void formatArea(Apply apply , TextView textView ){
+
+        String address = apply.getArea();
+        String detailAr=apply.getDetailArea();
+
+        String flies = apply.getFlies();
+        String room = apply.getRoom();
+        String addressDetail=apply.getAddressDetail();
+
+        StringBuffer sb =new StringBuffer(address);
+
+        String result="";
+
+        int rawLineLen = 18;
+
+
+        Log.d(TAG, "formatArea: "+flies);
+
+        //检查楼名是否为空
+        if(TextUtils.isEmpty(detailAr) || "null".equals(detailAr) ) {
+            sb.append("，");
+        } else {
+            if("其它".equals(detailAr)) {
+                sb.append("，");
+            } else {
+                sb.append(detailAr);
+
+                //检查层数是否为空
+                if(TextUtils.isEmpty(flies) || "null".equals(flies)){
+                    sb.append("，");
+                } else {
+
+                    if("其它".equals(flies)) {
+
+                        sb.append("，");
+                    } else {
+
+                        sb.append(flies);
+                        Log.d(TAG, "formatArea: " +sb.toString());
+                        //检查房间数
+                        if(TextUtils.isEmpty(room) || "null".equals(room)){
+                            sb.append("，");
+                        } else {
+                            if("其它".equals(room)) {
+                                sb.append("，");
+                            } else {
+                                sb.append(room).append("，");
+                            }
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+        }
+        if(!(TextUtils.isEmpty(addressDetail))){
+            sb.append(addressDetail);
+            result=sb.toString();
+        } else {
+            result= sb.substring(0,sb.length()-1);
+        }
+
+//        int numberLen =checkStringNumberLen(result);
+//
+//        int tempLen =sb.length()-numberLen;;
+//
+//        int resultLen =0;
+//
+//        if(tempLen%2==0){
+//            resultLen=numberLen+(tempLen/2);
+//        } else {
+//            resultLen=numberLen+(tempLen/2)+1;
+//        }
+
+
+        if(result.length()<=rawLineLen) {
+            Log.d(TAG, "formatArea:  sb.len ="+result.length()+" < "+rawLineLen);
+            textView.setText(result);
+            textView.setGravity(Gravity.RIGHT);
+        } else{
+            Log.d(TAG, "formatArea:  sb.lenth ="+result.length()+"+> "+rawLineLen);
+            textView.setText(result);
+        }
+
+
+
+    }
 
 
 

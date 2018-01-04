@@ -339,14 +339,23 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 return false;
             }
         });
+        sweetAlertDialog = new SweetAlertDialog(ChangeActivity.this, SweetAlertDialog.WARNING_TYPE);
 
         RxView.clicks(btn_apply).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 Log.d(TAG, "accept: 提交了");
-                sweetAlertDialog = new SweetAlertDialog(ChangeActivity.this)
+                sweetAlertDialog.setCancelable(false);
+                sweetAlertDialog
                         .setTitleText("确认提交？")
+                        .setCancelText("取消")
                         .setConfirmText("确定")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -580,7 +589,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         apply.setPassword(etApplyPassword.getText().toString());
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
-        apply.setAddressDetail(et_details.getText().toString());
+        String etDescribe = et_describe.getText().toString().replaceAll("\r|\n", "");
+        apply.setRepairDetails(etDescribe);
+        String addresDetail = et_details.getText().toString().replaceAll("\r|\n", "");
+        apply.setAddressDetail(addresDetail);
     }
 
 
