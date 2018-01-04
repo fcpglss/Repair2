@@ -102,6 +102,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 case 3:
 
                     Toast.makeText(getActivity(), "搜索完成", Toast.LENGTH_SHORT).show();
+                    lvMyList.setVisibility(View.VISIBLE);
                     closeDiag();;
                     closeReflush();
                     //先清后填

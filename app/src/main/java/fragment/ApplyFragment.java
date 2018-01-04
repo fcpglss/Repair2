@@ -179,7 +179,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                  //  clearAll();
+                                   clearAll();
                                     sweetAlertDialog.dismiss();
                                 }
                             }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -1156,15 +1156,36 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private void startCamera() {
 
-        fileUri = FIleUtils.createImageFile();
-        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri photoUri = FileProvider.getUriForFile(
-                getActivity(),
-                getActivity().getPackageName(),
-                fileUri);
-      //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-        getActivity().startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
+        int currentVersion =android.os.Build.VERSION.SDK_INT;
+
+        fileUri = FIleUtils.createImageFile(getActivity());
+
+
+        //低于24为6.0以下
+        if(currentVersion<24){
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileUri));
+
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+
+                getActivity().startActivityForResult(intent, TAKE_PHOTO_RAW);
+
+            }
+
+        } else {
+            Uri photoUri = FileProvider.getUriForFile(
+                    getActivity(),
+                    getActivity().getPackageName(),
+                    fileUri);
+            Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            getActivity().startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
+        }
+
+
+
 
     }
 

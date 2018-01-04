@@ -34,6 +34,7 @@
                     android:id="@+id/et_my_name"
                     android:gravity="center_vertical"
                     android:textColorHint="#e6838383"
+
                     android:background="@null"/>
             </LinearLayout>
             <LinearLayout
@@ -97,6 +98,7 @@
         <medusa.theone.waterdroplistview.view.WaterDropListView
             android:id="@+id/lv_my_lv"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_below="@id/ll1">
         </medusa.theone.waterdroplistview.view.WaterDropListView>
