@@ -364,10 +364,11 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                                     if(checkValidate()) {
 
                                         if (Util.isPhoneNumberValid(et_tel.getText().toString())) {
-                                            sweetAlertDialog
-                                                    .setTitleText("正在提交")
-                                                    .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                                             bindView();
+                                            sweetAlertDialog.setTitleText("正在提交请等待");
+                                            sweetAlertDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                            sweetAlertDialog.setCancelable(false);
+                                            sweetAlertDialog.showCancelButton(false);
                                             upApply();
                                         } else {
                                             sweetAlertDialog.setTitleText("请填写真实电话号码")
@@ -1135,9 +1136,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (view.getId()) {
             case R.id.btn_change_apply:
-
-                bindView();
-                upApply();
+//
+//                bindView();
+//                upApply();
                 break;
 
             case R.id.btn_change_clear:

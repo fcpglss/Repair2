@@ -29,6 +29,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
@@ -333,10 +334,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                                     if(checkValidate()) {
 
                                         if (Util.isPhoneNumberValid(et_tel.getText().toString())) {
-                                            sweetAlertDialog
-                                                    .setTitleText("正在提交")
-                                                    .changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                                             bindView();
+                                            sweetAlertDialog.setTitleText("正在提交请等待");
+
+                                            sweetAlertDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                            sweetAlertDialog.setCancelable(false);
+                                            sweetAlertDialog.showCancelButton(false);
                                             upApply();
                                         } else {
                                             sweetAlertDialog.setTitleText("请填写真实电话号码")
@@ -1093,8 +1096,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         switch (view.getId()) {
             case R.id.btn_apply:
-                bindView();
-                upApply();
+                //bindView();
+//                upApply();
                 break;
 
             case R.id.btn_clear:
@@ -1220,24 +1223,17 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private void upApply() {
 
-//
-//                Log.d(TAG, "setApply: AreaId" + apply.getArea());
-//                Log.d(TAG, "setApply: DetailAreaId" + apply.getDetailArea());
-//                Log.d(TAG, "setApply: fliesId" + apply.getFlies());
-//                Log.d(TAG, "setApply: roomId" + apply.getRoom());
-//                Log.d(TAG, "setApply: categoryId" + apply.getClasss());
+
         String json = JsonUtil.beanToJson(apply);
-        Log.d(TAG, "upApply: json " + json);
-        for (Uri u :
-                list_uri) {
-            Log.d(TAG, "upApply: " + u.toString());
-        }
+
         List<File> files = getFiles(list_uri);
 
+
+
         Util.submit("apply", json, GET_JSON, UP_APPLY, files,getContext())
-                .connTimeOut(20000)
-                .readTimeOut(20000)
-                .readTimeOut(20000)
+                .connTimeOut(60000)
+                .readTimeOut(60000)
+                .writeTimeOut(60000)
                 .execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
@@ -1252,7 +1248,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 Log.d(TAG, "onResponse: " + response);
 //                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
                 if ("申请成功等待处理".equals(response)) {
-                    Util.writePhoneToLocal(apply, MyApplication.getContext());
+                    Util.writePhoneToLocal(ApplyFragment.this.apply, MyApplication.getContext());
                     mhandler.sendEmptyMessage(6);
                 } else {
 

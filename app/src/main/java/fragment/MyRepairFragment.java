@@ -101,7 +101,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     break;
                 case 3:
 
-                    Toast.makeText(getActivity(), "搜索完成", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getActivity(), "搜索完成", Toast.LENGTH_SHORT).show();
                     lvMyList.setVisibility(View.VISIBLE);
                     closeDiag();;
                     closeReflush();
@@ -116,11 +116,11 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 case 5:
                     lvMyList.stopRefresh();
                     ishasData=myRespon.isEnd();
-                    Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
+                //    Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
                     Log.d(TAG, "handleMessage: 5");
                     break;
                 case 6:
-                    Toast.makeText(getActivity(), "没有记录", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getActivity(), "没有记录", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "handleMessage: 6");
                     lvMyList.stopLoadMore();
                     break;
