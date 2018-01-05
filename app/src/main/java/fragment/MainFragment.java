@@ -543,7 +543,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             end = fenye;
             moreFlag = false;
             ishasData = false;
-
+            OkHttpUtils.getInstance().cancelTag(this);
             super.onDestroy();
             Log.d(TAG, "Main_onDestroy");
         }

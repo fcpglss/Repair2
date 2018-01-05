@@ -23,6 +23,7 @@ import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
 import repari.com.adapter.AnnocmentListAdapter;
+
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -341,6 +342,12 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
         String request=ANNCOUCEMENTMORE + "?start=" + start + "&&end=" + end;
         Log.d(TAG, "onLoadMore: "+request);
+
+
+
+
+
+
         HttpUtil.sendHttpRequest(ANNCOUCEMENTMORE + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
             @Override
             public void onFinish(String responseString) {

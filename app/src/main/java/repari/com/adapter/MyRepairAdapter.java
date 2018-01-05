@@ -28,6 +28,7 @@ import model.Apply;
 import model.ResultBean;
 import repair.com.repair.ChangeActivity;
 import repair.com.repair.R;
+import util.AESUtil;
 import util.JsonUtil;
 import util.UIUtil;
 import util.Util;
@@ -49,6 +50,8 @@ public class MyRepairAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
 
     private Drawable mDefaultBitmapDrawable;
+
+    private String applyName ="";
 
 
     private static final int mImageWidth = 150;
@@ -90,6 +93,9 @@ public class MyRepairAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
         Apply apply = myRes.getApplys().get(position);
+
+
+
         if (convertView == null) {
             viewHolder = new ViewHolder();
 
@@ -136,7 +142,7 @@ public class MyRepairAdapter extends BaseAdapter {
         }
 
         viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
-        viewHolder.tvName.setText(apply.getRepair());
+        viewHolder.tvName.setText(AESUtil.decode(apply.getRepair()));
 
         int status = myRes.getApplys().get(position).getState();
         viewHolder.ivState.setImageResource(UIUtil.getStatusIcon(status));

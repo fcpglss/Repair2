@@ -33,6 +33,7 @@ import okhttp3.Request;
 import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
 import repari.com.adapter.MyRepairAdapter;
+import util.AESUtil;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
@@ -233,8 +234,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 }
                 phone=etPhone.getText().toString();
                 name=etName.getText().toString();
-                Log.d(TAG, "onClick: " + phone +" ,"+ name);
-                queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
+                queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
 
             }
         });
@@ -352,7 +352,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
         if (appraise2!=null&&appraise2.equals("ok")){
             appraise2="false";
-            queryFromServer("phone",phone,"name",name,QUERYMYREPAIR);
+            queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
         }
         super.onResume();
         Log.d(TAG, "onResume: ");
@@ -367,7 +367,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     @Override
     public void onRefresh() {
         isRefrush=true;
-        queryFromServer("phone",etPhone.getText().toString(),"name",etName.getText().toString(),QUERYMYREPAIR);
+        queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
     }
 
 
@@ -389,12 +389,15 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
         String request = SendMyRepairMore;
 
+        String phoneNumber = AESUtil.encode(etPhone.getText().toString());
+        String name=AESUtil.encode(etName.getText().toString());
+
         OkHttpUtils.get().
                 url(request).
                 addParams("start", String.valueOf(start)).
                 addParams("end", String.valueOf(end)).
-                addParams("phone", String.valueOf(etPhone.getText().toString())).
-                addParams("name", etName.getText().toString())
+                addParams("phone", phoneNumber).
+                addParams("name", name)
                 .tag(this)
                 .build()
                 .execute(new StringCallback() {

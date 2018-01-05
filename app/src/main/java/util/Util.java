@@ -805,17 +805,7 @@ public class Util {
         return postFormBuilder.build();
     }
 
-    public static RequestCall submits(String FLAGW, String adminEmailVules, String ID, String repairID,
-                                     String servserMan ,String serverAccountVules ,String AD,String adminAccount,
-                                     String URL) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        postFormBuilder.addParams(FLAGW, adminEmailVules);
-        postFormBuilder.addParams(ID, repairID);
-        postFormBuilder.addParams(servserMan, serverAccountVules);
-        postFormBuilder.addParams(AD, adminAccount);
-        postFormBuilder.url(URL);
-        return postFormBuilder.build();
-    }
+
 
 
 
@@ -861,83 +851,6 @@ public class Util {
     }
 
 
-
-    public static  byte[] desCrypto(byte[] datasource, String password) {
-        try{
-            SecureRandom random = new SecureRandom();
-            DESKeySpec desKey = new DESKeySpec(password.getBytes());
-            //创建一个密匙工厂，然后用它把DESKeySpec转换成
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-            SecretKey securekey = keyFactory.generateSecret(desKey);
-            //Cipher对象实际完成加密操作
-            Cipher cipher = Cipher.getInstance("DES");
-            //用密匙初始化Cipher对象
-            cipher.init(Cipher.ENCRYPT_MODE, securekey, random);
-            //现在，获取数据并加密
-            //正式执行加密操作
-            return cipher.doFinal(datasource);
-        }catch(Throwable e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-    //base 64 加密
-    public static String encryptStr(String strMing,String key) {
-        byte[] byteMi = null;
-        byte[] byteMing = null;
-        String strMi = "";
-        try {
-            byteMing = strMing.getBytes("utf-8");
-
-            byteMi = desCrypto(byteMing, key);
-
-            strMi = new String(Base64.encode(byteMi,Base64.DEFAULT));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            byteMing = null;
-            byteMi = null;
-        }
-        return strMi;
-    }
-
-
-    //des 解密
-    public static byte[] decrypt(byte[] src, String password) throws Exception {
-        // DES算法要求有一个可信任的随机数源
-        SecureRandom random = new SecureRandom();
-        // 创建一个DESKeySpec对象
-        DESKeySpec desKey = new DESKeySpec(password.getBytes());
-        // 创建一个密匙工厂
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-        // 将DESKeySpec对象转换成SecretKey对象
-        SecretKey securekey = keyFactory.generateSecret(desKey);
-        // Cipher对象实际完成解密操作
-        Cipher cipher = Cipher.getInstance("DES");
-        // 用密匙初始化Cipher对象
-        cipher.init(Cipher.DECRYPT_MODE, securekey, random);
-        // 真正开始解密操作
-        return cipher.doFinal(src);
-    }
-
-
-    //base64 加密
-    public static String decryptStr(String strMi, String key) {
-        byte[] byteMing = null;
-        String strMing = "";
-        try {
-
-            byteMing = Base64.decode(strMi,Base64.DEFAULT);
-
-            byteMing = decrypt(byteMing, key);
-            strMing = new String(byteMing);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            byteMing = null;
-        }
-        return strMing;
-    }
 
 
 

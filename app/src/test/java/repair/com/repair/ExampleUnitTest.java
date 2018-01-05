@@ -2,7 +2,8 @@ package repair.com.repair;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import util.AESUtil;
+
 
 /**
  * Example local unit apply_fragment, which will execute on the development machine (host).
@@ -12,7 +13,9 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+      String encode = AESUtil.encode("陈哲");
+        System.out.println(encode);
+        System.out.print(AESUtil.decode(encode));
     }
 
 

@@ -28,8 +28,8 @@ import model.Employee;
 import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
-import util.HttpCallbackListener;
-import util.HttpUtil;
+import util.AESUtil;
+
 import util.JsonUtil;
 import util.MyTextView;
 import util.UIUtil;
@@ -183,6 +183,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         else {
                             detailRes = response.getResultBean();
                             apply = detailRes.getApplys().get(0);
+                            String phone =apply.getTel();
+                            apply.setTel(AESUtil.decode(phone));
 //                    employee=detailRes.getEmployee().get(0);
                             employeeList = detailRes.getEmployee();
                             mhandler.sendEmptyMessage(3);
@@ -325,21 +327,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private void bindItem() {
-//        getCategory();
-        Log.d(TAG, "bindItem: " + apply.getRepair());
+
+
+     apply.setRepair(AESUtil.decode(apply.getRepair()));
         tvName.setText(Util.setNameXX(apply.getRepair()));
 
-//        tv_tel.setText(apply.getTel());
-//        setTelXXXX();
-//        tv_email.setText(apply.getEmail());
 
-//        tv_category.setText(apply.getClasss()+" ("+apply.getDetailClass()+")");
-//        tvDetailCategory.setText(apply.getDetailClass());
-//        tv_place.setText(apply.getDetailArea());
-
-        //   tvArea.setText(Util.setAddress(apply)+"\n"+Util.getAdressDetalil(apply.getAddressDetail())+"  ");
-
-        //   String area=Util.setAddress(apply)+","+Util.getAdressDetalil(apply.getAddressDetail());
         //设置故障地点
          Util.formatArea(apply, tvArea);
 

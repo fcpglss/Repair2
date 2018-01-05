@@ -62,6 +62,7 @@ import model.ResultBean;
 import model.Room;
 import okhttp3.Call;
 import repari.com.adapter.DialogAdapter;
+import util.AESUtil;
 import util.DialogUtil;
 import util.JsonUtil;
 import util.Util;
@@ -495,10 +496,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setView() {
-        et_name.setText(changeApply.getRepair());
-        et_tel.setText(changeApply.getTel());
-        etEmail.setText(changeApply.getEmail());
-        etApplyPassword.setText(changeApply.getPassword());
+        et_name.setText(AESUtil.decode(changeApply.getRepair()));
+        et_tel.setText(AESUtil.decode(changeApply.getTel()));
+        etEmail.setText(AESUtil.decode(changeApply.getEmail()));
+
         etArea.setText(changeApply.getArea());
 
         etDetailArea.setText(changeApply.getDetailArea());
@@ -548,7 +549,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        imgFile = FIleUtils.createImageFile(ChangeActivity.this);
+                        imgFile = FIleUtils.createImageFile();
                         try {
 //                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
                             out = new FileOutputStream(imgFile);
@@ -591,10 +592,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     private void bindView() {
 
-        apply.setRepair(et_name.getText().toString());
-        apply.setTel(et_tel.getText().toString());
-        apply.setEmail(etEmail.getText().toString());
-        apply.setPassword(etApplyPassword.getText().toString());
+
+            apply.setRepair(AESUtil.encode(et_name.getText().toString()));
+            apply.setTel(AESUtil.encode(et_tel.getText().toString()));
+            apply.setEmail(AESUtil.encode(etEmail.getText().toString()));
+            apply.setPassword("");
+
+
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
         String etDescribe = et_describe.getText().toString().replaceAll("\r|\n", "");
@@ -1266,16 +1270,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         String json = JsonUtil.beanToJson(apply);
         Log.d(TAG, "upApply: json " + json);
-        for (Uri u :
-                changeUriList) {
-            Log.d(TAG, "upApply: " + u.toString());
-        }
+
         List<File> files = getFiles(changeUriList);
 
         Util.submit("update", json, GET_JSON, UP_APPLY, files,this)
-                .connTimeOut(20000)
-                .readTimeOut(20000)
-                .writeTimeOut(20000)
+                .connTimeOut(60000)
+                .readTimeOut(60000)
+                .writeTimeOut(60000)
                 .execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
@@ -1318,15 +1319,15 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d(TAG, "getFiles: list_uri:" + list_uri.get(i).toString());
                 if (list_uri.get(i).toString().split(":")[0].equals("file")) {
                     String s = list_uri.get(i).toString().split("//")[1];
-                    Log.d(TAG, "getFiles: 修改后" + s);
+//                    Log.d(TAG, "getFiles: 修改后" + s);
                     paths[i] = s;
                 } else {
                     paths[i] = getPath(list_uri.get(i));
                 }
 
-                Log.d(TAG, "getFiles: " + paths[i]);
+//                Log.d(TAG, "getFiles: " + paths[i]);
                 String newPath = compressImage(paths[i]);
-                // Log.d(TAG, "getFiles: "+newPath);
+
                 files.add(new File(newPath));
             }
         }
@@ -1461,35 +1462,29 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         //如果区域不为其他 楼号可见
         if (!etArea.getText().toString().equals("其它") && !etArea.getText().toString().equals("")) {
-            Log.d(TAG, "resetVisible: " + etArea.getText());
+//            Log.d(TAG, "resetVisible: " + etArea.getText());
             llDetailArea.setVisibility(View.VISIBLE);
         }
         if (!etDetailArea.getText().toString().equals("其它") && !etDetailArea.getText().toString().equals("")) {
-            Log.d(TAG, "resetVisible: " + etDetailArea.getText());
+//            Log.d(TAG, "resetVisible: " + etDetailArea.getText());
             llContain.setVisibility(View.VISIBLE);
             llFloor.setVisibility(View.VISIBLE);
         }
         if (!etFloor.getText().toString().equals("其它") && !etFloor.getText().toString().equals("")) {
-            Log.d(TAG, "resetVisible: " + etFloor.getText());
+//            Log.d(TAG, "resetVisible: " + etFloor.getText());
             llRoom.setVisibility(View.VISIBLE);
         }
         if (!etApplyType.getText().toString().equals("其它") && !etApplyType.getText().toString().equals("")) {
-            Log.d(TAG, "resetVisible: " + etApplyType.getText());
+//            Log.d(TAG, "resetVisible: " + etApplyType.getText());
             llDetailType.setVisibility(View.VISIBLE);
         }
     }
 
 
     private boolean check() {
-        Log.d(TAG, "check: " + (getContent(et_tel)
-                && getContent(et_name)
-                && getContent(etApplyPassword)
-                && getContent(etArea)
-                && getContent(etApplyType)));
 
         return getContent(et_tel)
                 && getContent(et_name)
-                && getContent(etApplyPassword)
                 && getContent(etArea)
                 && getContent(etApplyType);
     }
@@ -1505,7 +1500,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private boolean getContent(EditText e) {
-        Log.d(TAG, "check getContent: " + e.getText().toString().equals(""));
+
         return !e.getText().toString().equals("");
     }
 

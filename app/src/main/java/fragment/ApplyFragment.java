@@ -55,6 +55,7 @@ import okhttp3.Call;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
 import repari.com.adapter.DialogAdapter;
+import util.AESUtil;
 import util.DialogUtil;
 import util.EdiTTouch;
 import util.JsonUtil;
@@ -180,7 +181,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                   clearAll();
+                                //   clearAll();
                                     sweetAlertDialog.dismiss();
                                 }
                             }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -584,11 +585,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     private void bindView() {
 
-        apply.setRepair(et_name.getText().toString());
-        apply.setTel(et_tel.getText().toString());
-        apply.setEmail(etEmail.getText().toString());
+        apply.setRepair(AESUtil.encode(et_name.getText().toString()));
+        apply.setTel(AESUtil.encode(et_tel.getText().toString()));
+        apply.setEmail(AESUtil.encode(etEmail.getText().toString()));
         String MD5 = Util.getMD5(etApplyPassword.getText().toString());
-        Log.d(TAG, "bindView: apply MD5: " + MD5);
         apply.setPassword(MD5);
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
