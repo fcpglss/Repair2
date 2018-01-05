@@ -20,8 +20,8 @@ public class RequestUrl {
     private static final String duankou = ":8888";
 
 
-    private static final String project="http://192.168.31.177:8080/repairSystem/";
-  // private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
+    //private static final String project="http://192.168.31.177:8080/repairSystem/";
+   private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
 
  public  static final String updateApp = project+"UpdateVersion";
 

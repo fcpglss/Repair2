@@ -1,5 +1,6 @@
 package util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -56,6 +57,8 @@ import model.Room;
 import repair.com.repair.R;
 
 import static android.content.Context.MODE_PRIVATE;
+import static constant.RequestUrl.REQUEST_CODE_CAMERA;
+import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
 
 
 public class Util {
@@ -765,6 +768,12 @@ public class Util {
         postFormBuilder.url(requestURL);
         return postFormBuilder.build();
     }
+
+    public static  void getPermission(Activity activity) {
+        PermissionUtil.justGetpermission(activity, Manifest.permission.CAMERA,REQUEST_CODE_CAMERA);
+        PermissionUtil.justGetpermission(activity,Manifest.permission.WRITE_EXTERNAL_STORAGE,REQUEST_CODE_SD_CARD);
+    }
+
 
     public static RequestCall submit(String requestURL,Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();

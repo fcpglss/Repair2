@@ -1153,6 +1153,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void addPic() {
+        Util.getPermission(this);
         List<String> list = new ArrayList<>();
         list.add("打开相机");
         list.add("选择本地图片");
@@ -1189,18 +1190,47 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     public static File cameraFile;
 
     private void startCamera() {
-        startCamarea = true;
-        cameraFile = FIleUtils.createImageFile(this);
 
-        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        Uri photoUri = FileProvider.getUriForFile(
-                this,
-                getPackageName(),
-                cameraFile);
-      //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-        startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
+        int currentVersion =android.os.Build.VERSION.SDK_INT;
+
+        cameraFile = FIleUtils.createImageFile();
+
+
+        //低于24为6.0以下
+        if(currentVersion<24){
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
+
+            if (intent.resolveActivity(getPackageManager()) != null) {
+
+                this.startActivityForResult(intent, TAKE_PHOTO_RAW);
+            }
+
+        } else {
+            Uri photoUri = FileProvider.getUriForFile(
+                    this,
+                    getPackageName(),
+                    cameraFile);
+            Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+          this .startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
+        }
+
+//        startCamarea = true;
+//        cameraFile = FIleUtils.createImageFile(this);
+//
+//        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//        Uri photoUri = FileProvider.getUriForFile(
+//                this,
+//                getPackageName(),
+//                cameraFile);
+//      //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+//        startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
     }
 
     private String getRealPathFromURI(Uri contentURI) {

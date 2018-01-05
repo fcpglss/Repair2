@@ -41,9 +41,9 @@ public class FIleUtils {
 //                    ".jpg",         /* suffix */
 //                    file/* directory */);
 //            Log.d(TAG,"FileUtils获取文件url :"+imageFile.getPath());
-            File imageFile = new File(Environment.getDataDirectory().toString()+"/Pictures/"+imageFileName);
-//            File imageFile =new File(Environment.getExternalStorageDirectory().toString()+"/Pictures/"
-//            +imageFileName);
+//            File imageFile = new File(Environment.getDataDirectory().toString()+"/Pictures/"+imageFileName);
+           File imageFile =new File(Environment.getExternalStorageDirectory().toString()+"/Pictures/"
+          +imageFileName);
 
 
             return imageFile;
@@ -69,13 +69,13 @@ public class FIleUtils {
             e.printStackTrace();
         }
         String imageFileName = "JPEG_" + timeStamp + "_.jpg";
-        //      Log.d(TAG, "createImageFile: " +imageFileName);
+              Log.d(TAG, "createImageFile: " +imageFileName);
         try {
 //            File imageFile = File.createTempFile(imageFileName,  /* prefix */
 //                    ".jpg",         /* suffix */
 //                    file/* directory */);
 //            Log.d(TAG,"FileUtils获取文件url :"+imageFile.getPath());
-            File imageFile = new File(context.getCacheDir().getAbsolutePath()+File.separator+imageFileName);
+            File imageFile = new File(context.getCacheDir().getAbsolutePath()+File.separator+"picture"+File.separator+imageFileName);
 //            File imageFile =new File(Environment.getExternalStorageDirectory().toString()+"/Pictures/"
 //            +imageFileName);
 

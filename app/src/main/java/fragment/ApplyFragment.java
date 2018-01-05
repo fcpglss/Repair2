@@ -1111,14 +1111,15 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     }
 
-    private void getPermission() {
-        PermissionUtil.justGetpermission(getActivity(), Manifest.permission.CAMERA,REQUEST_CODE_CAMERA);
-        PermissionUtil.justGetpermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE,REQUEST_CODE_SD_CARD);
-    }
+//    private void getPermission() {
+//        PermissionUtil.justGetpermission(getActivity(), Manifest.permission.CAMERA,REQUEST_CODE_CAMERA);
+//        PermissionUtil.justGetpermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE,REQUEST_CODE_SD_CARD);
+//    }
 
 
     private void addPic() {
-        getPermission();
+        //getPermission();
+        Util.getPermission(getActivity());
         List<String> list = new ArrayList<>();
         list.add("打开相机");
         list.add("选择本地图片");
@@ -1158,7 +1159,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         int currentVersion =android.os.Build.VERSION.SDK_INT;
 
-        fileUri = FIleUtils.createImageFile(getActivity());
+        fileUri = FIleUtils.createImageFile();
 
 
         //低于24为6.0以下
