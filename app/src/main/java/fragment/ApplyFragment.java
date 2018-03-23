@@ -11,6 +11,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -64,11 +65,20 @@ import util.RxBindingUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
-import static constant.RequestUrl.GET_JSON;
-import static constant.RequestUrl.JSON_URL;
+
+import static constant.RequestUrl.AdressAreaList;
+import static constant.RequestUrl.AdressFliesList;
+import static constant.RequestUrl.AdressPlaceList;
+import static constant.RequestUrl.AdressroomList;
+
+
+import static constant.RequestUrl.ApplyInsert;
+import static constant.RequestUrl.ApplyNoImgInsert;
 import static constant.RequestUrl.REQUEST_CODE_CAMERA;
 import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
-import static constant.RequestUrl.UP_APPLY;
+import static constant.RequestUrl.TypeCategoryList;
+import static constant.RequestUrl.TypeDetailClassList;
+
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.list_uri;
@@ -181,7 +191,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                //   clearAll();
+                                  clearAll();
                                     sweetAlertDialog.dismiss();
                                 }
                             }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -238,8 +248,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
     private void loadData() {
-        queryFromServer("area", "0", JSON_URL);
-        queryFromServer("category", "0", JSON_URL);
+        queryFromServer("area", "0", AdressAreaList);
+        queryFromServer("category", "0", TypeCategoryList);
     }
 
     protected void initViews(View view) {
@@ -377,36 +387,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
             }
         });
-
-//        btn_clear.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    btn_clear.setBackgroundResource(R.drawable.button_submit2);
-//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    btn_clear.setBackgroundResource(R.drawable.button_submit);
-//                }
-//                return false;
-//            }
-//        });
-//
-//        RxView.clicks(btn_clear).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Consumer<Object>() {
-//            @Override
-//            public void accept(Object o) throws Exception {
-//                Log.d(TAG, "accept: 清空了");
-//                new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
-//                        .setTitleText("确认清空？")
-//                        .setConfirmText("确定")
-//                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                            @Override
-//                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-//                                clearAll();
-//                                sweetAlertDialog.dismiss();
-//                            }
-//                        })
-//                        .show();
-//            }
-//        });
+        
 
         llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
         llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
@@ -590,6 +571,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         apply.setEmail(AESUtil.encode(etEmail.getText().toString()));
         String MD5 = Util.getMD5(etApplyPassword.getText().toString());
         apply.setPassword(MD5);
+
         setApply();
         apply.setRepairDetails(et_describe.getText().toString());
         String etDescribe = et_describe.getText().toString().replaceAll("\r|\n", "");
@@ -715,6 +697,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                             categoryId = newCategory.get(position).getC_id();
                             showId();
                             etApplyType.setText(newCategory.get(position).getC_name());
+
                             dialog.dismiss();
                         }
                     }
@@ -762,7 +745,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("place", String.valueOf(areaId), JSON_URL);
+                    queryFromServer("place", String.valueOf(areaId), AdressPlaceList);
                     setNextVisible(v, event);
                     placeDialog.show();
                 }
@@ -776,7 +759,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("flies", String.valueOf(placeId), JSON_URL);
+                    queryFromServer("flies", String.valueOf(placeId), AdressFliesList);
                     setNextVisible(v, event);
                     fliesDialog.show();
                 }
@@ -790,7 +773,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("room", String.valueOf(flieId), JSON_URL);
+                    queryFromServer("room", String.valueOf(flieId), AdressroomList);
                     setNextVisible(v, event);
                     roomDialog.show();
                 }
@@ -818,7 +801,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("detailClass", String.valueOf(categoryId), JSON_URL);
+
+                    queryFromServer("detailClass", String.valueOf(categoryId), TypeDetailClassList);
                     setNextVisible(v, event);
                     detailClassDialog.show();
                 }
@@ -889,7 +873,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             case "area": {
                 newAreaList.clear();
                 newAreaStringList.clear();
-                newAreaList.addAll(response.getResultBean().getAreas());
+                Log.d(TAG, "changeStringList: "+response.getResultBean().getAreas().size());
+
+                List<Area> areas = response.getResultBean().getAreas();
+                for (Area area : areas) {
+                    Log.d(TAG, "changeStringList: areas" +areas.toString());
+                }
+                Log.d(TAG, "changeStringList: "+areas);
+                newAreaList.addAll(areas);
                 Area.Comparator1 c = new Area.Comparator1();
                 Collections.sort(newAreaList, c);
                 for (Area a : newAreaList) {
@@ -971,7 +962,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
 
     private Response queryFromServer(final String parmsName, String parmsVules, String url) {
-        Log.d(TAG, "queryFromServer: ->调用了");
+        Log.d(TAG, "queryFromServer: ->调用了 :" +url);
         Util.submit(parmsName, parmsVules, url)
                 .execute(new StringCallback() {
                     @Override
@@ -1047,7 +1038,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 Log.d(TAG, "onResume: " + u.toString());
                 i++;
             }
-
             //判断和赋值
             switchImage();
 
@@ -1228,9 +1218,9 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         List<File> files = getFiles(list_uri);
 
+        Log.d(TAG, "upApply:  上传前"+json);
 
-
-        Util.submit("apply", json, GET_JSON, UP_APPLY, files,getContext())
+        Util.submit("apply", json, ApplyNoImgInsert, ApplyInsert, files,getContext())
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
@@ -1375,26 +1365,5 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     public void setVisable() {
 
     }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//
-//        Log.d(TAG, "onRequestPermissionsResult: requestCode:"+requestCode);
-//        switch (requestCode) {
-//            case REQUEST_CODE_CAMERA:
-//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    Log.d(TAG, "onRequestPermissionsResult: requestCode: "+requestCode+"接收了数据并且启动相机");
-//                    startCamera();
-//                }
-//                break;
-//            case REQUEST_CODE_SD_CARD:
-//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    Log.d(TAG, "onRequestPermissionsResult: requestCode: "+requestCode+"接收了数据并且启动相册");
-//                    startGallery();
-//                }
-//                break;
-//            default:
-//                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
+
 }

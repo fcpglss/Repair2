@@ -254,16 +254,12 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
 //        mSeachText.setOnClickListener(linearLayoutListener);
     }
 
-    /**
-     * ��ʼ��Tab��TextView��ɫ
-     */
+
     protected void resetView() {
         // TODO Auto-generated method stub
         mchat.setTextColor(Color.parseColor("#757575"));
         mfriend.setTextColor(Color.parseColor("#757575"));
         mcontact.setTextColor(Color.parseColor("#757575"));
-
-
     }
 
     @Override

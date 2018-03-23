@@ -25,10 +25,12 @@ import java.util.List;
 import application.MyApplication;
 import model.Apply;
 import okhttp3.Call;
+import util.AESUtil;
 import util.JsonUtil;
 import util.Util;
 
-import static constant.RequestUrl.UPDATESERVER;
+import static constant.RequestUrl.ApplyAppraise;
+
 
 /**
  * Created by hsp on 2017/3/14.
@@ -42,9 +44,23 @@ public class AppraiseActivity extends AppCompatActivity {
     TextView tvAppraiseName,tvAppraisePhone,tvAppraiseAddress,tvAppraiseOther,tvAppraiseServerName;
     //星星
     ImageView star1,star2,star3,star4,star5;
-    //数星星 默认好评
-    int starCount=5;
-    boolean starState=true;
+    ImageView speedstar1,speedstar2,speedstar3,speedstar4,speedstar5;
+    ImageView qualitystar1,qualitystar2,qualitystar3,qualitystar4,qualitystar5;
+    ImageView attutideystar1,attutideystar2,attutideystar3,attutideystar4,attutideystar5;
+
+    StarCount all = new StarCount();
+    StarCount speed = new StarCount();
+    StarCount quality = new StarCount();
+    StarCount attitude = new StarCount();
+    //维修质量
+    int qualitCount=5;
+    //维修速度
+    int speedCount=5;
+    //维修态度
+    int attitudeCount=5;
+    //总 默认好评
+    public int starCount=5;
+
 
     String accpetServer="";
     //评价内容
@@ -93,8 +109,8 @@ public class AppraiseActivity extends AppCompatActivity {
     //绑定数据 设置页面显示和点击事件
     private void bindData() {
         //直接设置text
-        tvAppraiseName.setText(apply.getRepair());
-        tvAppraisePhone.setText(apply.getTel());
+        tvAppraiseName.setText(AESUtil.decode(apply.getRepair()));
+        tvAppraisePhone.setText(AESUtil.decode(apply.getTel()));
         //地址由四部分组成
         tvAppraiseAddress.setText(getAddress());
         //其他可以不填写 所以没有数据显示为空
@@ -136,6 +152,25 @@ public class AppraiseActivity extends AppCompatActivity {
         star3 = (ImageView) findViewById(R.id.iv_appraise_star3);
         star4 = (ImageView) findViewById(R.id.iv_appraise_star4);
         star5 = (ImageView) findViewById(R.id.iv_appraise_star5);
+
+        speedstar1 = (ImageView) findViewById(R.id.iv_speed_star1);
+        speedstar2 = (ImageView) findViewById(R.id.iv_speed_star2);
+        speedstar3 = (ImageView) findViewById(R.id.iv_speed_star3);
+        speedstar4 = (ImageView) findViewById(R.id.iv_speed_star4);
+        speedstar5 = (ImageView) findViewById(R.id.iv_speed_star5);
+
+        qualitystar1 = (ImageView) findViewById(R.id.iv_quality_star1);
+        qualitystar2 = (ImageView) findViewById(R.id.iv_quality_star2);
+        qualitystar3 = (ImageView) findViewById(R.id.iv_quality_star3);
+        qualitystar4 = (ImageView) findViewById(R.id.iv_quality_star4);
+        qualitystar5 = (ImageView) findViewById(R.id.iv_quality_star5);
+
+        attutideystar1 = (ImageView) findViewById(R.id.iv_attitude_star1);
+        attutideystar2 = (ImageView) findViewById(R.id.iv_attitude_star2);
+        attutideystar3 = (ImageView) findViewById(R.id.iv_attitude_star3);
+        attutideystar4 = (ImageView) findViewById(R.id.iv_attitude_star4);
+        attutideystar5 = (ImageView) findViewById(R.id.iv_attitude_star5);
+
         etAppraiseContent = (EditText) findViewById(R.id.tv_appraise_content);
         btnSubmit = (Button) findViewById(R.id.btn_appraise_submit);
 
@@ -164,38 +199,66 @@ public class AppraiseActivity extends AppCompatActivity {
         list.add(star3);
         list.add(star4);
         list.add(star5);
+        final List<ImageView> qualityList = new ArrayList<>();
+        qualityList.add(qualitystar1);
+        qualityList.add(qualitystar2);
+        qualityList.add(qualitystar3);
+        qualityList.add(qualitystar4);
+        qualityList.add(qualitystar5);
+        final List<ImageView> speedList = new ArrayList<>();
 
+        speedList.add(speedstar1);
+        speedList.add(speedstar2);
+        speedList.add(speedstar3);
+        speedList.add(speedstar4);
+        speedList.add(speedstar5);
+        final List<ImageView> attitudeList = new ArrayList<>();
+
+        attitudeList.add(attutideystar1);
+        attitudeList.add(attutideystar2);
+        attitudeList.add(attutideystar3);
+        attitudeList.add(attutideystar4);
+        attitudeList.add(attutideystar5);
+
+        all.setCount(starCount);
+        quality.setCount(qualitCount);
+        speed.setCount(speedCount);
+        attitude.setCount(attitudeCount);
+
+        changeStarCount(list,all);
+        changeStarCount(qualityList,quality);
+        changeStarCount(speedList,speed);
+        changeStarCount(attitudeList,attitude);
+
+    }
+
+    private void changeStarCount(final List<ImageView> list , final StarCount count ) {
         for (int i = 0; i < list.size(); i++) {
             final int finalI = i;
             list.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //点击了 说明要改默认好评
-                    starCount = 0;
-                    starCount = finalI+1;
-                    Log.d(TAG, "onClick: "+starCount);
+                    count.setCount(0);
+                    count.setCount(finalI+1);
                     for (int j= 0; j<5;j++){
                         list.get(j).setImageResource(R.drawable.star_white);
-                        Log.d(TAG, "starOnClick: 赋值白色");
                     }
-                    for (int i =0;i<starCount;i++){
+                    for (int i =0;i<count.getCount();i++){
                         list.get(i).setImageResource(R.drawable.star_red);
-                        Log.d(TAG, "starOnClick: 赋值红色");
                     }
                 }
             });
         }
-
-
     }
+
     //提交 并且成功 则跳转详情页面
     private void upApply(String json) {
 
-                Util.submit("appraise",json,UPDATESERVER).execute(new StringCallback() {
+                Util.submit("appraise",json,ApplyAppraise).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.d(TAG, "onError: 错误返回"+e.toString());
-                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -226,7 +289,10 @@ public class AppraiseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Apply appraisApply=new Apply();
                 appraisApply.setId(apply.getId());
-                appraisApply.setEvaluate(String.valueOf(starCount));
+                appraisApply.setEvaluate(String.valueOf(all.getCount()));
+                appraisApply.setSpeedEval(String.valueOf(speed.getCount()));
+                appraisApply.setQualityEval(String.valueOf(quality.getCount()));
+                appraisApply.setAttitudeEval(String.valueOf(attitude.getCount()));
                 appraisApply.setEvalText(etAppraiseContent.getText().toString());
                 String json=JsonUtil.beanToJson(appraisApply);
                 upApply(json);
@@ -235,4 +301,16 @@ public class AppraiseActivity extends AppCompatActivity {
     }
 
 
+}
+
+class StarCount{
+    int count;
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

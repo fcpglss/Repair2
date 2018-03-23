@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 
 
 import java.util.ArrayList;
@@ -34,14 +32,14 @@ public class LoadListApplys{
 
     List<String> viewpager_url = new ArrayList<>();
     ResultBean res = null;
-    ConvenientBanner convenientBanner = null;
+
     WaterDropListView waterListView = null;
    public  ApplysAdapter adapter = null;
     Context context;
 
-    public LoadListApplys(Context mcontext, WaterDropListView listview, ApplysAdapter adapter, ConvenientBanner convenientBanner) {
+    public LoadListApplys(Context mcontext, WaterDropListView listview, ApplysAdapter adapter) {
         context = mcontext;
-        this.convenientBanner = convenientBanner;
+
         waterListView = listview;
         this.adapter = adapter;
     }
@@ -54,34 +52,34 @@ public class LoadListApplys{
             String json=Util.loadFirstFromLocal(context);
             res = JsonUtil.jsonToBean(json);
             adapter = getBeanFromJson(res, viewpager_url, adapter);
-            setShowView(convenientBanner, res, waterListView, viewpager_url, adapter);
+          //  setShowView(convenientBanner, res, waterListView, viewpager_url, adapter);
         } catch (Exception e) {
             Log.d(TAG, "LoadlistApplys: "+e.getMessage().toString());
         }
     }
 
 
-    public void setShowView(ConvenientBanner convenientBanner,final ResultBean res, WaterDropListView waterDropListView, List<String> viewpager_url, final ApplysAdapter applysAdapters) {
-        if (convenientBanner != null && res != null) {
-            convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
-            convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
-
-
-            convenientBanner.setPages(
-                    new CBViewHolderCreator<LocalImageHolderView>() {
-                        @Override
-                        public LocalImageHolderView createHolder() {
-                            return new LocalImageHolderView(MyApplication.getContext(), applysAdapters,res);
-                        }
-                    }, viewpager_url);
-            applysAdapters.notifyDataSetChanged();
-            waterDropListView.setAdapter(applysAdapters);
-            waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
-        } else {
-            Toast.makeText(MyApplication.getContext(), "本地也没有数据，请检查网络", Toast.LENGTH_LONG).show();
-        }
-
-    }
+//    public void setShowView(ConvenientBanner convenientBanner,final ResultBean res, WaterDropListView waterDropListView, List<String> viewpager_url, final ApplysAdapter applysAdapters) {
+//        if (convenientBanner != null && res != null) {
+//           // convenientBanner.setPageIndicator(new int[]{R.drawable.dot_unselected, R.drawable.dot_selected});
+//           // convenientBanner.setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT);
+//
+//
+////            convenientBanner.setPages(
+////                    new CBViewHolderCreator<LocalImageHolderView>() {
+////                        @Override
+////                        public LocalImageHolderView createHolder() {
+////                            return new LocalImageHolderView(MyApplication.getContext(), applysAdapters,res);
+////                        }
+////                    }, viewpager_url);
+//            applysAdapters.notifyDataSetChanged();
+//            waterDropListView.setAdapter(applysAdapters);
+//            waterDropListView.setOnItemClickListener(new WaterListViewListener(MyApplication.getContext(), res));
+//        } else {
+//            Toast.makeText(MyApplication.getContext(), "本地也没有数据，请检查网络", Toast.LENGTH_LONG).show();
+//        }
+//
+//    }
     public  ApplysAdapter getBeanFromJson(ResultBean res ,List<String> viewpager_url,ApplysAdapter applysAdapter)
     {
         if (res == null) {

@@ -56,11 +56,11 @@
         <activity android:name=".AppraiseActivity"/>
         <activity android:name=".ChangeActivity"/>
 
-        <activity android:name=".AdminListActivity"
-            android:launchMode="singleTask"/>
+        <!--<activity android:name=".AdminListActivity"-->
+            <!--android:launchMode="singleTask"/>-->
 
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".AdminDetailActivity"/>
+        <!--<activity android:name=".LoginActivity"/>-->
+        <!--<activity android:name=".AdminDetailActivity"/>-->
         <activity android:name=".AnnonceDetailActivity"/>
     </application>
 

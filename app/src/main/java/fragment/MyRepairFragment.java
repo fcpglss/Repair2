@@ -39,8 +39,9 @@ import util.HttpUtil;
 import util.JsonUtil;
 import util.Util;
 
-import static constant.RequestUrl.QUERYMYREPAIR;
-import static constant.RequestUrl.SendMyRepairMore;
+import static constant.RequestUrl.ApplySearch;
+import static constant.RequestUrl.ApplySearchMore;
+
 
 /**
  * Created by hsp on 2016/11/27.
@@ -55,20 +56,20 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     private EditText etName, etPhone;
     private Button btnSearch;
 
-    private static boolean isRefrush =false;
+    private static boolean isRefrush = false;
 
-    String appraise="false";
+    String appraise = "false";
 
     private static boolean moreFlag = false;
 
-    private static boolean isMore=false;
-    private static boolean ishasData=false;
+    private static boolean isMore = false;
+    private static boolean ishasData = false;
 
     private static int start = 0;
     private static int end = 5;
 
-    private String phone="";
-    private String name="";
+    private String phone = "";
+    private String name = "";
 
 
     public Response moreResponse = null;
@@ -85,7 +86,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
     private ResultBean firstRes;
 
-    ResultBean myRes=new ResultBean();
+    ResultBean myRes = new ResultBean();
     SVProgressHUD svProgressHUD = new SVProgressHUD(getActivity());
     private View view;
     private Handler mhandler = new Handler() {
@@ -95,47 +96,48 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
             switch (msg.what) {
                 case 2:
                     closeReflush();
-                   // Toast.makeText(MyApplication.getContext(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(MyApplication.getContext(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     closeDiag();
                     Log.d(TAG, "handleMessage: 2");
                     //  updateView(0);
                     break;
                 case 3:
 
-                 //   Toast.makeText(getActivity(), "搜索完成", Toast.LENGTH_SHORT).show();
+                    //   Toast.makeText(getActivity(), "搜索完成", Toast.LENGTH_SHORT).show();
                     lvMyList.setVisibility(View.VISIBLE);
-                    closeDiag();;
+                    closeDiag();
+                    ;
                     closeReflush();
                     //先清后填
                     setFirstApply(myRespon.getResultBean());
-                    ishasData=myRespon.isEnd();
-                    if (adapter!=null){
+                    ishasData = myRespon.isEnd();
+                    if (adapter != null) {
                         adapter.notifyDataSetChanged();
                     }
                     break;
 
                 case 5:
                     lvMyList.stopRefresh();
-                    ishasData=myRespon.isEnd();
-                //    Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
+                    ishasData = myRespon.isEnd();
+                    //    Toast.makeText(MyApplication.getContext(), "刷新成功", Toast.LENGTH_LONG).show();
                     Log.d(TAG, "handleMessage: 5");
                     break;
                 case 6:
-                 //   Toast.makeText(getActivity(), "没有记录", Toast.LENGTH_SHORT).show();
+                    //   Toast.makeText(getActivity(), "没有记录", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "handleMessage: 6");
                     lvMyList.stopLoadMore();
                     break;
                 case 7:
                     moreList = moreRes.getApplys();
                     setMoreApply(moreList);
-                    lvMyList.setSelection(start-1);
+                    lvMyList.setSelection(start - 1);
                     Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
                     moreFlag = moreResponse.isEnd();
                     Log.d(TAG, "handleMessage: " + moreFlag);
                     closeReflush();
                     break;
                 case 8:
-                  //  Toast.makeText(getActivity(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(getActivity(), myRespon.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     closeDiag();
                     break;
             }
@@ -149,17 +151,14 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         }
     }
 
-    private void closeReflush()
-    {
-        if(isRefrush)
-        {
+    private void closeReflush() {
+        if (isRefrush) {
             lvMyList.stopRefresh();
-            isRefrush=false;
+            isRefrush = false;
         }
-        if(isMore)
-        {
+        if (isMore) {
             lvMyList.stopLoadMore();
-            isMore=false;
+            isMore = false;
         }
     }
 
@@ -167,9 +166,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        appraise="faile";
-        phone="";
-        name="";
+        appraise = "faile";
+        phone = "";
+        name = "";
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -222,9 +221,9 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moreFlag=false;
-                start=0;
-                end=5;
+                moreFlag = false;
+                start = 0;
+                end = 5;
 
                 if (svProgressHUD == null) {
                     svProgressHUD = new SVProgressHUD(getActivity());
@@ -232,18 +231,17 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                 } else {
                     svProgressHUD.showWithStatus("搜索中");
                 }
-                phone=etPhone.getText().toString();
-                name=etName.getText().toString();
-                queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
+                phone = etPhone.getText().toString();
+                name = etName.getText().toString();
+                queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
 
             }
         });
 
     }
 
-    private void queryFromServer(String parms,String Vules,String params2,String Vules2,String url)
-    {
-        Log.d(TAG, "queryFromServer: 执行");
+    private void queryFromServer(String parms, String Vules, String params2, String Vules2, String url) {
+
         Util.submit(parms, Vules, params2, Vules2, url)
                 .execute(new StringCallback() {
                     @Override
@@ -253,7 +251,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                         rp.setError(true);
                         rp.setErrorMessage("网络异常,请检查网络");
                         myRespon = rp;
-                        Log.d(TAG, " onEnrror调用:" + e.getMessage());
+//                        Log.d(TAG, " onEnrror调用:" + e.getMessage());
                         mhandler.sendEmptyMessage(8);
                     }
 
@@ -261,20 +259,18 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     public void onResponse(String response, int id) {
                         //请求成功后获取到json
                         final String responseJson = response.toString();
-                        Log.d(TAG, "onFinish: " + responseJson);
+//                        Log.d(TAG, "onFinish: " + responseJson);
                         myRespon = JsonUtil.jsonToResponse(responseJson);
                         if (myRespon.getErrorType() == -1) {
                             myRespon.setErrorMessage("没有找到该报修记录");
                             mhandler.sendEmptyMessage(2);
                             return;
                         }
-                        if(myRespon.getResultBean().getApplys()==null||myRespon.getResultBean().getApplys().size()<0)
-                        {
+                        if (myRespon.getResultBean().getApplys() == null || myRespon.getResultBean().getApplys().size() < 0) {
                             myRespon.setErrorMessage("没有找到该报修记录");
                             mhandler.sendEmptyMessage(2);
-                            return ;
-                        }else
-                        {
+                            return;
+                        } else {
 
                             mhandler.sendEmptyMessage(3);
                         }
@@ -284,7 +280,6 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     }
 
 
-
     private void closeDiag() {
         if (svProgressHUD.isShowing()) {
             svProgressHUD.dismiss();
@@ -292,17 +287,8 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     }
 
 
-
-
     private void setFirstApply(ResultBean resultBean) {
-        if(resultBean!=null)
-        {
-            Log.d(TAG, "setFirstAly: resultbean不为Null");
-        }
-        if(myRes==null)
-        {
-            Log.d(TAG, "setFirstAly: myRes为null");
-        }
+
         if (myRes != null && myRes.getApplys().size() > 0) {
             myRes.getApplys().clear();
         }
@@ -336,23 +322,22 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         start = 0;
         end = 5;
         moreFlag = false;
-        ishasData=false;
+        ishasData = false;
 
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
 
 
-
     @Override
     public void onResume() {
 
-        String appraise2= getActivity().getIntent().getStringExtra("appraise");
-        Log.d(TAG, "onResume: appraise :"+appraise2);
+        String appraise2 = getActivity().getIntent().getStringExtra("appraise");
+        Log.d(TAG, "onResume: appraise :" + appraise2);
 
-        if (appraise2!=null&&appraise2.equals("ok")){
-            appraise2="false";
-            queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
+        if (appraise2 != null && appraise2.equals("ok")) {
+            appraise2 = "false";
+            queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
         }
         super.onResume();
         Log.d(TAG, "onResume: ");
@@ -366,10 +351,12 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
 
     @Override
     public void onRefresh() {
-        isRefrush=true;
-        queryFromServer("phone",AESUtil.encode(phone),"name",AESUtil.encode(name),QUERYMYREPAIR);
+        isRefrush = true;
+        moreFlag = false;
+        start = 0;
+        end = 5;
+        queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
     }
-
 
 
     @Override
@@ -387,10 +374,10 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         // String request = SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString();
 //        Log.d(TAG, "onLoadMore: ->" + request);
 
-        String request = SendMyRepairMore;
+        String request = ApplySearchMore;
 
         String phoneNumber = AESUtil.encode(etPhone.getText().toString());
-        String name=AESUtil.encode(etName.getText().toString());
+        String name = AESUtil.encode(etName.getText().toString());
 
         OkHttpUtils.get().
                 url(request).
@@ -432,42 +419,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                     }
                 });
 
-
-//        HttpUtil.sendHttpRequest(SendMyRepairMore + "?start=" + start + "&&end=" + end + "&&phone=" + etPhone.getText().toString() +"&&name="+etName.getText().toString() ,new HttpCallbackListener() {
-//            @Override
-//            public void onFinish(String responseString) {
-//                //请求成功后获取到json
-//                final String responseJson = responseString.toString();
-//                Log.d(TAG, "onFinish: " + responseJson);
-//                //解析json获取到Response;
-//                moreResponse = JsonUtil.jsonToResponse(responseJson);
-//                moreRes = moreResponse.getResultBean();
-//             if (moreRes != null&&moreRes.getApplys()!=null&&moreRes.getApplys().size()>0) {
-//                    mhandler.sendEmptyMessage(7);
-////
-//                } else {
-//                    myRespon.setErrorType(-2);
-//                    myRespon.setError(false);
-//                    myRespon.setErrorMessage("没有数据");
-//
-//                    mhandler.sendEmptyMessage(2);
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                Response rp = new Response();
-//                rp.setErrorType(-1);
-//                rp.setError(true);
-//                rp.setErrorMessage("网络异常，返回空值");
-//                myRespon = rp;
-//                Log.d(TAG, " onEnrror调用:" + e.getMessage());
-//                mhandler.sendEmptyMessage(2);
-//            }
-//        });
-//    }
     }
-
 
 
 }

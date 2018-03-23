@@ -34,6 +34,10 @@ public class Apply implements Serializable {
     private String evaluate;
     private String evalText;
 
+    private String qualityEval;
+    private String speedEval;
+    private String attitudeEval;
+
     private String addressDetail;
 
     public String getAddressDetail() {
@@ -56,6 +60,30 @@ public class Apply implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public String getQualityEval() {
+        return qualityEval;
+    }
+
+    public void setQualityEval(String qualityEval) {
+        this.qualityEval = qualityEval;
+    }
+
+    public String getSpeedEval() {
+        return speedEval;
+    }
+
+    public void setSpeedEval(String speedEval) {
+        this.speedEval = speedEval;
+    }
+
+    public String getAttitudeEval() {
+        return attitudeEval;
+    }
+
+    public void setAttitudeEval(String attitudeEval) {
+        this.attitudeEval = attitudeEval;
     }
 
     public void setId(String id) {

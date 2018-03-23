@@ -45,12 +45,6 @@ public abstract  class BasActivity extends AppCompatActivity implements WaterDro
     }
 
 
-
-
-
-
-
-
     @Override
     public void onRefresh() {
 

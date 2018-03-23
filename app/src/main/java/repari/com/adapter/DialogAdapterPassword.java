@@ -126,7 +126,7 @@ public class DialogAdapterPassword extends BaseAdapter {
                             String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
                             Log.d(TAG, "onClick: MD5: " + MD5);
                             Log.d(TAG, "onClick: ID: " + apply.getId());
-                            Util.submit("password", MD5, "ID", apply.getId(), RequestUrl.QUERYMYREPAIR).execute(new StringCallback() {
+                            Util.submit("password", MD5, "ID", apply.getId(), RequestUrl.ApplyPassword).execute(new StringCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
                                     mhandler.sendEmptyMessage(3);

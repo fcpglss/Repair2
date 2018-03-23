@@ -9,20 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.bigkoo.convenientbanner.ConvenientBanner xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/loop"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:visibility="gone"
-            app:canLoop="true">
 
-        </com.bigkoo.convenientbanner.ConvenientBanner>
 
         <LinearLayout
             android:id="@+id/ll1"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen32"
-            android:layout_below="@id/loop"
+
             android:background="#ffffff"
             android:gravity="center_vertical"
             android:orientation="horizontal">

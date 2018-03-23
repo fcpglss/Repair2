@@ -68,10 +68,19 @@ import util.JsonUtil;
 import util.Util;
 
 import static camera.CalculateImage.getSmallBitmap;
-import static constant.RequestUrl.GET_JSON;
-import static constant.RequestUrl.JSON_URL;
-import static constant.RequestUrl.QUERYMYREPAIR;
-import static constant.RequestUrl.UP_APPLY;
+import static constant.RequestUrl.AdressAreaList;
+import static constant.RequestUrl.AdressFliesList;
+import static constant.RequestUrl.AdressPlaceList;
+import static constant.RequestUrl.AdressroomList;
+import static constant.RequestUrl.ApplyChange;
+
+
+import static constant.RequestUrl.ApplyInsert;
+import static constant.RequestUrl.ApplyNoImgUpdate;
+import static constant.RequestUrl.ApplyUpdate;
+import static constant.RequestUrl.TypeCategoryList;
+import static constant.RequestUrl.TypeDetailClassList;
+
 import static repair.com.repair.MainActivity.REQUEST_IMAGE;
 import static repair.com.repair.MainActivity.TAKE_PHOTO_RAW;
 import static repair.com.repair.MainActivity.windowHeigth;
@@ -161,7 +170,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     bindView();
                     break;
                 case 4:
-                    queryFromServer("changeId", changeApply.getId(), QUERYMYREPAIR);
+                    queryFromServer("changeId", changeApply.getId(), ApplyChange);
                     break;
                 case 5:
                     Toast.makeText(ChangeActivity.this, "请填写报修地址", Toast.LENGTH_SHORT).show();
@@ -235,8 +244,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         addressRes = (ResultBean) getIntent().getSerializableExtra("address");
         svProgressHUD = new SVProgressHUD(this);
         svProgressHUD.showWithStatus("正在加载");
-//        sweetAlertDialog = new SweetAlertDialog(this,SweetAlertDialog.NORMAL_TYPE);
-        queryFromServerFirst("changeId", changeApply.getId(), QUERYMYREPAIR);
+
+        queryFromServerFirst("changeId", changeApply.getId(), ApplyChange);
 
     }
 
@@ -326,9 +335,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         imageViewList.add(img_2);
         imageViewList.add(img_3);
         btn_apply = (Button) findViewById(R.id.btn_change_apply);
-        btn_clear = (Button) findViewById(R.id.btn_change_clear);
-//        btn_apply.setOnClickListener(this);
-        btn_clear.setOnClickListener(this);
+
         btn_apply.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -529,8 +536,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         /**
          * 请求area 和 category
          */
-        queryFromServer("area", "0", JSON_URL);
-        queryFromServer("category", "0", JSON_URL);
+        queryFromServer("area", "0", AdressAreaList);
+        queryFromServer("category", "0", TypeCategoryList);
 
         //  把传来的uri变为本地的uri存进list_uri
         new AsyncTask<Void, Void, List<File>>() {
@@ -800,7 +807,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     Log.d(TAG, "onTouch: plac" + areaId);
-                    queryFromServer("place", String.valueOf(areaId), JSON_URL);
+                    queryFromServer("place", String.valueOf(areaId), AdressPlaceList);
                     Log.d(TAG, "onTouch: " + String.valueOf(areaId));
                     setNextVisible(v, event);
                     placeDialog.show();
@@ -815,7 +822,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("flies", String.valueOf(placeId), JSON_URL);
+                    queryFromServer("flies", String.valueOf(placeId), AdressFliesList);
                     Log.d(TAG, "onTouch: " + String.valueOf(placeId));
                     setNextVisible(v, event);
                     fliesDialog.show();
@@ -830,7 +837,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("room", String.valueOf(flieId), JSON_URL);
+                    queryFromServer("room", String.valueOf(flieId), AdressroomList);
                     Log.d(TAG, "onTouch: " + String.valueOf(flieId));
                     setNextVisible(v, event);
                     roomDialog.show();
@@ -846,6 +853,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    queryFromServer("room", String.valueOf(flieId), JSON_URL);
                     setNextVisible(v, event);
                     categoryDialog.show();
                 }
@@ -859,13 +867,14 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    queryFromServer("detailClass", String.valueOf(categoryId), JSON_URL);
+                    queryFromServer("detailClass", String.valueOf(categoryId), TypeDetailClassList);
                     setNextVisible(v, event);
                     detailClassDialog.show();
                 }
                 return false;
             }
         });
+
 
 
     }
@@ -907,7 +916,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 //清空存放好的Id
                 roomId = 0;
                 break;
-            case R.id.et_apply_type:
+            case R.id.et_change_apply_type:
                 //清空详细类型
                 etApplyTypeDetails.setText("");
                 llDetailArea.setVisibility(View.INVISIBLE);
@@ -1145,9 +1154,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 //                upApply();
                 break;
 
-            case R.id.btn_change_clear:
-                clearAll();
-                break;
             case R.id.iv_change_add:
 
                 addPic();
@@ -1273,7 +1279,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         List<File> files = getFiles(changeUriList);
 
-        Util.submit("update", json, GET_JSON, UP_APPLY, files,this)
+        Util.submit("update", json, ApplyNoImgUpdate, ApplyUpdate, files,this)
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
@@ -1285,7 +1291,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onResponse(String response, int id) {
-                //clearAll();
+                clearAll();
                 Log.d(TAG, "onResponse: " + response);
                 if ("UpdateOK".equals(response)) {
                     mhandler.sendEmptyMessage(6);

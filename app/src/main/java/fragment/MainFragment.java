@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.bigkoo.convenientbanner.ConvenientBanner;
+
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -42,9 +42,10 @@ import util.JsonUtil;
 import util.Util;
 import util.WaterListViewListener;
 
+import static constant.RequestUrl.ApplyLoadMore;
+import static constant.RequestUrl.ApplyRrefresh;
 import static constant.RequestUrl.FRIST_URL;
-import static constant.RequestUrl.REFRESH_URL;
-import static constant.RequestUrl.SENDMORE_URL;
+
 
 /**
  * Created by hsp on 2016/11/27.
@@ -76,7 +77,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
 
     private static boolean isFirst = true;
 
-    private ConvenientBanner convenientBanner = null;
+
 
     public ResultBean res = null;
 
@@ -243,8 +244,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
 
     @Override
     protected void initViews(View view) {
-        convenientBanner = (ConvenientBanner) view.findViewById(R.id.loop);
-        convenientBanner.startTurning(5000);
+
         waterDropListView = (WaterDropListView) view.findViewById(R.id.waterdrop_w);
         waterDropListView.setWaterDropListViewListener(MainFragment.this);
         waterDropListView.setPullLoadEnable(true);
@@ -326,7 +326,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
 
             id=res.getApplys().get(res.getApplys().size()-1).getId();
         }
-        Util.submit("mainfragment",id,REFRESH_URL)
+        Util.submit("mainfragment",id,ApplyRrefresh)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
@@ -437,7 +437,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
             start = start + fenye;
             end = end + fenye;
         }
-        HttpUtil.sendHttpRequest(SENDMORE_URL + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
+        HttpUtil.sendHttpRequest(ApplyLoadMore + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
 
             @Override
             public void onFinish(String responseString) {

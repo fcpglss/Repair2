@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +52,6 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private Drawable mDefaultBitmapDrawable;
 
-    private String applyName ="";
 
 
     private static final int mImageWidth = 150;
@@ -120,25 +120,24 @@ public class MyRepairAdapter extends BaseAdapter {
         ImageView imageView = viewHolder.ivPhoto;
         final String tag = (String) imageView.getTag();
         String photoUrl = "";
-        String a_details = "";
-
         if(Util.getPhotoUrl(position, myRes))
         {
             photoUrl=myRes.getApplys().get(position).getA_imaes().get(0);
         }
 
         categoryName = apply.getClasss();
-        a_details = Util.setAddress(apply,20,false);
         final String uri = photoUrl;
 
         if (!uri.equals(tag)) {
-            imageView.setImageDrawable(mDefaultBitmapDrawable);
+            imageView.setImageResource(R.drawable.loadimg);
         }
 
         if (mCanGetBitmapFromNetWork&&!photoUrl.equals("")) {
             imageView.setTag(photoUrl);
-//            mImageLoader.bindBitmap(photoUrl, imageView, mImageWidth, mImageHeigth);
-            Picasso.with(context).load(photoUrl).into(imageView);
+            Picasso.with(context)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.loadimg)
+                    .into(imageView);
         }
 
         viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
@@ -201,12 +200,9 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private void JumpApprise(final TextView tvAppraise, final int state, final int position) {
 
-        Log.d(TAG, "JumpApprise: 状态 "+state);
-        Log.d(TAG, "JumpApprise: "+(myRes.getApplys().get(position).getEvalText()==null));
 
 
-        if (state == 4 && myRes.getApplys().get(position).getEvalText()==null){
-            Log.d(TAG, "JumpApprise: 状态 里面"+state);
+        if (state == 4 &&  TextUtils.isEmpty( myRes.getApplys().get(position).getEvalText())){
             tvAppraise.setVisibility(View.VISIBLE);
         }else {
             tvAppraise.setVisibility(View.GONE);
@@ -217,8 +213,7 @@ public class MyRepairAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: " + state);
                 if (state == 4) {
-                    Log.d(TAG, "JumpApprise  onClick: 点击事件");
-                    Log.d(TAG, "onClick: position: " + position);
+
                     DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context, R.layout.dialog_input_password,myRes.getApplys().get(position));
                     //点击弹出对话框输入密码
                     dialogPlus = DialogPlus.newDialog(context)
@@ -229,7 +224,7 @@ public class MyRepairAdapter extends BaseAdapter {
                             .setHeader(R.layout.dialog_head5)
                             .create();
                     dialogPlus.show();
-                    Log.d(TAG, "JumpApprise onClick: show()已被调用");
+//                    Log.d(TAG, "JumpApprise onClick: show()已被调用");
                 } else {
                     Toast.makeText(context, "维修单未完成不能评价", Toast.LENGTH_SHORT).show();
                 }

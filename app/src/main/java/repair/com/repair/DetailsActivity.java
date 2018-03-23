@@ -1,6 +1,7 @@
 package repair.com.repair;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,24 +11,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bm.library.Info;
+import com.bm.library.PhotoView;
 import com.squareup.picasso.Picasso;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import application.MyApplication;
 import model.Apply;
 import model.Employee;
+import model.Photo;
 import model.Response;
 import model.ResultBean;
 import okhttp3.Call;
+import repari.com.adapter.ImgAdapter;
 import util.AESUtil;
 
 import util.JsonUtil;
@@ -35,9 +43,8 @@ import util.MyTextView;
 import util.UIUtil;
 import util.Util;
 
-import static constant.RequestUrl.URL;
-import static repair.com.repair.MainActivity.windowHeigth;
-import static repair.com.repair.MainActivity.windowWitch;
+import static constant.RequestUrl.ApplyDetail;
+
 
 
 /**
@@ -48,16 +55,23 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String TAG = "DetailsActivity";
 
-
-    boolean visible = false;//员工详细页面默认不可见
+    //员工详细页面默认不可见
+    boolean visible = false;
 
     //评价星星
-    private ImageView star1, star2, star3, star4, star5;
+    ImageView star1, star2, star3, star4, star5;
+
+    ImageView speedstar1, speedstar2, speedstar3, speedstar4, speedstar5;
+    ImageView qualitystar1, qualitystar2, qualitystar3, qualitystar4, qualitystar5;
+    ImageView attutideystar1, attutideystar2, attutideystar3, attutideystar4, attutideystar5;
+
     //评价文字
     private TextView appraise;
     //大图片
 
-    private ImageView showBigImg;
+
+
+    private PhotoView showBigImg;
     //背景
     LinearLayout linearLayoutDetail;
 
@@ -73,13 +87,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView iv_employee_arr;
     private LinearLayout ll_employee_details, llDetailDeal;
 
-//    private LinearLayout llBreakDown;
-
 
     private ImageView img_category, img_status;
     private ImageView img1, img2, img3;
     private Apply apply = null;
-    //    private Employee employee=null;
+
     private List<Employee> employeeList = new ArrayList<>();
     private String repairId;
 
@@ -90,9 +102,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
     private List<ImageView> star_list = new ArrayList<ImageView>();
+    private List<ImageView> qualityList = new ArrayList<ImageView>();
+    private List<ImageView> speedList = new ArrayList<ImageView>();
+    private List<ImageView> attitudeList = new ArrayList<ImageView>();
     private List<String> list_imageView = new ArrayList<>();
     private Response response;
 
+    private GridView gridView ;
+    private ImgAdapter imgAdapter ;
 
     private Handler mhandler = new Handler() {
         @Override
@@ -134,9 +151,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         repairId = getIntent().getStringExtra("repairId");
         isAppraisePage = getIntent().getBooleanExtra("appraiseIntent", false);
 
-        Log.d(TAG, "onCreate: 获取repairId=" + repairId);
         if (apply == null) {
-            queryFromServer(URL, repairId);
+            queryFromServer(ApplyDetail, repairId);
         } else {
             if (apply.getLogisticMan() != null) {
                 iv_employee_arr.setVisibility(View.VISIBLE);
@@ -151,7 +167,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     public void queryFromServer(String url, String repairId) {
 
         String jsonurl = url;
-        Log.d(TAG, "queryFromServer: " + jsonurl);
 
         OkHttpUtils.get().
                 url(jsonurl).
@@ -183,47 +198,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         else {
                             detailRes = response.getResultBean();
                             apply = detailRes.getApplys().get(0);
-                            String phone =apply.getTel();
+                            String phone = apply.getTel();
                             apply.setTel(AESUtil.decode(phone));
-//                    employee=detailRes.getEmployee().get(0);
+
                             employeeList = detailRes.getEmployee();
                             mhandler.sendEmptyMessage(3);
                         }
                     }
                 });
 
-
-//        HttpUtil.sendHttpRequest(jsonurl, new HttpCallbackListener() {
-//            @Override
-//            public void onFinish(String responseString) {
-//                //请求成功后获取到json
-//                final String responseJson = responseString.toString();
-//                Log.d(TAG, "请求成功onFinish: " + responseJson);
-//                response = JsonUtil.jsonToResponse(responseJson);
-//                if (response.getErrorType() != 0) {
-//                    //连接成功，但读取数据失败
-//                    mhandler.sendEmptyMessage(4);
-//                }
-//                //连接成功，抛到主线程更新UI
-//                else {
-//                    detailRes = response.getResultBean();
-//                    apply = detailRes.getApplys().get(0);
-////                    employee=detailRes.getEmployee().get(0);
-//                    employeeList = detailRes.getEmployee();
-//                    mhandler.sendEmptyMessage(3);
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                Response rp = new Response();
-//                rp.setErrorType(-1);
-//                rp.setError(true);
-//                rp.setErrorMessage("网络异常，返回空值");
-//                response = rp;
-//                mhandler.sendEmptyMessage(2);
-//            }
-//        });
     }
 
     private void initView() {
@@ -233,23 +216,74 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
 
+        gridView = (GridView) findViewById(R.id.gv_img);
+
+
         //星星
         star1 = (ImageView) findViewById(R.id.iv_star1);
         star2 = (ImageView) findViewById(R.id.iv_star2);
         star3 = (ImageView) findViewById(R.id.iv_star3);
         star4 = (ImageView) findViewById(R.id.iv_star4);
         star5 = (ImageView) findViewById(R.id.iv_star5);
+
+        speedstar1 = (ImageView) findViewById(R.id.iv_speed_star1);
+        speedstar2 = (ImageView) findViewById(R.id.iv_speed_star2);
+        speedstar3 = (ImageView) findViewById(R.id.iv_speed_star3);
+        speedstar4 = (ImageView) findViewById(R.id.iv_speed_star4);
+        speedstar5 = (ImageView) findViewById(R.id.iv_speed_star5);
+
+        qualitystar1 = (ImageView) findViewById(R.id.iv_quality_star1);
+        qualitystar2 = (ImageView) findViewById(R.id.iv_quality_star2);
+        qualitystar3 = (ImageView) findViewById(R.id.iv_quality_star3);
+        qualitystar4 = (ImageView) findViewById(R.id.iv_quality_star4);
+        qualitystar5 = (ImageView) findViewById(R.id.iv_quality_star5);
+
+        attutideystar1 = (ImageView) findViewById(R.id.iv_attitude_star1);
+        attutideystar2 = (ImageView) findViewById(R.id.iv_attitude_star2);
+        attutideystar3 = (ImageView) findViewById(R.id.iv_attitude_star3);
+        attutideystar4 = (ImageView) findViewById(R.id.iv_attitude_star4);
+        attutideystar5 = (ImageView) findViewById(R.id.iv_attitude_star5);
+
         star_list.add(star1);
         star_list.add(star2);
         star_list.add(star3);
         star_list.add(star4);
         star_list.add(star5);
+
+        speedList.add(speedstar1);
+        speedList.add(speedstar2);
+        speedList.add(speedstar3);
+        speedList.add(speedstar4);
+        speedList.add(speedstar5);
+
+        attitudeList.add(attutideystar1);
+        attitudeList.add(attutideystar2);
+        attitudeList.add(attutideystar3);
+        attitudeList.add(attutideystar4);
+        attitudeList.add(attutideystar5);
+
+        qualityList.add(qualitystar1);
+        qualityList.add(qualitystar2);
+        qualityList.add(qualitystar3);
+        qualityList.add(qualitystar4);
+        qualityList.add(qualitystar5);
+
+
         //评价文字
         appraise = (TextView) findViewById(R.id.tv_appraise);
         //大图片
 
-        showBigImg = (ImageView) findViewById(R.id.iv_show_big_img);
+        showBigImg = (PhotoView) findViewById(R.id.iv_show_big_img);
+        showBigImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        showBigImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                showBigImg.setVisibility(View.GONE);
+                linearLayoutDetail.setBackgroundColor(Color.WHITE);
+                Log.d(TAG, "onClick: 显示");
+            }
+        });
         //背景
         linearLayoutDetail = (LinearLayout) findViewById(R.id.ll_detail_info);
 
@@ -261,13 +295,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvName = (TextView) findViewById(R.id.tv_details_name);
         tv_date = (TextView) findViewById(R.id.tv_details_date);
         tvDealTime = (TextView) findViewById(R.id.tv_details_deal_date);
-        /// tv_place = (TextView) findViewById(R.id.tv_details_place);
-//        tv_email= (TextView) findViewById(R.id.tv_details_email);
+
 
         tvArea = (TextView) findViewById(R.id.tv_details_area);
 
 
-        // tv_employee= (TextView) findViewById(R.id.tv_details_employee);
 
         tv_describe = (TextView) findViewById(R.id.tv_details_describe);
 
@@ -278,7 +310,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvCompensation = (TextView) findViewById(R.id.tv_details_compensation);
         tvAdmin = (TextView) findViewById(R.id.tv_details_admin);
         llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
-    //    llBreakDown= (LinearLayout) findViewById(R.id.ll_break_down);
+
 
         img_status = (ImageView) findViewById(R.id.img_status);
 
@@ -308,34 +340,29 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private void clickPic(View v) {
-        ImageView iV = (ImageView) v;
+//        ImageView iV = (ImageView) v;
 //        showBigImg.setImageDrawable(iV.getDrawable());
-        showBigImg.setBackground(iV.getDrawable());
-        showBigImg.setVisibility(View.VISIBLE);
+//        Info imageViewInfo = PhotoView.getImageViewInfo(iV);
+//        showBigImg.animaFrom(imageViewInfo);
+//        showBigImg.setVisibility(View.VISIBLE);
         //设置背景
+        PhotoView view = (PhotoView) v;
+
         linearLayoutDetail.setBackgroundColor(Color.BLACK);
 
-        showBigImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showBigImg.setBackground(null);
-                showBigImg.setVisibility(View.GONE);
-                linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
-            }
-        });
+
     }
 
 
     private void bindItem() {
 
 
-     apply.setRepair(AESUtil.decode(apply.getRepair()));
+        apply.setRepair(AESUtil.decode(apply.getRepair()));
         tvName.setText(Util.setNameXX(apply.getRepair()));
 
 
         //设置故障地点
-         Util.formatArea(apply, tvArea);
-
+        Util.formatArea(apply, tvArea);
 
 
         tv_date.setText(Util.getDealTime(apply.getRepairTime()));
@@ -356,24 +383,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         visibaleFinishTime();
 
-//        String describe=apply.getClasss()+checkDetailClas(apply.getDetailClass())+","+apply.getRepairDetails();
-//        String destemp=changeRow(describe);
-//        tv_describe.setText(destemp);
         //设置故障描述
-        Util.formatBreakDown(apply,tv_describe);
-       // tv_describe.setText(destemp);
+        Util.formatBreakDown(apply, tv_describe);
         img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
         getApplyImages();
 
         img_status.setImageResource(getRightIcon());
-        if (apply.getA_imaes().size() > 0) {
-            for (int i = 0; i <= apply.getA_imaes().size() - 1; i++) {
-                Log.d(TAG, "该Apply的images集合:" + apply.getA_imaes().get(i));
-            }
-        } else {
-            Log.d(TAG, "该Apply的images集合为空");
-        }
+
 
         //直接设置员工信息 但是默认被隐藏
         // setEmployeeInf(apply.getLogisticMan());
@@ -383,8 +400,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 //            tv_employee_can.setText(employee.getJob());
 //        }
 
-
-        Log.d(TAG, "bindItem: " + apply.getServerMan());
 
 
         StringBuilder sbEmployeeName = new StringBuilder();
@@ -425,10 +440,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             tv_employee_phone.setText(employeePhone);
         }
 
-
-        Log.d(TAG, "bindItem: " + Integer.parseInt(apply.getEvaluate()));
         //设置星星
-        setStarColor(Integer.parseInt(apply.getEvaluate()));
+        setStarColor(Integer.parseInt(apply.getEvaluate()), star_list);
+        setStarColor(Integer.parseInt(apply.getQualityEval()), qualityList);
+        setStarColor(Integer.parseInt(apply.getSpeedEval()), speedList);
+        setStarColor(Integer.parseInt(apply.getAttitudeEval()), attitudeList);
         //设置评价内容
         appraise.setText(apply.getEvalText());
 
@@ -503,19 +519,46 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     list_imageView.remove(i);
                 }
             }
-            for (int i = 0; i < list_imageView.size(); i++) {
-//                mImageLoader.bindBitmap(list_imageView.get(i), imageviewList.get(i), 150, 150);
-                Picasso.with(this).load(list_imageView.get(i)).into(imageviewList.get(i));
-                LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
-                layout.height = windowHeigth / 4;
-                layout.width = (int) (windowWitch / 3.3);
-                imageviewList.get(i).setLayoutParams(layout);
-                Log.d(TAG, "执行了一次bindBitmap " + list_imageView.get(i));
-            }
+            imgAdapter = new ImgAdapter(this, list_imageView);
+            gridView.setAdapter(imgAdapter);
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    PhotoView p = (PhotoView) view;
+                    Info info = p.getInfo();
+                    Bitmap drawingCache = p.getDrawingCache();
 
-        } else {
-            Log.d(TAG, "list_imageView为0,该Apply没有图片");
+                    showBigImg.setImageBitmap(drawingCache);
+                    showBigImg.animaFrom(info);
+                    showBigImg.setVisibility(View.VISIBLE);
+//                    mBg.startAnimation(in);
+//                    mBg.setVisibility(View.VISIBLE);
+//                    mParent.setVisibility(View.VISIBLE);;
+//                    mPhotoView.animaFrom(mInfo);
+                }
+            });
+
         }
+
+//            for (int i = 0; i < list_imageView.size(); i++) {
+//
+//                Picasso.with(this).load(list_imageView.get(i))
+//                        .placeholder(R.drawable.loadimg)
+//                        .fit()
+//                        .centerCrop()
+//                        .noFade()
+//                        .into(imageviewList.get(i));
+//
+////                LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
+////                layout.height = windowHeigth / 4;
+////                layout.width = (int) (windowWitch / 3.3);
+////                imageviewList.get(i).setLayoutParams(layout);
+//                Log.d(TAG, "执行了一次bindBitmap " + list_imageView.get(i));
+//            }
+//
+//        } else {
+//            Log.d(TAG, "list_imageView为0,该Apply没有图片");
+//        }
 
     }
 
@@ -569,23 +612,21 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    private void setStarColor(int appraise) {
+    private void setStarColor(int appraise, List<ImageView> list) {
         if (appraise > 0) {
             for (int i = 0; i < appraise; i++) {
-                star_list.get(i).setColorFilter(getResources().getColor(R.color.starColor));
+                list.get(i).setColorFilter(getResources().getColor(R.color.starColor));
             }
         }
-
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-
             if (showBigImg.getVisibility() == View.VISIBLE) {
-                showBigImg.setBackground(null);
+
                 showBigImg.setVisibility(View.GONE);
-                linearLayoutDetail.setBackgroundColor(Color.rgb(211, 211, 211));
+                linearLayoutDetail.setBackgroundColor(Color.WHITE);
             } else {
                 if (isAppraisePage) {
                     Intent intent = new Intent(this, MainActivity.class);

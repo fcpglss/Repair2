@@ -47,7 +47,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 import camera.CalculateImage;
-import model.Admin;
+
 import model.Apply;
 import model.Category;
 import model.Flies;
@@ -582,25 +582,7 @@ public class Util {
 
     }
 
-    public static void writeJsonAdmin(final Admin admin, final Context mContext) {
 
-        Log.d(TAG, "writeJsonAdmin: "+admin.getEmailPassword().toString());
-        Gson gson = new Gson();
-        String adminJson = gson.toJson(admin);
-        SharedPreferences.Editor editor = mContext.getSharedPreferences("admin_inf", mContext.MODE_PRIVATE).edit();
-        editor.putString("admin_inf", adminJson);
-        editor.apply();
-        Log.d(TAG, "writeJsonAdmin: 成功将Admin信息的Json写入本地admin_inf文件中，key:admin_inf");
-    }
-
-    public static Admin loadWriteAdmin(Context mContext) {
-
-        SharedPreferences preferences = mContext.getSharedPreferences("admin_inf", mContext.MODE_PRIVATE);
-        String json = preferences.getString("admin_inf", null);
-        Admin admin=JsonUtil.jsonToAdmin(json);
-        Log.d(TAG, "loadWriteAdmin: "+admin.getEmailPassword().toString());
-        return admin;
-    }
 
 
 
@@ -730,25 +712,25 @@ public class Util {
      *
      * @param paramsKey    参数名
      * @param paramsValues 参数值
-     * @param requestURL   api地址
+     * @param noImgUrl   api地址
      * @param files        文件集合
      * @return 用于回调onResponse和onError方法
      */
-    public static RequestCall submit(String paramsKey, String paramsValues, String requestURL, String requestImgURL, List<File> files,Context context) {
+    public static RequestCall submit(String paramsKey, String paramsValues, String noImgUrl, String ImgUrl, List<File> files,Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
 
         for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("file", "file" + i + ".jpg", files.get(i));
-            Log.d(TAG, "submit: " + files.get(i).getPath());
+            postFormBuilder.addFile("fileImg", "file" + i + ".jpg", files.get(i));
+           // Log.d(TAG, "submit: " + files.get(i).getPath());
         }
 
         postFormBuilder.addParams(paramsKey, paramsValues);
-        if (files.size() > 0) {
-            postFormBuilder.url(requestImgURL);
-        } else {
-            postFormBuilder.url(requestURL);
-        }
 
+        if (files.size() > 0) {
+            postFormBuilder.url(ImgUrl);
+        } else {
+            postFormBuilder.url(noImgUrl);
+        }
         return postFormBuilder.build();
     }
 
@@ -778,6 +760,7 @@ public class Util {
     public static RequestCall submit(String requestURL,Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         postFormBuilder.url(requestURL);
+
         return postFormBuilder.build();
     }
     public static RequestCall submit(String paramsKey, String paramsValues,String parmasKey,String v2,String p3,String v3, String p4 ,String v4,String requestURL) {
