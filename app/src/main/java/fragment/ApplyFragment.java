@@ -301,8 +301,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         btn_apply = (Button) view.findViewById(R.id.btn_apply);
 
 
-        //滚动
-        svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
+//        //滚动
+//        svBackground = (ScrollView) view.findViewById(R.id.sv_apply);
 
         sweetAlertDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE);
 
@@ -1090,11 +1090,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 //                upApply();
                 break;
 
-            case R.id.btn_clear:
-
-                clearAll();
-
-                break;
+//            case R.id.btn_clear:
+//
+//                clearAll();
+//
+//                break;
 
 
             case R.id.iv_add:

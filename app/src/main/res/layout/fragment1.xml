@@ -15,19 +15,20 @@
             android:id="@+id/ll1"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen32"
-
             android:background="#ffffff"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <TextView
+                android:paddingTop="4dp"
+                android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="报修页面"
-                android:textColor="#e45534"
-                android:textSize="@dimen/text_subtitle" />
+                android:text="报修列表"
+                android:textColor="@color/ColorHeadColor"
+                android:textSize="@dimen/text_button_text"  />
 
             <LinearLayout
                 android:id="@+id/ll_arr_in"
@@ -36,6 +37,7 @@
                 android:gravity="center">
 
                 <TextView
+                    android:paddingTop="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/dimen4"
@@ -44,8 +46,9 @@
                     android:textSize="@dimen/text_button_text" />
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:paddingTop="4dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginRight="@dimen/dimen16"
                     android:src="@drawable/arr_in" />
 

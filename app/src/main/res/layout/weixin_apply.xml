@@ -20,6 +20,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:background="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none">
@@ -27,8 +28,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/ColorText_Icons"
+            android:layout_height="match_parent"
+
             android:orientation="vertical">
 
             <LinearLayout
@@ -809,7 +810,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/dimen16"
                 android:layout_marginTop="8dp"
                 android:gravity="center">
@@ -832,19 +833,7 @@
 
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/ll_big_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000"
-        android:visibility="gone"
-        >
 
-        <ImageView
-            android:id="@+id/iv_big_img"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
 
 
 </LinearLayout>

@@ -153,8 +153,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
         mLinearLayout = (LinearLayout) findViewById(R.id.ll_chat);
         mFriendLayout = (LinearLayout) findViewById(R.id.ll_friend);
         mContactLayout = (LinearLayout) findViewById(R.id.ll_contact);
-        mTop2Layout = (LinearLayout) findViewById(R.id.ll_top2);
-        mSeachText = (EditText) findViewById(R.id.et_seach);
+
 
         tvHead = (TextView) findViewById(R.id.tv_head);
 
