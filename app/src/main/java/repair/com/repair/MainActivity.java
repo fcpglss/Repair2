@@ -55,12 +55,8 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
     public static int windowHeigth;
 
 
-    public static Uri photoUri;
-
     public static List<Uri> list_uri = new ArrayList<>();
-    public static Uri[] arrayUri2 = new Uri[3];
 
-    public static final boolean REQUEST = false;
     @BindView(R.id.iv_home)
     ImageView ivHome;
     @BindView(R.id.iv_repair)
@@ -78,26 +74,19 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
     private LinearLayout mLinearLayout;
     private LinearLayout mContactLayout;
     private LinearLayout mFriendLayout;
-    private LinearLayout mTop2Layout;
-    private EditText mSeachText; //
+
     private TextView mchat;
     private TextView mfriend;
     private TextView mcontact;
 
     private ApplyFragment applyFragment;
     private MainFragment mainFragment;
-    // private StatisticsFragment statisticsFragment;
+
     private MyRepairFragment myRepairFragment;
 
     private static int Screen1_3;
 
     private TextView tvHead;
-
-    private ImageView ivMenu;
-
-
-    //菜单项
-    private TextView itemAdmin;
 
 
     @Override
@@ -105,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ButterKnife.bind(this);
-        Log.d(TAG, "onCreate");
+
         //获取屏幕宽高
         setWitchAndHeigth();
 
@@ -125,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
 
-        //��ȡ��Ļ�Ŀ��
+
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
@@ -137,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
 
         mainFragment = new MainFragment();
         applyFragment = new ApplyFragment();
-        //  statisticsFragment = new StatisticsFragment();
+
         myRepairFragment = new MyRepairFragment();
 
         mList.add(mainFragment);
@@ -157,24 +146,10 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
 
         tvHead = (TextView) findViewById(R.id.tv_head);
 
-        //菜单选项
-
-        ivMenu = (ImageView) findViewById(R.id.iv_menu);
-        //菜单图片 现在先直接跳转管理页面
-        ivMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//                startActivity(intent);
-            }
-        });
-
 
     }
 
-    /**
-     * ��ʼ������
-     */
+
     private void initData() {
 
 
@@ -209,11 +184,10 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
                 }
             }
 
-            //�ı�ָʾ��
+
             @Override
             public void onPageScrolled(int position, float offset, int arg2) {
-                // TODO Auto-generated method stub
-                Log.e("TAG", position + "," + offset + "," + arg2);
+
                 LayoutParams lp = (LayoutParams) miImageView.getLayoutParams();
                 lp.leftMargin = (int) ((position + offset) * Screen1_3);
                 miImageView.setLayoutParams(lp);
@@ -250,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
         mLinearLayout.setOnClickListener(linearLayoutListener);
         mContactLayout.setOnClickListener(linearLayoutListener);
         mFriendLayout.setOnClickListener(linearLayoutListener);
-//        mSeachText.setOnClickListener(linearLayoutListener);
+
     }
 
 
@@ -299,14 +273,13 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("Apply_Activity", " resultCode=" + RESULT_OK + "  requestCode=" + requestCode);
+
         if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO_RAW) {
             MainActivity.list_uri.add(Uri.fromFile(ApplyFragment.fileUri));
         }
         if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE) {
             list_uri.add(data.getData());
-            Log.d(TAG, "addItem");
-            Log.i("Apply_Activity", "GalleryUri:    " + data.getData().getPath());
+
         }
     }
 
@@ -317,27 +290,6 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
         windowWitch = dm.widthPixels;
         windowHeigth = dm.heightPixels;
     }
-
-
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            Log.d(TAG, "onKeyDown: 1 ");
-//            if(applyFragment.sweetAlertDialog!=null &&applyFragment.sweetAlertDialog.isShowing()){
-//                applyFragment.sweetAlertDialog.dismiss();
-//            }
-//        }
-////            if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
-////                applyFragment.RlIsVisable().setVisibility(View.GONE);
-//////                linearLayoutDetail.setBackgroundColor(Color.rgb(211,211,211));
-////            } else {
-////                Log.d(TAG, "onKeyDown: 返回了main");
-////                this.finish();
-////            }
-////        }
-//        return super.onKeyDown(keyCode,event);
-////        return true;
-//    }
 
 
     /**
@@ -353,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-            Log.d(TAG, "onKeyUp:  1");
+
             //图片放大 变小
             if (applyFragment.RlIsVisable() != null && applyFragment.RlIsVisable().getVisibility() == View.VISIBLE) {
                 if (applyFragment.bigImageView() != null) {

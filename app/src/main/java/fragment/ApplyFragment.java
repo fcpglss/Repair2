@@ -91,15 +91,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private static final String TAG = "ApplyFragment";
 
 
-
-    private boolean isFirst = true;
-
     private EditText et_name, et_tel, et_describe;
 
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails, etAddressDetail;
     //对话框点击显示下一级
-    private LinearLayout llApplyArea, llApplyDetailArea, llApplyBigFloorRoom, llApplyFloor, llApplyRoom, llApplyType, llApplyDetailType;
+    private LinearLayout  llApplyDetailArea, llApplyFloor, llApplyRoom, llApplyType, llApplyDetailType;
 
     private LinearLayout llPhoneLine, llNameLine, llPasswordLine, llEmailLine, llAreaLine, llPlaceLine, llFliesLine;
 
@@ -122,8 +119,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private List<DetailClass> newDetailClass = new ArrayList<>();
 
 
-    //滚动
-    private ScrollView svBackground;
+
     private Button btn_apply;
     private ImageView img_add, img_1, img_2, img_3;
 
@@ -387,11 +383,9 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
             }
         });
-        
 
-        llApplyArea = (LinearLayout) view.findViewById(R.id.ll_apply_area);
         llApplyDetailArea = (LinearLayout) view.findViewById(R.id.ll_apply_detail_area);
-        llApplyBigFloorRoom = (LinearLayout) view.findViewById(R.id.ll_apply_big_floor_room);
+//        llApplyBigFloorRoom = (LinearLayout) view.findViewById(R.id.ll_apply_big_floor_room);
         llApplyFloor = (LinearLayout) view.findViewById(R.id.ll_apply_floor);
         llApplyRoom = (LinearLayout) view.findViewById(R.id.ll_apply_room);
         llApplyType = (LinearLayout) view.findViewById(R.id.ll_apply_type);
@@ -428,9 +422,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         setClearEditText();
         setEditTextBackground();
         setEditTextOnTouch();
-
-//        setAreaDialog();
-
+        resetVisible();
     }
 
     private boolean check() {
@@ -452,7 +444,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
 
     private boolean getContent(EditText e) {
-        Log.d(TAG, "check getContent: " + e.getText().toString().equals(""));
+
         return !e.getText().toString().equals("") ;
     }
 
@@ -512,13 +504,12 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         Log.d(TAG, "setBigImg: 图片点击了");
         ImageView iv = (ImageView) v;
         llBigImg.setVisibility(View.VISIBLE);
-//        ivBigImg.setImageDrawable(iv.getDrawable());
+
         ivBigImg.setBackground(iv.getDrawable());
         ivBigImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 llBigImg.setVisibility(View.GONE);
-//                ivBigImg.setImageDrawable(null);
                 ivBigImg.setBackground(null);
             }
         });
@@ -821,10 +812,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 etFloor.setText("");
                 etRoom.setText("");
                 //清空下一级可见
-                llApplyDetailArea.setVisibility(View.INVISIBLE);
-                llApplyBigFloorRoom.setVisibility(View.GONE);
-                llApplyFloor.setVisibility(View.INVISIBLE);
-                llApplyRoom.setVisibility(View.INVISIBLE);
+                llApplyDetailArea.setVisibility(View.VISIBLE);
+//                llApplyBigFloorRoom.setVisibility(View.GONE);
+                llApplyFloor.setVisibility(View.GONE);
+                llApplyRoom.setVisibility(View.GONE);
                 //清空存放好的Id
                 placeId = 0;
                 flieId = 0;
@@ -835,9 +826,9 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 etFloor.setText("");
                 etRoom.setText("");
                 //清空下一级可见
-                llApplyBigFloorRoom.setVisibility(View.GONE);
-                llApplyFloor.setVisibility(View.INVISIBLE);
-                llApplyRoom.setVisibility(View.INVISIBLE);
+//                llApplyBigFloorRoom.setVisibility(View.GONE);
+                llApplyFloor.setVisibility(View.VISIBLE);
+                llApplyRoom.setVisibility(View.GONE);
                 //清空存放好的Id
                 flieId = 0;
                 roomId = 0;
@@ -846,14 +837,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                 //点击区域清空   房间
                 etRoom.setText("");
                 //清空下一级可见
-                llApplyRoom.setVisibility(View.INVISIBLE);
+                llApplyRoom.setVisibility(View.VISIBLE);
                 //清空存放好的Id
                 roomId = 0;
                 break;
             case R.id.et_apply_type:
                 //清空详细类型
                 etApplyTypeDetails.setText("");
-                llApplyDetailType.setVisibility(View.INVISIBLE);
+                llApplyDetailType.setVisibility(View.VISIBLE);
                 detailTypeID = 0;
                 break;
         }
@@ -1001,14 +992,14 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("MainFragment", "Apply_onPause");
+        Log.d(TAG, "onPause");
     }
 
     @Override
     public void onStop() {
 
         super.onStop();
-        Log.d("MainFragment", "Apply_onStop");
+        Log.d(TAG, "onStop");
     }
 
     @Override
@@ -1086,15 +1077,10 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         switch (view.getId()) {
             case R.id.btn_apply:
-                //bindView();
-//                upApply();
+
                 break;
 
-//            case R.id.btn_clear:
-//
-//                clearAll();
-//
-//                break;
+
 
 
             case R.id.iv_add:
@@ -1304,6 +1290,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         rl2.setVisibility(View.GONE);
         rl3.setVisibility(View.GONE);
         list_uri.clear();
+
         resetVisableAlways();
     }
 
@@ -1325,7 +1312,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         //进来就全部不可见
         llApplyDetailArea.setVisibility(View.GONE);
-        llApplyBigFloorRoom.setVisibility(View.GONE);
+//        llApplyBigFloorRoom.setVisibility(View.GONE);
         llApplyFloor.setVisibility(View.GONE);
         llApplyRoom.setVisibility(View.GONE);
         llApplyDetailType.setVisibility(View.GONE);
@@ -1338,7 +1325,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         }
         if (!etDetailArea.getText().toString().equals("其它") && !etDetailArea.getText().toString().equals("")) {
             Log.d(TAG, "resetVisible: " + etDetailArea.getText());
-            llApplyBigFloorRoom.setVisibility(View.VISIBLE);
+//            llApplyBigFloorRoom.setVisibility(View.VISIBLE);
             llApplyFloor.setVisibility(View.VISIBLE);
         }
         if (!etFloor.getText().toString().equals("其它") && !etFloor.getText().toString().equals("")) {
@@ -1354,7 +1341,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private void resetVisableAlways() {
         //进来就全部不可见
         llApplyDetailArea.setVisibility(View.GONE);
-        llApplyBigFloorRoom.setVisibility(View.GONE);
+//        llApplyBigFloorRoom.setVisibility(View.GONE);
         llApplyFloor.setVisibility(View.GONE);
         llApplyRoom.setVisibility(View.GONE);
         llApplyDetailType.setVisibility(View.GONE);

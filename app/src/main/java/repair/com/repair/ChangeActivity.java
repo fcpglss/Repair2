@@ -99,9 +99,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
     //包含editText 的 LinearLayout
     private LinearLayout llDetailType, llContain, llFloor, llRoom, llDetailArea;
-    //记录区域ID
-    int AreaId;
-    int PlaceId;//楼号ID
+
     // 添加层号 房间号
     private EditText etFloor, etRoom;
 
@@ -110,10 +108,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     //对话框
     SweetAlertDialog sweetAlertDialog;
-    //滚动
-    private ScrollView svBackground;
+
     private Button btn_apply;
-    private ImageView image_camera, img_add, img_1, img_2, img_3;
+    private ImageView  img_add, img_1, img_2, img_3;
 
     private RelativeLayout rl1, rl2, rl3;
     //打叉图片
@@ -122,7 +119,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private LinearLayout llBigImg;
     private ImageView ivBigImg;
 
-    private Button btn_clear;
+
 
     private List<ImageView> imageViewList = new ArrayList<>();
 
@@ -131,10 +128,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     public static ResultBean addressRes = null;
 
     private SVProgressHUD svProgressHUD;
-
-
-    //用于存放报修区域，报修楼号，报修类型，报修详情的list,放入适配器在对话框显示
-    private List<String> listArea = new ArrayList<>();
 
 
     private int areaId = 0;
@@ -216,8 +209,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         }
 
     };
-    //对话框
-    DialogPlus dialogArea;
 
     DialogPlus dialogGetImage;
 
@@ -416,8 +407,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         });
 
 
-        //滚动
-        svBackground = (ScrollView) findViewById(R.id.sv_change_apply);
 
         /**
          * 初始化Dialog
@@ -518,10 +507,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         et_describe.setText(changeApply.getRepairDetails());
         et_details.setText(changeApply.getAddressDetail());
 
-//        areaId = getAreaID(etArea.getText().toString());
-//        placeId = getDetailId(etDetailArea.getText().toString());
-//        categoryId = getCategoryID(etApplyType.getText().toString());
-//        detailTypeID=getDetailTypeID(etApplyType.getText().toString(),etApplyTypeDetails.getText().toString());
+
 
         if(changeApply.getA_imaes()!=null){
             for (String s : changeApply.getA_imaes()) {
@@ -558,7 +544,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         }
                         imgFile = FIleUtils.createImageFile();
                         try {
-//                            Log.d(TAG, "doInBackground: 文件 " + imgFile.toString());
                             out = new FileOutputStream(imgFile);
                             //有图片
                             if (bitmap != null) {
@@ -570,7 +555,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
                 return imgFileList;

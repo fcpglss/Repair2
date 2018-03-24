@@ -22,11 +22,8 @@ import static repair.com.repair.MainActivity.windowWitch;
  */
 
 public class DialogUtil {
-    static ResetVisable resetVisable ;
-    public static DialogPlusBuilder getDialogBuilder(Context context, DialogAdapter dialogAdapter, int layout,ResetVisable reset) {
 
-
-        resetVisable=reset;
+    public static DialogPlusBuilder getDialogBuilder(Context context, DialogAdapter dialogAdapter, int layout,final ResetVisable reset) {
 
 
         DialogPlusBuilder dialogPlusBuilder = DialogPlus.newDialog(context)
@@ -36,7 +33,7 @@ public class DialogUtil {
                 .setOnDismissListener(new OnDismissListener() {
                     @Override
                     public void onDismiss(DialogPlus dialog) {
-                        resetVisable.resetVisible();
+                        reset.resetVisible();
                     }
                 })
                 .setContentWidth((int) (windowWitch / 1.5))
