@@ -33,7 +33,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
 
-
+    compile 'me.codeboy.android:align-text-view:2.3.2'
     compile 'com.bm.photoview:library:1.4.1'
 
     //Gson

@@ -18,8 +18,7 @@ import model.ResultBean;
 
 public abstract  class BasActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener,View.OnClickListener{
 
-    private ResultBean adminRes;
-    private Response adminResponse;
+
     private SVProgressHUD svProgressHUD;
     private WaterDropListView waterDropListView;
 

@@ -97,7 +97,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -204,39 +206,221 @@
 
                 </LinearLayout>
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
+                        <ImageView
+                            android:id="@+id/iv_icon"
+                            android:layout_width="16dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@mipmap/ic_launcher"
+                            android:visibility="invisible" />
+
                         <TextView
+                            android:id="@+id/tv_left"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
                             android:text="故障地点"
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
-                        <TextView
+                        <me.codeboy.android.aligntextview.AlignTextView
                             android:id="@+id/tv_details_area"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:maxLines="5"
-                            android:layout_gravity="right"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="90dp"
+                            android:layout_toLeftOf="@id/iv_icon"
                             android:lineSpacingExtra="4dp"
-                            android:layout_marginRight="@dimen/dimen16"
+                            android:maxLines="5"
+                            android:text=""
                             android:textSize="@dimen/text_button_text" />
 
-                    </LinearLayout>
+                    </RelativeLayout>
 
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/iv_class_icon"
+                            android:layout_width="16dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@mipmap/ic_launcher"
+                            android:visibility="invisible" />
+
+                        <TextView
+                            android:id="@+id/tv_class_left"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="故障"
+                            android:textColor="@color/ColorPrimaryText"
+                            android:textSize="@dimen/text_button_text" />
+
+                        <me.codeboy.android.aligntextview.AlignTextView
+                            android:id="@+id/tv_details_describe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="90dp"
+                            android:layout_toLeftOf="@id/iv_class_icon"
+                            android:lineSpacingExtra="4dp"
+                            android:maxLines="5"
+                            android:text=""
+                            android:textSize="@dimen/text_button_text" />
+
+                    </RelativeLayout>
+
+
+                </LinearLayout>
+
+
+                <!--图片的GridView-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp">
+
+                    <GridView
+                        android:id="@+id/gv_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:horizontalSpacing="5dp"
+                        android:numColumns="3"
+                        android:verticalSpacing="5dp"></GridView>
+                </LinearLayout>
+
+
+                <!--维修进度-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/ColorText_Icons"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="8dp">
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="维修进度"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:background="#ffffff"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/dimen8"
+                    android:paddingRight="@dimen/dimen8">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="75dp"
+                                android:layout_height="wrap_content"
+                                android:text="维修状态"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_button_text" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                            </LinearLayout>
+
+
+                            <ImageView
+                                android:id="@+id/img_status"
+                                android:layout_width="@dimen/dimen32"
+                                android:layout_height="@dimen/dimen24" />
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="75dp"
+                                android:layout_height="wrap_content"
+                                android:text="处理时间"
+                                android:textColor="@color/ColorPrimaryText"
+                                android:textSize="@dimen/text_button_text" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                            </LinearLayout>
+
+
+                            <TextView
+                                android:id="@+id/tv_details_deal_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:gravity="right"
+                                android:textSize="@dimen/text_button_text" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!--维修组长-->
+                <LinearLayout
+                    android:id="@+id/ll_thirdMan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -244,185 +428,13 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:text="故障"
-                            android:textColor="@color/ColorPrimaryText"
-                            android:textSize="@dimen/text_button_text" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/img_category"
-                            android:layout_width="28dp"
-                            android:layout_height="20dp" />
-
-                        <TextView
-                            android:id="@+id/tv_details_category"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
-                            android:gravity="right"
-                            android:textSize="@dimen/text_button_text" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/ll_break_down"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:background="#ffffff"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_width="80dp"
-                                android:layout_height="wrap_content"
-                                android:text="故障"
-                                android:textColor="@color/ColorPrimaryText"
-                                android:textSize="@dimen/text_button_text" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/tv_details_describe"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:maxLines="5"
-                                android:lineSpacingExtra="4dp"
-                                android:text=""
-                                android:layout_weight="1"
-
-                                android:layout_marginRight="16dp"
-                                android:textColor="#BF383838" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_marginTop="8dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <GridView
-                            android:id="@+id/gv_img"
-                            android:horizontalSpacing="5dp"
-                            android:numColumns="3"
-                            android:verticalSpacing="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                        </GridView>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:gravity="left"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/img_pc1"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="150dp"
-                            android:padding="2dp"
-                          />
-
-                        <ImageView
-                            android:id="@+id/img_pc2"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="150dp"
-                            android:padding="2dp"
-                            />
-
-                        <ImageView
-                            android:id="@+id/img_pc3"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="150dp"
-                            android:padding="2dp"
-                          />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="@color/ColorDividerColor">
-
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="@color/ColorText_Icons"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="8dp">
-
-                <TextView
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="维修进度"
-                    android:textColor="@color/ColorPrimaryText"
-                    android:textSize="@dimen/text_subtitle" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:background="#ffffff"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/dimen8"
-                android:paddingRight="@dimen/dimen8">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
                             android:layout_height="wrap_content"
-                            android:text="维修状态"
+                            android:text="维修组长"
                             android:textColor="@color/ColorPrimaryText"
                             android:textSize="@dimen/text_button_text" />
 
@@ -433,55 +445,8 @@
 
                         </LinearLayout>
 
-
-                        <ImageView
-                            android:id="@+id/img_status"
-                            android:layout_width="@dimen/dimen32"
-                            android:layout_height="@dimen/dimen24" />
-
                         <TextView
-                            android:id="@+id/tv_details_details"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
-                            android:gravity="right"
-                            android:textSize="@dimen/text_button_text" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:text="处理时间"
-                            android:textColor="@color/ColorPrimaryText"
-                            android:textSize="@dimen/text_button_text" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-
-                        </LinearLayout>
-
-
-                        <ImageView
-
-                            android:layout_width="28dp"
-                            android:layout_height="20dp" />
-
-                        <TextView
-                            android:id="@+id/tv_details_deal_date"
+                            android:id="@+id/tv_thirdMan"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="16dp"
@@ -493,6 +458,7 @@
 
                 </LinearLayout>
 
+                <!--完成时间-->
                 <LinearLayout
                     android:id="@+id/ll_finish_time"
                     android:layout_width="match_parent"
@@ -502,7 +468,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -538,7 +505,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -568,7 +536,7 @@
                             android:id="@+id/tv_paigong"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="16dp"
+                            android:layout_marginRight="8dp"
                             android:gravity="right"
                             android:text="未派工"
                             android:textSize="@dimen/text_button_text"
@@ -592,7 +560,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="4dp">
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -610,7 +578,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="4dp">
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -645,11 +614,12 @@
 
 
                 <LinearLayout
+                    android:id="@+id/ll_detail_deal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:id="@+id/ll_detail_deal"
                     android:visibility="gone">
+
                     <LinearLayout
                         android:id="@+id/ll_detail_compensation"
                         android:layout_width="match_parent"
@@ -658,7 +628,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp">
 
                             <TextView
                                 android:layout_width="75dp"
@@ -678,7 +649,7 @@
                                 android:id="@+id/tv_details_compensation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginRight="16dp"
+                                android:layout_marginRight="8dp"
                                 android:gravity="right"
                                 android:textSize="@dimen/text_button_text" />
 
@@ -696,7 +667,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp">
 
                             <TextView
                                 android:id="@+id/textView3"
@@ -735,7 +707,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp">
 
                             <TextView
                                 android:layout_width="75dp"
@@ -767,14 +740,14 @@
                 </LinearLayout>
                 <!--维修速度-->
                 <LinearLayout
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -820,6 +793,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -834,7 +808,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -880,6 +855,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -894,7 +870,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -940,6 +917,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -954,7 +932,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -1000,14 +979,13 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
 
 
                 </LinearLayout>
-
-
 
 
                 <LinearLayout
@@ -1029,25 +1007,25 @@
                     </LinearLayout>
 
 
-
                 </LinearLayout>
 
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp">
 
                     <TextView
-                        android:layout_marginLeft="@dimen/dimen16"
-                        android:layout_marginRight="@dimen/dimen16"
                         android:id="@+id/tv_appraise"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen16"
+                        android:layout_marginRight="8dp"
                         android:maxLines="5"
                         android:minLines="5"
-
                         android:text=""
-                        android:textColor="#BF383838" />
+                        android:textColor="#BF383838"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
 

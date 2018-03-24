@@ -63,4 +63,12 @@ public class AppUpdate {
         return version;
     }
 
+
+    public  static int getVerisonCode(Activity context) throws PackageManager.NameNotFoundException {
+        PackageManager packageManager =context.getPackageManager();
+        PackageInfo pi =packageManager.getPackageInfo(context.getPackageName(),0);
+        int version  =pi.versionCode;
+        return version;
+    }
+
 }

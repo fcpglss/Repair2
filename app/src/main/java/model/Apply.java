@@ -40,6 +40,16 @@ public class Apply implements Serializable {
 
     private String addressDetail;
 
+    private String thirdLogisticMan;
+
+    public String getThirdLogisticMan() {
+        return thirdLogisticMan;
+    }
+
+    public void setThirdLogisticMan(String thirdLogisticMan) {
+        this.thirdLogisticMan = thirdLogisticMan;
+    }
+
     public String getAddressDetail() {
         return addressDetail;
     }

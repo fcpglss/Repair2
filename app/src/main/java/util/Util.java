@@ -65,51 +65,18 @@ public class Util {
 
     private static final String TAG = "Util";
 
-    private  static View.OnTouchListener touch;
 
-
-    private EdiTTouch ed;
-
-
-    public static boolean validateString(String validateString){
-        boolean illegality =false;
-        Log.d(TAG, "validateString: "+validateString);
+    public static boolean validateString(String validateString) {
+        boolean illegality = false;
+        Log.d(TAG, "validateString: " + validateString);
         String regEx = "[@#$%^&*\\[\\]/@#￥%……&*——{}【]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(validateString);
-        illegality=m.find();
-        Log.d(TAG, "validateString: "+illegality);
+        illegality = m.find();
+        Log.d(TAG, "validateString: " + illegality);
         return !illegality;
     }
 
-    public static int convertToInt(Object value, int defaultValue) {
-        if (value != null || "".equals(value.toString().trim())) {
-            return defaultValue;
-        }
-        try {
-            return Integer.valueOf(value.toString());
-        } catch (Exception e) {
-            try {
-                return Double.valueOf(value.toString()).intValue();
-
-            } catch (Exception e2) {
-                return defaultValue;
-            }
-        }
-    }
-
-    public static String convertToString(Object value, String defaultString) {
-        if (value != null || "".equals(value.toString().trim())) {
-            return defaultString;
-        }
-        try {
-            return value.toString();
-        } catch (Exception e) {
-
-            return defaultString;
-        }
-
-    }
 
     /**
      * 获取cache目录路径
@@ -122,404 +89,169 @@ public class Util {
         }
     }
 
-    /**
-     * ����¥������ȡ��¥�ŵ�ID
-     *
-     * @param detailAreaName ,¥����
-     * @param listPlace      ,��DetailArea�л�ȡ������
-     * @return
-     */
-    public static int getDetailAreaId(String detailAreaName, List<Place> listPlace) {
-        if (detailAreaName != null && !detailAreaName.equals("")) {
-            for (Place place : listPlace) {
-
-                return place.getP_id();
-            }
-            return -2;
-        }
-        return -2;
-    }
-
-    public static int getCategoryId(String className, List<Category> listCategory) {
-        if (className != null && !className.equals("")) {
-            for (Category category2 : listCategory) {
-                if (category2.getC_name().equals(className))
-                    return category2.getC_id();
-            }
-            return -2;
-        }
-        return -2;
-    }
-
-    /**
-     * ���ݲ����,¥��ID,��ȡ���ID
-     *
-     * @param placeId   ¥�ŵ�ID
-     * @param fliesName �����
-     * @param listFlies Flies���е�����
-     * @return
-     */
-    public static int getFlies(int placeId, String fliesName, List<Flies> listFlies) {
-        if (fliesName != null && !fliesName.equals("")) {
-            for (Flies flies : listFlies) {
-                if (placeId == flies.getaFloor()) {
-                    if (fliesName.equals(flies.getFlies())) {
-                        return flies.getId();
-                    }
-                }
-
-            }
-            return 0;
-        } else {
-            return 0;
-        }
-
-    }
-
-    public static int getRoomId(int fliesId, String roomName, List<Room> listRoom) {
-        if (fliesId == 0) {
-            return 0;
-        }
-        if (roomName != null && !roomName.equals("")) {
-            for (Room romm : listRoom) {
-                if (fliesId == romm.getFlies()) {
-                    if (roomName.equals(romm.getRoomNumber())) {
-                        return romm.getId();
-                    }
-                }
-
-            }
-            return 0;
-        } else {
-            return 0;
-        }
-    }
-
-//    //为放置flies层号，房间号为null设置
-//    public static String setTitle(Apply apply) {
-//        String address = "";
-//        String detailAr=apply.getDetailArea();
-//        if(TextUtils.isEmpty(detailAr)||detailAr.equals("null"))
-//        {
-//            detailAr="";
-//        }
-//        String flies = apply.getFlies();
-//        String room = apply.getRoom();
-//        if (flies != null && !flies.equals("")) {
-//            address = apply.getArea() + " " + detailAr + flies;
-//            if (room != null && !room.equals("")) {
-//                address = apply.getArea() + " " + detailAr + flies + apply.getRoom();
-//            }
-//        } else {
-//            address = apply.getArea() + " " + detailAr; //没有层号的时候 可在后面加其他地址
-//        }
-//        return address;
-//    }
-
-    public static String setAddress(Apply apply,int length,boolean isTitle) {
-        String address = "";
-        String detailAr=apply.getDetailArea();
-        if(TextUtils.isEmpty(detailAr)||detailAr.equals("null"))
-        {
-            detailAr="";
-        }
-        String flies = apply.getFlies();
-        String room = apply.getRoom();
-        String addressDetail=apply.getAddressDetail();
-        if (detailAr==null||"null".equals(detailAr)||"".equals(detailAr)){
-          address=apply.getArea();
-        }else {
-            if (flies != null && !flies.equals("")) {
-                address = apply.getDetailArea() + flies;
-                if (room != null && !room.equals("")) {
-                    address = apply.getArea()+apply.getDetailArea() + flies + apply.getRoom();
-                }
-            } else {
-                address = apply.getArea() + apply.getDetailArea(); //没有层号的时候 可在后面加其他地址
-            }
-        }
-        if(addressDetail!=null)
-        {
-            if(addressDetail.equals("null")||addressDetail.equals(""))
-            {
-
-            }
-            else
-            {
-                address=address+","+addressDetail;
-            }
-        }
-        if(isTitle)
-        {
-            if(address.length()>length)
-            {
-                String temp=address.substring(0,length-2);
-                String end="...";
-                address=temp+end;
-            }
-        }
-        else
-        {
-            if(address.length()>length)
-            {
-                String temp=address.substring(0,length-1);
-                String end=address.substring(length-1,address.length());
-                address=temp+"\n"+end;
-            }
-        }
-        return address;
-    }
 
     public static String setContentTitle(Apply apply) {
         String address = apply.getArea();
-        String detailAr=apply.getDetailArea();
+        String detailAr = apply.getDetailArea();
 
         String flies = apply.getFlies();
         String room = apply.getRoom();
-        String addressDetail=apply.getAddressDetail();
+        String addressDetail = apply.getAddressDetail().replace("\\s*", "");
 
-        StringBuffer sb =new StringBuffer(address);
+        StringBuffer sb = new StringBuffer();
+        String result = "";
 
-        String result="";
+        sb.append(address).append(detailAr).append(flies).append(room);
+        result = sb.toString();
 
-        int rawLineLen = 18;
-
-
-        Log.d(TAG, "formatArea: "+flies);
-
-        //检查楼名是否为空
-        if(TextUtils.isEmpty(detailAr) || "null".equals(detailAr) ) {
-            sb.append("，");
-        } else {
-            if("其它".equals(detailAr)) {
-                sb.append("，");
-            } else {
-                sb.append(detailAr);
-
-                //检查层数是否为空
-                if(TextUtils.isEmpty(flies) || "null".equals(flies)){
-                    sb.append("，");
+        result = result.replace("null", "");
+        boolean isNull = (!TextUtils.isEmpty(addressDetail));
+        if (result.length() > 18) {
+            result = result.substring(0, 18) + "...";
+        } else if (result.length() > 10) {
+            if (result.contains("其它")) {
+                if (isNull) {
+                    result = result.replace("其它", "，" + addressDetail);
                 } else {
+                    result = result.replace("其它", "");
+                }
 
-                    if("其它".equals(flies)) {
+            }
+        } else {
 
-                        sb.append("，");
+            if (result.contains("其它")) {
+                if (result.indexOf("其它") != 2) {
+                    if (isNull) {
+                        result = result + "，" + addressDetail;
                     } else {
 
-                        sb.append(flies);
-                        Log.d(TAG, "formatArea: " +sb.toString());
-                        //检查房间数
-                        if(TextUtils.isEmpty(room) || "null".equals(room)){
-                            sb.append("，");
-                        } else {
-                            if("其它".equals(room)) {
-                                sb.append("，");
-                            } else {
-                                sb.append(room).append("，");
-                            }
-                        }
                     }
 
+                } else {
+                    if (isNull) {
+                        result = result.replace("其它", "，" + addressDetail);
+                    } else {
+                        result = result.replace("其它", "");
+                    }
 
                 }
 
-
             }
-
-
         }
-        if(!(TextUtils.isEmpty(addressDetail))){
-            sb.append(addressDetail);
-            result=sb.toString();
+
+        if (result.length() > 18) {
+            result = result.substring(0, 18) + "...";
+        }
+
+        return result;
+    }
+
+    public static String setClass(Apply apply, int length, boolean isTitle) {
+        String result = "";
+        String classs = apply.getClasss();
+        String detailClas = apply.getDetailClass();
+        String repairDetail = apply.getRepairDetails();
+        boolean isNull = false;
+        if (detailClas == null || detailClas.equals("")) {
+            isNull = true;
+            result = classs;
         } else {
-            result= sb.substring(0,sb.length()-1);
-        }
-        Log.d(TAG, "setContentTitle: "+result);
-
-
-        if(result.length()>18){
-            result=result.substring(0,18)+"...";
-        }
-        Log.d(TAG, "setContentTitle: "+result);
-        return result;
-    }
-
-    public static String setClass(Apply apply,int length,boolean isTitle)
-    {
-        String result="";
-        String classs=apply.getClasss();
-        String detailClas=apply.getDetailClass();
-        String repairDetail=apply.getRepairDetails();
-        boolean isNull=false;
-        if(detailClas==null||detailClas.equals(""))
-        {
-            isNull=true;
-           result=classs;
-        }
-        else
-        {
-            String temp=detailClas;
-                temp="("+temp+")";
-                result=classs+temp;
+            String temp = detailClas;
+            temp = "(" + temp + ")";
+            result = classs + temp;
         }
 
-        if(repairDetail!=null)
-        {
-            if(repairDetail.equals("null")||repairDetail.equals(""))
-            {
+        if (repairDetail != null) {
+            if (repairDetail.equals("null") || repairDetail.equals("")) {
 
-            }
-            else
-            {
-                Log.d(TAG, "setClass: "+repairDetail);
-                    result=result+","+repairDetail;
+            } else {
+                Log.d(TAG, "setClass: " + repairDetail);
+                result = result + "," + repairDetail;
             }
 
         }
-        if(isTitle)
-        {
-            if(result.length()>length)
-            {
-                String temp=result.substring(0,length-2);
-                String end="...";
-                result=temp+end;
+        if (isTitle) {
+            if (result.length() > length) {
+                String temp = result.substring(0, length - 2);
+                String end = "...";
+                result = temp + end;
             }
-        }
-        else
-        {
-            if(result.length()>length)
-            {
-                String temp=result.substring(0,length-1);
-                String end=result.substring(length-1,result.length());
-                result=temp+"\n"+end;
+        } else {
+            if (result.length() > length) {
+                String temp = result.substring(0, length - 1);
+                String end = result.substring(length - 1, result.length());
+                result = temp + "\n" + end;
             }
         }
         return result;
     }
 
-    /**
-     * 获取字符双字节的长度
-     * @param str
-     * @return
-     */
-    private static int checkStringNumberLen(String str) {
-        String regx ="[^\\x00-\\xff]";
-        Pattern p = Pattern.compile(regx);
-        Matcher m = p.matcher(str);
+
+    public static void formatBreakDown(Apply apply, TextView textView) {
+
+        String classs = apply.getClasss();
+        String detailClas = apply.getDetailClass();
+        String repairDetail = apply.getRepairDetails();
+
         StringBuffer sb = new StringBuffer();
-        while(m.find()) {
-            sb.append(m.group());
-
-        }
-
-        System.out.println(sb.toString());
-
-        int sbLen =sb.length();
-
-        return sbLen;
-    }
-
-
-    public static void formatBreakDown(Apply apply , TextView textView ){
-
-        String classs=apply.getClasss();
-        String detailClas=apply.getDetailClass();
-        String repairDetail=apply.getRepairDetails();
-
-        int rawLineLen = 18;
-
-        StringBuffer sb =new StringBuffer();
         sb.append(classs);
 
         //拼装 故障 和 故障类别 如: 电(空调)
-        if(!(TextUtils.isEmpty(detailClas))) {
+        if (!(TextUtils.isEmpty(detailClas))) {
             sb.append("（").append(detailClas).append("）");
         }
         //拼装 故障描述
-        if((!(TextUtils.isEmpty(repairDetail))) && !("null".equals(repairDetail))) {
+        if ((!(TextUtils.isEmpty(repairDetail))) && !("null".equals(repairDetail))) {
             sb.append("，").append(repairDetail);
         }
-        int len = sb.length();
 
-        String results =sb.toString();
+        String results = sb.toString();
 
-        Log.d(TAG, "formatBreakDown: "+results);
-
-        int sbLen =checkStringNumberLen(results);
-
-        int numberLen =len-sbLen;
-
-        float resulteLen =0;
-
-        if(len%2==0){
-            resulteLen=sbLen+numberLen/2;
-        } else {
-            resulteLen=sbLen+(numberLen/2)+0.5f;
-        }
-
-
-        //如果字符不超过rawLineLen 单行显示
-        if ( resulteLen<=rawLineLen) {
-            textView.setText(results);
-            textView.setGravity(Gravity.RIGHT);
-        } else {
-            //数字少,字符多情况
-            if(numberLen<=6 && resulteLen<=20){
-
-                textView.setGravity(Gravity.RIGHT);
-            }
-            textView.setText(results);
-        }
-
-
-
+        textView.setText(results);
 
     }
 
-    public static void formatArea(Apply apply , TextView textView ){
+    public static void formatArea(Apply apply, TextView textView) {
 
         String address = apply.getArea();
-        String detailAr=apply.getDetailArea();
-
+        String detailAr = apply.getDetailArea();
         String flies = apply.getFlies();
         String room = apply.getRoom();
-        String addressDetail=apply.getAddressDetail();
+        String addressDetail = apply.getAddressDetail();
 
-        StringBuffer sb =new StringBuffer(address);
+        StringBuffer sb = new StringBuffer(address);
 
-        String result="";
-
-        int rawLineLen = 18;
+        String result = "";
 
 
-        Log.d(TAG, "formatArea: "+flies);
+        Log.d(TAG, "formatArea: " + flies);
 
         //检查楼名是否为空
-        if(TextUtils.isEmpty(detailAr) || "null".equals(detailAr) ) {
+        if (TextUtils.isEmpty(detailAr) || "null".equals(detailAr)) {
             sb.append("，");
         } else {
-            if("其它".equals(detailAr)) {
+            if ("其它".equals(detailAr)) {
                 sb.append("，");
             } else {
                 sb.append(detailAr);
 
                 //检查层数是否为空
-                if(TextUtils.isEmpty(flies) || "null".equals(flies)){
+                if (TextUtils.isEmpty(flies) || "null".equals(flies)) {
                     sb.append("，");
                 } else {
 
-                    if("其它".equals(flies)) {
+                    if ("其它".equals(flies)) {
 
                         sb.append("，");
                     } else {
 
                         sb.append(flies);
-                        Log.d(TAG, "formatArea: " +sb.toString());
+                        Log.d(TAG, "formatArea: " + sb.toString());
                         //检查房间数
-                        if(TextUtils.isEmpty(room) || "null".equals(room)){
+                        if (TextUtils.isEmpty(room) || "null".equals(room)) {
                             sb.append("，");
                         } else {
-                            if("其它".equals(room)) {
+                            if ("其它".equals(room)) {
                                 sb.append("，");
                             } else {
                                 sb.append(room).append("，");
@@ -535,55 +267,27 @@ public class Util {
 
 
         }
-        if(!(TextUtils.isEmpty(addressDetail))){
+        if (!(TextUtils.isEmpty(addressDetail))) {
             sb.append(addressDetail);
-            result=sb.toString();
+            result = sb.toString();
         } else {
-            result= sb.substring(0,sb.length()-1);
+            result = sb.substring(0, sb.length() - 1);
         }
-
-//        int numberLen =checkStringNumberLen(result);
-//
-//        int tempLen =sb.length()-numberLen;;
-//
-//        int resultLen =0;
-//
-//        if(tempLen%2==0){
-//            resultLen=numberLen+(tempLen/2);
-//        } else {
-//            resultLen=numberLen+(tempLen/2)+1;
-//        }
-
-
-        if(result.length()<=rawLineLen) {
-            Log.d(TAG, "formatArea:  sb.len ="+result.length()+" < "+rawLineLen);
-            textView.setText(result);
-            textView.setGravity(Gravity.RIGHT);
-        } else{
-            Log.d(TAG, "formatArea:  sb.lenth ="+result.length()+"+> "+rawLineLen);
-            textView.setText(result);
-        }
-
-
-
+        textView.setText(result);
     }
-
 
 
     //将服务器第一次获取到的数据，写到文件json_data中，key为json
     public static void writeJsonToLocal(final ResultBean resultBean, final Context mContext) {
 
-                String json = JsonUtil.beanToResultBean(resultBean);
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
-                editor.putString("json", json);
-                editor.apply();
-                Log.d(TAG, "writeJsonToLocal: 成功将FirstRequest的Json写入本地json_data文件中，key:json");
+        String json = JsonUtil.beanToResultBean(resultBean);
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
+        editor.putString("json", json);
+        editor.apply();
+        Log.d(TAG, "writeJsonToLocal: 成功将FirstRequest的Json写入本地json_data文件中，key:json");
 
 
     }
-
-
-
 
 
     //将从服务器获取到的数据写入address_data文件中，key为address
@@ -609,7 +313,6 @@ public class Util {
     }
 
 
-
     //从address_data文件中读出地点相关的字符串
     public static String loadAddressFromLocal(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("address_data", context.MODE_PRIVATE);
@@ -617,25 +320,6 @@ public class Util {
 
         Log.d(TAG, "loadAddressFromLocal:从本地address_data文件中读出json: " + json);
         return json;
-    }
-
-    //从
-    public static String loadAnnouceFromLocal(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("annoucement_data", context.MODE_PRIVATE);
-        String json = preferences.getString("annoucement", "");
-
-        Log.d(TAG, "loadAnnouceFromLocal: 从本地文件annoucement_data中读出json:" + json);
-        return json;
-    }
-
-    public static void writeAnnouceToLocal(final ResultBean resultBean, final Context mContext) {
-
-
-        String json = JsonUtil.beanToResultBean(resultBean);
-        SharedPreferences.Editor editor = mContext.getSharedPreferences("annoucement_data", mContext.MODE_PRIVATE).edit();
-        editor.putString("annoucement", json);
-        editor.apply();
-        Log.d(TAG, "writeAnnouceToLocal: 成功将Annoucement的Json写入本地annoucement_data文件中，key:myrepair");
     }
 
 
@@ -647,22 +331,6 @@ public class Util {
         return json;
     }
 
-    public static void writeMyResToLocal(final ResultBean resultBean, final Context mContext) {
-
-
-                String json = JsonUtil.beanToResultBean(resultBean);
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("myrepair_data", mContext.MODE_PRIVATE).edit();
-                editor.putString("myrepair", json);
-                editor.apply();
-                Log.d(TAG, "writeJsonToLocal: 成功将MyRepair的Json写入本地myrepair_data文件中，key:myrepair");
-    }
-
-    public static String loadMyResFromLocal(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("myrepair_data", context.MODE_PRIVATE);
-        String json = preferences.getString("myrepair", "");
-        Log.d(TAG, "loadFirstFromLocal: 从本地文件myrepair_data中读出json:" + json);
-        return json;
-    }
 
     /**
      * 将datetime类型的数据只精确到秒
@@ -685,7 +353,6 @@ public class Util {
         }
         return "尚未完成";
     }
-
 
 
     public static String createAsterisk(int length) {
@@ -712,16 +379,16 @@ public class Util {
      *
      * @param paramsKey    参数名
      * @param paramsValues 参数值
-     * @param noImgUrl   api地址
+     * @param noImgUrl     api地址
      * @param files        文件集合
      * @return 用于回调onResponse和onError方法
      */
-    public static RequestCall submit(String paramsKey, String paramsValues, String noImgUrl, String ImgUrl, List<File> files,Context context) {
+    public static RequestCall submit(String paramsKey, String paramsValues, String noImgUrl, String ImgUrl, List<File> files, Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
 
         for (int i = 0; i < files.size(); i++) {
             postFormBuilder.addFile("fileImg", "file" + i + ".jpg", files.get(i));
-           // Log.d(TAG, "submit: " + files.get(i).getPath());
+            // Log.d(TAG, "submit: " + files.get(i).getPath());
         }
 
         postFormBuilder.addParams(paramsKey, paramsValues);
@@ -751,48 +418,18 @@ public class Util {
         return postFormBuilder.build();
     }
 
-    public static  void getPermission(Activity activity) {
-        PermissionUtil.justGetpermission(activity, Manifest.permission.CAMERA,REQUEST_CODE_CAMERA);
-        PermissionUtil.justGetpermission(activity,Manifest.permission.WRITE_EXTERNAL_STORAGE,REQUEST_CODE_SD_CARD);
+    public static void getPermission(Activity activity) {
+        PermissionUtil.justGetpermission(activity, Manifest.permission.CAMERA, REQUEST_CODE_CAMERA);
+        PermissionUtil.justGetpermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_CODE_SD_CARD);
     }
 
 
-    public static RequestCall submit(String requestURL,Context context) {
+    public static RequestCall submit(String requestURL, Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         postFormBuilder.url(requestURL);
 
         return postFormBuilder.build();
     }
-    public static RequestCall submit(String paramsKey, String paramsValues,String parmasKey,String v2,String p3,String v3, String p4 ,String v4,String requestURL) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-
-        postFormBuilder.addParams(paramsKey, paramsValues);
-        postFormBuilder.addParams(parmasKey, v2);
-        postFormBuilder.addParams(p3, v3);
-        postFormBuilder.addParams(p4 , v4);
-        postFormBuilder.url(requestURL);
-        return postFormBuilder.build();
-    }
-    public static RequestCall submit(String adminEmail, String adminEmailVules, String password, String passwordVules,
-                                     String content ,String contentVules ,String serverEmail,String serverMailVules,
-                                     String ID,String IDVules,String imgPath,String imgPathVules,
-                                     String URL) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        postFormBuilder.addParams(adminEmail, adminEmailVules);
-        postFormBuilder.addParams(password, passwordVules);
-        postFormBuilder.addParams(content, contentVules);
-        postFormBuilder.addParams(serverEmail, serverMailVules);
-        postFormBuilder.addParams(ID, IDVules);
-        postFormBuilder.addParams(imgPath, imgPathVules);
-        postFormBuilder.url(URL);
-        return postFormBuilder.build();
-    }
-
-
-
-
-
-
 
 
     public static RequestCall submit(String paramsKey, String paramsValues, String paramsKey2, String paramsValues2, String requestURL) {
@@ -834,9 +471,6 @@ public class Util {
     }
 
 
-
-
-
     public static String getPath(Activity context, Uri uri) {
 
         String[] proj = {MediaStore.Images.Media.DATA};
@@ -870,10 +504,10 @@ public class Util {
         }
     }
 
-    public static void deleteImage(Context context,String imgPath) {
+    public static void deleteImage(Context context, String imgPath) {
         ContentResolver resolver = context.getContentResolver();
-        Cursor cursor = MediaStore.Images.Media.query(resolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] { MediaStore.Images.Media._ID }, MediaStore.Images.Media.DATA + "=?",
-                new String[] { imgPath }, null);
+        Cursor cursor = MediaStore.Images.Media.query(resolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Images.Media._ID}, MediaStore.Images.Media.DATA + "=?",
+                new String[]{imgPath}, null);
         boolean result = false;
         if (cursor.moveToFirst()) {
             long id = cursor.getLong(0);
@@ -888,13 +522,10 @@ public class Util {
 
     }
 
+    public static String getMD5(String mingwen) {
+        String salt = ",>?<>(?>j(%&$#%U)(gh_^&*$^&*(_+";
 
-
-
-    public static String getMD5(String mingwen){
-        String salt=",>?<>(?>j(%&$#%U)(gh_^&*$^&*(_+";
-
-        MessageDigest md=null;
+        MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
@@ -902,13 +533,13 @@ public class Util {
             e.printStackTrace();
         }
 
-        String first =salt+mingwen;
+        String first = salt + mingwen;
         byte[] bytValue, bytHash;
         byte[] bytValueTwo, bytHashTwo;
-        bytValue =first.getBytes();
+        bytValue = first.getBytes();
 //		        System.out.println("bytValue :" +bytValue);
         md.update(bytValue);
-        bytHash=md.digest();
+        bytHash = md.digest();
 //		        System.out.println("bytHash :" +bytHash);
         //清理
         // md.reset();
@@ -916,17 +547,15 @@ public class Util {
         bytValueTwo = mingwen.getBytes();
 //		        System.out.println("bytValueTwo :" +bytValueTwo);
         md.update(bytValueTwo);
-        bytHashTwo =md.digest();
+        bytHashTwo = md.digest();
 //		        System.out.println("bytHashTwo :" +bytHashTwo);
         String sTemp = "";
         String sTwoTemp = "";
 
 
-
-
-        sTemp=new  BigInteger(1, bytHash).toString(16);
-        System.out.println("sTemp :" +sTemp);
-        sTwoTemp= new   BigInteger(1, bytHashTwo).toString(16);
+        sTemp = new BigInteger(1, bytHash).toString(16);
+        System.out.println("sTemp :" + sTemp);
+        sTwoTemp = new BigInteger(1, bytHashTwo).toString(16);
 //		        System.out.println("sTwoTemp :" +sTwoTemp);
         String totalTemp = sTemp + sTwoTemp;
         return totalTemp;
@@ -935,44 +564,10 @@ public class Util {
     }
 
 
-    public static void setOnClickBackgroundColor(final View view){
-
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    view.setBackgroundResource(R.drawable.button_submit2);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d(TAG, "onTouch: " + event.getAction());
-                    view.setBackgroundResource(R.drawable.button_submit);
-                }
-                return false;
-            }
-        });
-    }
-    public static void setEditTextOnTouch(final View view){
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_UP){
-//                    ed.setVisable();
-                }
-
-
-
-                return false;
-            }
-        });
-
-    }
-
-
     public static boolean isPhoneNumberValid(String phoneNumber) {
         boolean isValid = false;
 
-        String regx="^(0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8})|(400|800|0771)([0-9\\\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$";
+        String regx = "^(0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8})|(400|800|0771)([0-9\\\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$";
         CharSequence inputStr = phoneNumber;
 
         Pattern pattern = Pattern.compile(regx);
@@ -983,7 +578,6 @@ public class Util {
         }
 
         return isValid;
-
 
 
     }

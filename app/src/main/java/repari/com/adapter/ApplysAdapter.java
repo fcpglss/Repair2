@@ -72,30 +72,15 @@ public class ApplysAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView imageView = viewHolder.ivIcon;
-        final String tag = (String) imageView.getTag();
-        String c_url = "";
-        String a_details = "";
-//        c_url = getCategoryId(position, res);
+
         Apply apply = res.getApplys().get(position);
-        a_details = Util.setAddress(apply,18,true);
 
-        final String uri = c_url;
 
-        if (!uri.equals(tag)) {
-            imageView.setImageDrawable(mDefaultBitmapDrawable);
-        }
-
-        if (mCanGetBitmapFromNetWork) {
-            imageView.setTag(c_url);
-//            Picasso.with(context).load(c_url).into(imageView);
-        }
         viewHolder.tvTitle.setText(Util.setContentTitle(apply));
         viewHolder.tvContent.setText(Util.setClass(apply,22,true));
 
         String temp = res.getApplys().get(position).getRepairTime();
         viewHolder.tvTime.setText(temp.split(":")[0] + ":" + temp.split(":")[1]);
-        setIcon(viewHolder);
 
         int state = res.getApplys().get(position).getState();
 
@@ -105,18 +90,7 @@ public class ApplysAdapter extends BaseAdapter {
 
         return convertView;
     }
-    private void setIcon(ViewHolder view) {
-        if(categoryProprety==null||categoryProprety.equals(""))
-        {
-            categoryProprety="0";
-        }
-        switch (categoryProprety) {
-            case "1":
-                view.img_emergent.setImageResource(R.drawable.emergent3);
-                break;
-            default:
-        }
-    }
+
 
     public void setList_Applys(List<Apply> apply) {
         res.setApplys(apply);

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import application.MyApplication;
+import me.codeboy.android.aligntextview.AlignTextView;
 import model.Apply;
 import model.Employee;
 import model.Photo;
@@ -69,27 +71,25 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private TextView appraise;
     //大图片
 
-
-
     private PhotoView showBigImg;
     //背景
     LinearLayout linearLayoutDetail;
 
-    private TextView tvArea;
+    private AlignTextView tvArea;
 
-    private TextView tv_describe;
+    private AlignTextView tv_describe;
 
-    private TextView tvName, tv_date, tvDealTime, tvCompensation, tvNeed, tvAdmin;
+    private TextView tvName, tv_date, tvDealTime, tvCompensation, tvNeed, tvAdmin,tvThirdMan,tvFishTime;
 
     private TextView tv_details_employee1;
 
-    private TextView tv_employee_phone, tv_employee_can, tv_paigong;
+    private TextView tv_employee_phone, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details, llDetailDeal;
+    private LinearLayout ll_employee_details, llDetailDeal,llThirdMan,llFinshTime;
 
 
-    private ImageView img_category, img_status;
-    private ImageView img1, img2, img3;
+    private ImageView  img_status;
+
     private Apply apply = null;
 
     private List<Employee> employeeList = new ArrayList<>();
@@ -99,7 +99,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private boolean isAppraisePage = false;
 
-    private List<ImageView> imageviewList = new ArrayList<ImageView>();
 
     private List<ImageView> star_list = new ArrayList<ImageView>();
     private List<ImageView> qualityList = new ArrayList<ImageView>();
@@ -212,13 +211,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private void initView() {
         //员工详细信息
         tv_employee_phone = (TextView) findViewById(R.id.tv_details_employee_phone);
-        tv_employee_can = (TextView) findViewById(R.id.tv_details_employee_can);
+        llFinshTime= (LinearLayout) findViewById(R.id.ll_finish_time);
+        llThirdMan = (LinearLayout) findViewById(R.id.ll_thirdMan);
+        tvFishTime = (TextView) findViewById(R.id.tv_details_finish_date);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
+        tvThirdMan = (TextView) findViewById(R.id.tv_thirdMan);
 
         gridView = (GridView) findViewById(R.id.gv_img);
-
-
         //星星
         star1 = (ImageView) findViewById(R.id.iv_star1);
         star2 = (ImageView) findViewById(R.id.iv_star2);
@@ -297,78 +297,57 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvDealTime = (TextView) findViewById(R.id.tv_details_deal_date);
 
 
-        tvArea = (TextView) findViewById(R.id.tv_details_area);
+        tvArea = (AlignTextView) findViewById(R.id.tv_details_area);
 
 
 
-        tv_describe = (TextView) findViewById(R.id.tv_details_describe);
+        tv_describe = (AlignTextView) findViewById(R.id.tv_details_describe);
 
 
-        img_category = (ImageView) findViewById(R.id.img_category);
+
 
         tvNeed = (TextView) findViewById(R.id.tv_details_need);
         tvCompensation = (TextView) findViewById(R.id.tv_details_compensation);
         tvAdmin = (TextView) findViewById(R.id.tv_details_admin);
         llDetailDeal = (LinearLayout) findViewById(R.id.ll_detail_deal);
 
-
         img_status = (ImageView) findViewById(R.id.img_status);
-
-        img1 = (ImageView) findViewById(R.id.img_pc1);
-        img2 = (ImageView) findViewById(R.id.img_pc2);
-        img3 = (ImageView) findViewById(R.id.img_pc3);
-        img1.setOnClickListener(this);
-        img2.setOnClickListener(this);
-        img3.setOnClickListener(this);
-
-        imageviewList.add(img1);
-        imageviewList.add(img2);
-        imageviewList.add(img3);
-//        img_back.setOnClickListener(this);
 
         //员工详细信息箭头点击事件
         iv_employee_arr.setOnClickListener(this);
 
-
     }
 
-    private void visibaleFinishTime() {
+    private void visibaleTime() {
         if (!tvDealTime.getText().equals("尚未处理")) {
+            llDetailDeal.setVisibility(View.VISIBLE);
+        }
+        if(!tvFishTime.getText().equals("尚未完成")){
             llDetailDeal.setVisibility(View.VISIBLE);
         }
     }
 
 
-    private void clickPic(View v) {
-//        ImageView iV = (ImageView) v;
-//        showBigImg.setImageDrawable(iV.getDrawable());
-//        Info imageViewInfo = PhotoView.getImageViewInfo(iV);
-//        showBigImg.animaFrom(imageViewInfo);
-//        showBigImg.setVisibility(View.VISIBLE);
-        //设置背景
-        PhotoView view = (PhotoView) v;
-
-        linearLayoutDetail.setBackgroundColor(Color.BLACK);
-
-
-    }
 
 
     private void bindItem() {
 
-
         apply.setRepair(AESUtil.decode(apply.getRepair()));
         tvName.setText(Util.setNameXX(apply.getRepair()));
-
 
         //设置故障地点
         Util.formatArea(apply, tvArea);
 
-
         tv_date.setText(Util.getDealTime(apply.getRepairTime()));
 
         tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
+        tvFishTime.setText(Util.getFinshTime(apply.getFinilTime()));
+        if(TextUtils.isEmpty(apply.getThirdLogisticMan())){
 
+        }else{
+            tvThirdMan.setText(apply.getThirdLogisticMan());
+            llThirdMan.setVisibility(View.VISIBLE);
+        }
         String Compensation = "";
         if (apply.getCompensation().equals("0")) {
             Compensation = "不收费";
@@ -380,27 +359,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvNeed.setText(apply.getMaterial());
         tvAdmin.setText(apply.getLogisticMan());
 
-
-        visibaleFinishTime();
-
+        //设置完成时间和处理时间的可见性。
+        visibaleTime();
         //设置故障描述
         Util.formatBreakDown(apply, tv_describe);
-        img_category.setImageResource(UIUtil.getCategoryIcon(apply.getClasss()));
 
         getApplyImages();
 
         img_status.setImageResource(getRightIcon());
-
-
-        //直接设置员工信息 但是默认被隐藏
-        // setEmployeeInf(apply.getLogisticMan());
-//        if (employee!=null){
-//            tv_details_employee1.setText(employee.getName());
-//            tv_employee_phone.setText(employee.getE_tel());
-//            tv_employee_can.setText(employee.getJob());
-//        }
-
-
 
         StringBuilder sbEmployeeName = new StringBuilder();
         StringBuilder sbEmployeePhone = new StringBuilder();
@@ -408,7 +374,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         String employeePhone = "";
 
         List<Employee> employeeTempList = new ArrayList<>();
-        //idArrayapply 是这个单号维修人员的 id String
+
         String[] idArrayapply = {""};
         if (apply.getServerMan() != null && !apply.getServerMan().isEmpty()) {
             idArrayapply = apply.getServerMan().split(",");
@@ -429,8 +395,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         if (employeeTempList.size() > 0) {
 
-            for (Employee e :
-                    employeeTempList) {
+            for (Employee e : employeeTempList) {
                 sbEmployeeName.append(e.getName()).append(",");
                 sbEmployeePhone.append(e.getE_tel()).append(",");
             }
@@ -451,36 +416,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    //获取到apply中LogisticMan字段，（员工姓名)的对象
-    private Employee getEmploye(String employeeName) {
-
-        Employee employee = new Employee();
-        if (employeeName != null && !employeeName.equals("")) {
-            List<Employee> list_employee = detailRes.getEmployee();
-            for (Employee e : list_employee) {
-                if (e.getName().equals(employeeName)) {
-                    return e;
-                }
-            }
-        }
-
-        return employee;
-    }
-
-
-    private String getState() {
-        switch (apply.getState()) {
-            case 1:
-                return "正在处理";
-            case 2:
-                return "派员中";
-            case 3:
-                return "已完工";
-            case 4:
-                return "已失效";
-        }
-        return "正在审核";
-    }
 
 
     private int getRightIcon() {
@@ -511,6 +446,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void getApplyImages() {
+        //只加载最后三张图
         list_imageView = apply.getA_imaes();
         if (list_imageView != null && list_imageView.size() > 0) {
             if (list_imageView.size() > 3) {
@@ -527,38 +463,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     PhotoView p = (PhotoView) view;
                     Info info = p.getInfo();
                     Bitmap drawingCache = p.getDrawingCache();
-
                     showBigImg.setImageBitmap(drawingCache);
                     showBigImg.animaFrom(info);
                     showBigImg.setVisibility(View.VISIBLE);
-//                    mBg.startAnimation(in);
-//                    mBg.setVisibility(View.VISIBLE);
-//                    mParent.setVisibility(View.VISIBLE);;
-//                    mPhotoView.animaFrom(mInfo);
                 }
             });
 
         }
 
-//            for (int i = 0; i < list_imageView.size(); i++) {
-//
-//                Picasso.with(this).load(list_imageView.get(i))
-//                        .placeholder(R.drawable.loadimg)
-//                        .fit()
-//                        .centerCrop()
-//                        .noFade()
-//                        .into(imageviewList.get(i));
-//
-////                LinearLayout.LayoutParams layout = (LinearLayout.LayoutParams) imageviewList.get(i).getLayoutParams();
-////                layout.height = windowHeigth / 4;
-////                layout.width = (int) (windowWitch / 3.3);
-////                imageviewList.get(i).setLayoutParams(layout);
-//                Log.d(TAG, "执行了一次bindBitmap " + list_imageView.get(i));
-//            }
-//
-//        } else {
-//            Log.d(TAG, "list_imageView为0,该Apply没有图片");
-//        }
 
     }
 
@@ -599,15 +511,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.iv_star1:
                 break;
-            case R.id.img_pc1:
-                clickPic(view);
-                break;
-            case R.id.img_pc2:
-                clickPic(view);
-                break;
-            case R.id.img_pc3:
-                clickPic(view);
-                break;
+
         }
     }
 
