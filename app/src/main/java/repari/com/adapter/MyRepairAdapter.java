@@ -50,19 +50,10 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
 
-    private Drawable mDefaultBitmapDrawable;
 
-
-
-    private static final int mImageWidth = 150;
-
-    private static final int mImageHeigth = 150;
 
     private boolean mCanGetBitmapFromNetWork = true;
 
-    private String area_name = "";
-
-    private String categoryName = "";
 
     private Context context;
 
@@ -70,7 +61,7 @@ public class MyRepairAdapter extends BaseAdapter {
         this.myRes = res;
 
         mInflater = LayoutInflater.from(context);
-        mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
+
         this.context = context;
     }
 
@@ -125,7 +116,6 @@ public class MyRepairAdapter extends BaseAdapter {
             photoUrl=myRes.getApplys().get(position).getA_imaes().get(0);
         }
 
-        categoryName = apply.getClasss();
         final String uri = photoUrl;
 
         if (!uri.equals(tag)) {

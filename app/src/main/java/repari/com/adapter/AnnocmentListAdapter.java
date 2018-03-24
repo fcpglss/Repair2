@@ -51,9 +51,8 @@ public class AnnocmentListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
 
-
         if (convertView == null) {
-            viewHolder =new ViewHolder();
+            viewHolder = new ViewHolder();
             convertView = layoutInflater.inflate(R.layout.annocment_list_item, null);
             viewHolder = new ViewHolder();
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_annocment_title);
@@ -61,10 +60,10 @@ public class AnnocmentListAdapter extends BaseAdapter {
             viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_annocment_content);
             viewHolder.llTitle = (LinearLayout) convertView.findViewById(R.id.ll_annocement_title);
             viewHolder.llContent = (LinearLayout) convertView.findViewById(R.id.ll_annocement_content);
-            viewHolder.tvAdmin= (TextView) convertView.findViewById(R.id.tv_annocment_admin);
+            viewHolder.tvAdmin = (TextView) convertView.findViewById(R.id.tv_annocment_admin);
             convertView.setTag(viewHolder);
         } else {
-           viewHolder= (ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
         viewHolder.tvTitle.setText(list.get(position).getTitle());
@@ -74,7 +73,6 @@ public class AnnocmentListAdapter extends BaseAdapter {
         viewHolder.llTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: 点击事件设置内容可见");
                 viewHolder.llContent.setVisibility(View.VISIBLE);
             }
         });
@@ -83,10 +81,9 @@ public class AnnocmentListAdapter extends BaseAdapter {
 
 
     private static class ViewHolder {
-        TextView tvTitle, tvTime, tvContent,tvAdmin;
+        TextView tvTitle, tvTime, tvContent, tvAdmin;
         LinearLayout llTitle, llContent;
     }
-
 
 
 }

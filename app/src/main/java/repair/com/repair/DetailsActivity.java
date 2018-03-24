@@ -41,8 +41,8 @@ import repari.com.adapter.ImgAdapter;
 import util.AESUtil;
 
 import util.JsonUtil;
-import util.MyTextView;
-import util.UIUtil;
+
+
 import util.Util;
 
 import static constant.RequestUrl.ApplyDetail;

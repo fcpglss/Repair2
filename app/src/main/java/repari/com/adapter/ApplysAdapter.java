@@ -26,17 +26,14 @@ public class ApplysAdapter extends BaseAdapter {
     private static final String TAG = "ApplysAdapter";
     private ResultBean res = null;
     private LayoutInflater mInflater;
-    private Drawable mDefaultBitmapDrawable;
 
-    private static String categoryProprety = "";
 
-    private boolean mCanGetBitmapFromNetWork = true;
     Context context;
 
     public ApplysAdapter(ResultBean res, Context context) {
         this.res = res;
         mInflater = LayoutInflater.from(context);
-        mDefaultBitmapDrawable = context.getResources().getDrawable(R.mipmap.ic_launcher);
+
         this.context = context;
     }
 

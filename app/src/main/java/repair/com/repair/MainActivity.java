@@ -1,7 +1,6 @@
 package repair.com.repair;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,35 +8,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.Callback;
-import com.zhy.http.okhttp.callback.StringCallback;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import constant.RequestUrl;
 import fragment.ApplyFragment;
 import fragment.MainFragment;
 import fragment.MyRepairFragment;
-import okhttp3.Call;
 import repari.com.adapter.FragmentAdapter;
-import util.AppUpdate;
-import util.DownloadUtil;
-import util.Util;
 
 
 public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDownloadListener {

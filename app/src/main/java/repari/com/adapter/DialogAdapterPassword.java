@@ -39,7 +39,6 @@ public class DialogAdapterPassword extends BaseAdapter {
     LayoutInflater layoutInflater;
     Apply apply;
     Context context;
-    int position;
     int layout;
     SVProgressHUD svProgressHUD;
     private Handler mhandler = new Handler() {
@@ -124,8 +123,6 @@ public class DialogAdapterPassword extends BaseAdapter {
                             svProgressHUD.showWithStatus("验证中");
                             svProgressHUD.show();
                             String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
-                            Log.d(TAG, "onClick: MD5: " + MD5);
-                            Log.d(TAG, "onClick: ID: " + apply.getId());
                             Util.submit("password", MD5, "ID", apply.getId(), RequestUrl.ApplyPassword).execute(new StringCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
@@ -134,7 +131,6 @@ public class DialogAdapterPassword extends BaseAdapter {
 
                                 @Override
                                 public void onResponse(String response, int id) {
-                                    Log.d(TAG, "onResponse: response:" + response);
                                     if ("OK".equals(response)) {
                                         mhandler.sendEmptyMessage(1);
                                     } else {
