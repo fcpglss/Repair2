@@ -91,32 +91,28 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                     closeReflush();
                     setFirstApply(refrushRes);
                     adapter.notifyDataSetChanged();
-                    Log.d(TAG, "handleMessage: 3");
                     break;
                 case 4:
                     closeReflush();
                     Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "handleMessage: 4");
                     break;
                 case 5:
                     moreList = moreRes.getAnnouncements();
                     setMoreApply(moreList);
-                    // lvAnnocment.setSelection(start);
-                    Log.d(TAG, "handleMessage: response" + moreResponse.isEnd());
+
+
                     moreFlag = moreResponse.isEnd();
-                    Log.d(TAG, "handleMessage: " + moreFlag);
+
                     closeReflush();
                     break;
                 case 6:
                     Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "handleMessage: 6");
                     closeReflush();
                     break;
                 case 8:
                     closeReflush();
                     setFirstApply(refrushRes);
                     adapter.notifyDataSetChanged();
-                    Log.d(TAG, "handleMessage: 5");
                     break;
 
 
@@ -174,7 +170,6 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
 
     protected void loadData() {
-        Log.d(TAG, "loadData: ");
         if (isFirst) {
             queryFromServer(AnnouceList);
 
@@ -193,16 +188,13 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 rp.setError(true);
                 rp.setErrorMessage("网络异常,尝试重连");
                 annoceResponse = rp;
-                Log.d(TAG, " onEnrror调用:" + e.getMessage());
                 mhandler.sendEmptyMessage(2);
             }
 
             @Override
             public void onResponse(String responses, int id) {
                 final String responseJson = responses.toString();
-                Log.d(TAG, "onResponse: " + responseJson);
                 annoceResponse = JsonUtil.jsonToResponse(responseJson);
-                Log.d(TAG, "onResponse: annoceResponse " + annoceResponse.toString());
                 if (annoceResponse == null) {
                     annoceResponse = new Response();
                     annoceResponse.setErrorMessage("服务器维护");
@@ -259,7 +251,6 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 annoucementList.add(resultBean.getAnnouncements().get(i));
             }
         }
-        Log.d(TAG, "setFirstApply: " + annoucementList.toString());
 
     }
 
@@ -296,7 +287,6 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
                     @Override
                     public void onResponse(String response, int id) {
-                        Log.d(TAG, "onResponse: onrefresh ->" + response);
                         Response responses = JsonUtil.jsonToResponse(response);
                         isDelete = responses.isEnd();
                         refrushRes = responses.getResultBean();
@@ -308,22 +298,17 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     @Override
     public void onLoadMore() {
-        Log.d(TAG, "onLoadMore: " + moreFlag);
         isMore = true;
         if (moreFlag || ishasData) {
             annoceResponse.setErrorMessage("下边没有数据了");
             mhandler.sendEmptyMessage(6);
-            Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             return;
         } else {
-            Log.d(TAG, "onFinish: moreFlag:" + moreFlag);
             start = start + fenye;
             end = end + fenye;
         }
 
         String request = AnnouceLoadMore + "?start=" + start + "&&end=" + end;
-        Log.d(TAG, "onLoadMore: " + request);
-
 
         HttpUtil.sendHttpRequest(AnnouceLoadMore + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
             @Override
@@ -342,7 +327,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                     //有数据
                     mhandler.sendEmptyMessage(5);
                 } else {
-                    moreResponse.setErrorMessage("下边没有更多数据了");
+                    moreResponse.setErrorMessage("已没有更多公告");
                     annoceResponse.setErrorMessage(moreResponse.getErrorMessage());
                     moreFlag = moreResponse.isEnd();
                     mhandler.sendEmptyMessage(6);
@@ -354,9 +339,8 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
                 Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
-                rp.setErrorMessage("网络异常");
+                rp.setErrorMessage("没有更多数据");
                 annoceResponse = rp;
-                Log.d(TAG, " onEnrror调用:" + e.getMessage());
                 mhandler.sendEmptyMessage(6);
             }
         });

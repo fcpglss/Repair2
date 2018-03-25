@@ -28,12 +28,11 @@ import fragment.MyRepairFragment;
 import repari.com.adapter.FragmentAdapter;
 
 
-public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDownloadListener {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
 
     public static int count = 5;
-
 
     public static final int TAKE_PHOTO_RAW = 1;
     public static final int REQUEST_IMAGE = 2;
@@ -51,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
     ImageView ivRepair;
     @BindView(R.id.iv_my)
     ImageView ivMy;
-
 
     private ViewPager mviewPager;
     private FragmentAdapter mpagerAdapter;
@@ -221,21 +219,6 @@ public class MainActivity extends AppCompatActivity implements DownloadUtil.OnDo
         mchat.setTextColor(Color.parseColor("#757575"));
         mfriend.setTextColor(Color.parseColor("#757575"));
         mcontact.setTextColor(Color.parseColor("#757575"));
-    }
-
-    @Override
-    public void onDownloadSuccess() {
-
-    }
-
-    @Override
-    public void onDownloading(int progress) {
-
-    }
-
-    @Override
-    public void onDownloadFailed() {
-
     }
 
 

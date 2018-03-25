@@ -37,6 +37,7 @@ import util.AESUtil;
 import util.HttpCallbackListener;
 import util.HttpUtil;
 import util.JsonUtil;
+import util.RxBindingUtil;
 import util.Util;
 
 import static constant.RequestUrl.ApplySearch;
@@ -199,6 +200,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         etName = (EditText) view.findViewById(R.id.et_my_name);
         etPhone = (EditText) view.findViewById(R.id.et_my_phone);
         btnSearch = (Button) view.findViewById(R.id.btn_my_search);
+
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,7 +232,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                         Response rp = new Response();
                         rp.setErrorType(-1);
                         rp.setError(true);
-                        rp.setErrorMessage("网络异常,请检查网络");
+                        rp.setErrorMessage("无法连接服务器");
                         myRespon = rp;
                         mhandler.sendEmptyMessage(8);
                     }
@@ -325,7 +327,11 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         moreFlag = false;
         start = 0;
         end = 5;
-        queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
+        phone = etPhone.getText().toString();
+        name = etName.getText().toString();
+        phone=AESUtil.encode(phone);
+        name=AESUtil.encode(name);
+        queryFromServer("phone", phone, "name", name, ApplySearch);
     }
 
 
@@ -359,7 +365,7 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
                         Response rp = new Response();
                         rp.setErrorType(-1);
                         rp.setError(true);
-                        rp.setErrorMessage("网络异常，返回空值");
+                        rp.setErrorMessage("无法连接服务器");
                         myRespon = rp;
                         mhandler.sendEmptyMessage(2);
                     }

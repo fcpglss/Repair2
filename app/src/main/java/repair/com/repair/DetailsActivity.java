@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.bm.library.Info;
 import com.bm.library.PhotoView;
-import com.squareup.picasso.Picasso;
+
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import application.MyApplication;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.codeboy.android.aligntextview.AlignTextView;
 import model.Apply;
 import model.Employee;
@@ -66,6 +67,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     ImageView speedstar1, speedstar2, speedstar3, speedstar4, speedstar5;
     ImageView qualitystar1, qualitystar2, qualitystar3, qualitystar4, qualitystar5;
     ImageView attutideystar1, attutideystar2, attutideystar3, attutideystar4, attutideystar5;
+
+    LinearLayout llMain;
 
     //评价文字
     private TextView appraise;
@@ -110,14 +113,17 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private GridView gridView ;
     private ImgAdapter imgAdapter ;
 
+    SweetAlertDialog sweetAlertDialog ;
+
     private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.d(TAG, "msg=" + msg.what);
             switch (msg.what) {
                 case 2:
-                    Log.d(TAG, "handleMessage2:连接服务器失败,尝试从本地文件读取");
+                    sweetAlertDialog.changeAlertType(SweetAlertDialog.WARNING_TYPE);
+                    sweetAlertDialog.setTitleText("加载失败");
+                    sweetAlertDialog.setConfirmText("确定");
                     Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 case 3:
@@ -126,6 +132,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         tv_paigong.setVisibility(View.VISIBLE);
                     }
+                    llMain.setVisibility(View.VISIBLE);
+                    sweetAlertDialog.dismiss();
+
                     Log.d(TAG, "handleMessage3 ");
                     bindItem();
                     break;
@@ -144,7 +153,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.detailinfo);
-
+        sweetAlertDialog = new SweetAlertDialog(this,SweetAlertDialog.PROGRESS_TYPE);
+        sweetAlertDialog.setTitleText("正在加载");
+        sweetAlertDialog.setCancelText("取消")
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        OkHttpUtils.getInstance().cancelTag(this);
+                        Intent intent = new Intent();
+                        intent.setClass(DetailsActivity.this,MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Intent intent = new Intent();
+                intent.setClass(DetailsActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
         initView();
 
         repairId = getIntent().getStringExtra("repairId");
@@ -166,7 +194,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     public void queryFromServer(String url, String repairId) {
 
         String jsonurl = url;
-
+        sweetAlertDialog.show();
         OkHttpUtils.get().
                 url(jsonurl).
                 addParams("detail", repairId)
@@ -178,7 +206,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         Response rp = new Response();
                         rp.setErrorType(-1);
                         rp.setError(true);
-                        rp.setErrorMessage("网络异常，返回空值");
+                        rp.setErrorMessage("网络异常，加载失败");
                         response = rp;
                         mhandler.sendEmptyMessage(2);
                     }
@@ -188,6 +216,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         //请求成功后获取到json
                         final String responseJson = responses.toString();
                         Log.d(TAG, "请求成功onFinish: " + responseJson);
+
                         response = JsonUtil.jsonToResponse(responseJson);
                         if (response.getErrorType() != 0) {
                             //连接成功，但读取数据失败
@@ -213,6 +242,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tv_employee_phone = (TextView) findViewById(R.id.tv_details_employee_phone);
         llFinshTime= (LinearLayout) findViewById(R.id.ll_finish_time);
         llThirdMan = (LinearLayout) findViewById(R.id.ll_thirdMan);
+        llMain= (LinearLayout) findViewById(R.id.ll_main);
+        llMain.setVisibility(View.GONE);
         tvFishTime = (TextView) findViewById(R.id.tv_details_finish_date);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
         ll_employee_details = (LinearLayout) findViewById(R.id.ll_employee_details);
@@ -323,7 +354,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             llDetailDeal.setVisibility(View.VISIBLE);
         }
         if(!tvFishTime.getText().equals("尚未完成")){
-            llDetailDeal.setVisibility(View.VISIBLE);
+            llFinshTime.setVisibility(View.VISIBLE);
         }
     }
 
@@ -483,6 +514,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         OkHttpUtils.getInstance().cancelTag(this);
+        if(sweetAlertDialog!=null&&sweetAlertDialog.isShowing()){
+            sweetAlertDialog.dismiss();
+        }
         super.onDestroy();
     }
 

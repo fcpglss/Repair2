@@ -191,6 +191,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
         waterDropListView = (WaterDropListView) view.findViewById(R.id.waterdrop_w);
         waterDropListView.setWaterDropListViewListener(MainFragment.this);
         waterDropListView.setPullLoadEnable(true);
+        waterDropListView.setVerticalScrollBarEnabled(false);
         waterDropListView.setAdapter(applysAdapter);
 
         llArrIn = (LinearLayout) view.findViewById(R.id.ll_arr_in);
@@ -210,6 +211,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
      */
     public void queryFromServer(String url, final int isRefrush) {
         isFirst = false;
+        Log.d(TAG, "queryFromServer: "+url);
         OkHttpUtils.get()
                 .url(url)
                 .build()
@@ -219,7 +221,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                         Response rp = new Response();
                         rp.setErrorType(-1);
                         rp.setError(true);
-                        rp.setErrorMessage("连接不到服务器,请检查网络设置");
+                        rp.setErrorMessage("无法连接服务器");
                         response = rp;
                         mhandler.sendEmptyMessage(4);
                     }
@@ -295,7 +297,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Response responses = new Response();
-                        responses.setErrorMessage("网络异常,刷新失败");
+                        responses.setErrorMessage("无法连接服务器,刷新失败");
                         response = responses;
                         mhandler.sendEmptyMessage(2);
                     }
@@ -407,7 +409,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                     //有数据
                     mhandler.sendEmptyMessage(7);
                 } else {
-                    moreResponse.setErrorMessage("下边没有更多数据了");
+                    moreResponse.setErrorMessage("已没有报修记录");
                     response.setErrorMessage(moreResponse.getErrorMessage());
                     moreFlag = moreResponse.isEnd();
                     mhandler.sendEmptyMessage(2);
@@ -419,7 +421,7 @@ public class MainFragment extends LazyFragment2 implements WaterDropListView.IWa
                 Response rp = new Response();
                 rp.setErrorType(-1);
                 rp.setError(true);
-                rp.setErrorMessage("网络异常，返回空值");
+                rp.setErrorMessage("无法连接服务器");
                 response = rp;
                 mhandler.sendEmptyMessage(2);
             }

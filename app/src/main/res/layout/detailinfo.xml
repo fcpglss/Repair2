@@ -10,7 +10,7 @@
         android:id="@+id/iv_show_big_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerInside"
+        android:scaleType="fitCenter"
         android:visibility="gone" />
 
     <LinearLayout
@@ -38,6 +38,8 @@
         android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/ll_main"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="4dp"
@@ -324,10 +326,9 @@
                     android:background="@color/ColorText_Icons"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingLeft="8dp">
+                    android:paddingLeft="4dp">
 
                     <TextView
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="维修进度"
@@ -343,13 +344,15 @@
                     android:layout_marginBottom="4dp"
                     android:background="#ffffff"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/dimen8"
+                    android:paddingLeft="@dimen/dimen4"
                     android:paddingRight="@dimen/dimen8">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp">
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="16dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -379,7 +382,7 @@
                         </LinearLayout>
 
                     </LinearLayout>
-
+                 <!--处理时间-->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -408,7 +411,7 @@
                                 android:id="@+id/tv_details_deal_date"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-
+                                android:layout_marginRight="8dp"
                                 android:gravity="right"
                                 android:textSize="@dimen/text_button_text" />
 
@@ -506,7 +509,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginLeft="4dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -649,7 +652,7 @@
                                 android:id="@+id/tv_details_compensation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginRight="8dp"
+                                android:layout_marginRight="16dp"
                                 android:gravity="right"
                                 android:textSize="@dimen/text_button_text" />
 
@@ -706,6 +709,7 @@
                         android:layout_margin="8dp">
 
                         <LinearLayout
+                            android:layout_marginRight="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp">
@@ -730,7 +734,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="16dp"
                                 android:gravity="right"
-
                                 android:textSize="@dimen/text_button_text" />
 
                         </LinearLayout>
@@ -747,7 +750,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginLeft="4dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -793,7 +796,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginRight="16dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -809,7 +812,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginLeft="4dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -855,7 +858,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginRight="16dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -871,7 +874,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginLeft="4dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -917,7 +920,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginRight="16dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>
@@ -933,7 +936,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp">
+                        android:layout_marginLeft="4dp">
 
                         <TextView
                             android:layout_width="75dp"
@@ -979,7 +982,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginRight="16dp"
                             android:src="@drawable/star" />
 
                     </LinearLayout>

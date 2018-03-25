@@ -2,6 +2,7 @@ package repari.com.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,7 @@ public class ImgAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        Log.d(TAG, "getView:  "+imgList.get(position));
         Picasso.with(context)
                 .load(imgList.get(position))
                 .placeholder(R.drawable.loadimg)

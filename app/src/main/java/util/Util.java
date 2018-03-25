@@ -126,7 +126,6 @@ public class Util {
                     } else {
 
                     }
-
                 } else {
                     if (isNull) {
                         result = result.replace("其它", "，" + addressDetail);
@@ -349,6 +348,7 @@ public class Util {
     public static String getFinshTime(String datetime) {
 
         if (datetime != null && !datetime.equals("")) {
+
             return datetime.split(":")[0] + ":" + datetime.split(":")[1];
         }
         return "尚未完成";

@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.bm.library.PhotoView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
@@ -128,7 +129,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private ImageView ivX1, ivX2, ivX3;
     //显示大图
     private LinearLayout llBigImg;
-    private ImageView ivBigImg;
+    private PhotoView ivBigImg;
 
 
     private List<ImageView> imageViewList = new ArrayList<>();
@@ -282,7 +283,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         XOnclick();
         //大图
         llBigImg = (LinearLayout) view.findViewById(R.id.ll_big_img);
-        ivBigImg = (ImageView) view.findViewById(R.id.iv_big_img);
+        ivBigImg = (PhotoView) view.findViewById(R.id.iv_big_img);
 
         //设置图片点击事件
         imgOnclick();
@@ -895,6 +896,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                     newRoomStringList.add(r.getRoomNumber());
                 }
                 roomAdapter.notifyDataSetChanged();
+//                roomDialog.show();
                 break;
             }
             case "category": {
