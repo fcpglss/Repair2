@@ -30,6 +30,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.picasso.Picasso;
+import com.zhangym.customview.VerificationCodeView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -60,6 +61,7 @@ import model.Place;
 import model.Response;
 import model.ResultBean;
 import model.Room;
+import network.Api;
 import okhttp3.Call;
 import repari.com.adapter.DialogAdapter;
 import util.AESUtil;
@@ -96,7 +98,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private static boolean startCamarea = false;
     private EditText et_name, et_tel, et_describe, et_details;
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
-    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails;
+    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails,etCode;
     //包含editText 的 LinearLayout
     private LinearLayout llDetailType, llContain, llFloor, llRoom, llDetailArea;
 
@@ -212,6 +214,8 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     DialogPlus dialogGetImage;
 
+    VerificationCodeView verificationCodeView ;
+
     //获取点击修改获得的apply
     Apply changeApply;
     Apply tempApply = new Apply();
@@ -289,7 +293,16 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etApplyType = (EditText) findViewById(R.id.et_change_apply_type);
         etApplyTypeDetails = (EditText) findViewById(R.id.et_change_apply_detail_type);
         et_name = (EditText) findViewById(R.id.et_change_name);
+        etCode= (EditText) findViewById(R.id.et_code);
+        verificationCodeView = (VerificationCodeView) findViewById(R.id.verificationCodeView);
 
+        Api.changeCode(verificationCodeView);
+        verificationCodeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Api.changeCode(verificationCodeView);
+            }
+        });
         etFloor = (EditText) findViewById(R.id.et_change_floor);
         etRoom = (EditText) findViewById(R.id.et_change_room);
 
@@ -1263,7 +1276,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         List<File> files = getFiles(changeUriList);
 
-        Util.submit("update", json, ApplyNoImgUpdate, ApplyUpdate, files,this)
+        Util.submit("update", json,"code",etCode.getText().toString(), ApplyNoImgUpdate, ApplyUpdate, files,this)
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
@@ -1278,10 +1291,34 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 clearAll();
                 Log.d(TAG, "onResponse: " + response);
                 if ("UpdateOK".equals(response)) {
-                    mhandler.sendEmptyMessage(6);
+                    //修改成功
+                    sweetAlertDialog.setTitleText("修改成功")
+                            .setConfirmText(null)
+                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    Observable.timer(1,TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                        @Override
+                        public void accept(Long aLong) throws Exception {
+                            Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
+                            intent.putExtra("repairId", apply.getId());
+                            startActivity(intent);
+                        }
+                    });
                 } else {
-                    mhandler.sendEmptyMessage(7);
+                    //服务器有返回 但是不成功
+                    sweetAlertDialog.setTitleText(response)
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismiss();
+                                }
+                            })
+                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                 }
+//                if ("UpdateOK".equals(response)) {
+//                    mhandler.sendEmptyMessage(6);
+//                } else {
+//                    mhandler.sendEmptyMessage(7);
+//                }
 
             }
         });
@@ -1378,6 +1415,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etDetailArea.setText("");
         etEmail.setText("");
         etApplyType.setText("");
+        etCode.setText("");
 //        etApplyTypeDetails.setText("");
         etApplyPassword.setText("");
         etFloor.setText("");
@@ -1476,7 +1514,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         return getContent(et_tel)
                 && getContent(et_name)
                 && getContent(etArea)
-                && getContent(etApplyType);
+                && getContent(etApplyType)&&getContent(etCode);
     }
 
 

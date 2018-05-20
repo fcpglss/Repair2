@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import com.bm.library.PhotoView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.zhangym.customview.VerificationCodeView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -53,6 +55,7 @@ import model.Place;
 import model.Response;
 import model.ResultBean;
 import model.Room;
+import network.Api;
 import okhttp3.Call;
 import repair.com.repair.MainActivity;
 import repair.com.repair.R;
@@ -75,6 +78,7 @@ import static constant.RequestUrl.AdressroomList;
 
 import static constant.RequestUrl.ApplyInsert;
 import static constant.RequestUrl.ApplyNoImgInsert;
+import static constant.RequestUrl.Code;
 import static constant.RequestUrl.REQUEST_CODE_CAMERA;
 import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
 import static constant.RequestUrl.TypeCategoryList;
@@ -92,7 +96,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private static final String TAG = "ApplyFragment";
 
 
-    private EditText et_name, et_tel, et_describe;
+    private EditText et_name, et_tel, et_describe, etCode;
 
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
     private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails, etAddressDetail;
@@ -124,6 +128,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private ImageView img_add, img_1, img_2, img_3;
 
     private RelativeLayout rl1, rl2, rl3;
+
+    private VerificationCodeView verificationCodeView;
 
     //打叉图片
     private ImageView ivX1, ivX2, ivX3;
@@ -244,7 +250,24 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     private void loadData() {
         queryFromServer("area", "0", AdressAreaList);
         queryFromServer("category", "0", TypeCategoryList);
+        Api.changeCode(verificationCodeView);
     }
+
+
+//    public void changeCode(){
+//        Api.checkCode().execute(new StringCallback() {
+//            @Override
+//            public void onError(Call call, Exception e, int id) {
+//                Log.d(TAG, "onError: 验证码"+e.getMessage());
+//            }
+//            @Override
+//            public void onResponse(String response, int id) {
+//                Log.d(TAG, "onResponse验证码: ");
+//                verificationCodeView.setVerificationText(response);
+//            }
+//        });
+//    }
+
 
     protected void initViews(View view) {
 
@@ -256,14 +279,21 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         etApplyTypeDetails = (EditText) view.findViewById(R.id.et_apply_detail_type);
         et_name = (EditText) view.findViewById(R.id.et_name);
         etAddressDetail = (EditText) view.findViewById(R.id.et_apply_address_details);
-
+        verificationCodeView = (VerificationCodeView) view.findViewById(R.id.verificationCodeView);
+//        verificationCodeView.setVerificationCodeBackground(Color.BLUE);
+        verificationCodeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Api.changeCode(verificationCodeView);
+            }
+        });
         etFloor = (EditText) view.findViewById(R.id.et_floor);
         etRoom = (EditText) view.findViewById(R.id.et_room);
 
         et_tel = (EditText) view.findViewById(R.id.et_tel);
 
         et_describe = (EditText) view.findViewById(R.id.et_apply_describe);
-
+        etCode = (EditText) view.findViewById(R.id.et_code);
         img_add = (ImageView) view.findViewById(R.id.iv_add);
         img_add.setOnClickListener(this);
 
@@ -418,16 +448,19 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         resetVisible();
     }
 
+    //检查必填项
     private boolean check() {
 
         boolean notNull = getContent(et_tel)
                 && getContent(et_name)
                 && getContent(etApplyPassword)
                 && getContent(etArea)
-                && getContent(etApplyType);
+                && getContent(etApplyType)
+                && getContent(etCode);
         return notNull;
     }
 
+    //检查非法字符
     private boolean checkValidate() {
         boolean ok = Util.validateString(et_name.getText().toString()) &&
                 Util.validateString(etAddressDetail.getText().toString()) &&
@@ -1162,26 +1195,40 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         Log.d(TAG, "upApply:  上传前" + json);
 
-        Util.submit("apply", json, ApplyNoImgInsert, ApplyInsert, files, getContext())
+        Util.submit("apply", json, "code", etCode.getText().toString(), ApplyNoImgInsert, ApplyInsert, files, getContext())
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-
+                        Log.d(TAG, "onError: " + e.getMessage().toString());
                         mhandler.sendEmptyMessage(7);
                     }
 
                     @Override
                     public void onResponse(String response, int id) {
-
+                        Log.d(TAG, "onResponse: " + response);
                         if ("申请成功等待处理".equals(response)) {
                             Util.writePhoneToLocal(ApplyFragment.this.apply, MyApplication.getContext());
-                            mhandler.sendEmptyMessage(6);
+                            sweetAlertDialog.setConfirmText("确定")
+                                    .setTitleText("报修成功")
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            clearAll();
+                                            sweetAlertDialog.dismiss();
+                                        }
+                                    }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                         } else {
-
-                            mhandler.sendEmptyMessage(8);
+                            sweetAlertDialog.setTitleText(response)
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            sweetAlertDialog.dismiss();
+                                        }
+                                    })
+                                    .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                         }
                     }
                 });
@@ -1226,7 +1273,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         et_name.setText("");
         et_tel.setText("");
         et_describe.setText("");
-
+        etCode.setText("");
         etArea.setText("");
         etDetailArea.setText("");
         etEmail.setText("");

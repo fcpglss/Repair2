@@ -8,9 +8,9 @@ public class RequestUrl {
 
 
 //    private static final String IP = "http://116.13.193.8";
-    private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
+//    private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
 
-//    private static final String project = "http://192.168.31.199:8080/repairSystem/";
+    private static final String project = "http://192.168.31.199:8080/repairSystem/";
 
 
     public static final String updateApp = project + "UpdateVersion";
@@ -26,7 +26,7 @@ public class RequestUrl {
     public static final String TypeCategoryList = project + "type/categoryList";
     public static final String TypeDetailClassList = project + "type/detailClassList";
 
-
+    public static final String Code = project + "/code";
 
     //报修
     public static final String ApplyHomeList = project + "applyList/home";

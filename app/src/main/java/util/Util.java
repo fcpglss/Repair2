@@ -401,6 +401,36 @@ public class Util {
         return postFormBuilder.build();
     }
 
+    /**
+     * 使用okHttp框架post请求网络,若有图片文件则使用requestImgURL,
+     * 若没有图片则使用requestURL
+     *
+     * @param paramsKey    参数名
+     * @param paramsValues 参数值
+     * @param noImgUrl     api地址
+     * @param files        文件集合
+     * @return 用于回调onResponse和onError方法
+     */
+    public static RequestCall submit(String paramsKey, String paramsValues, String code,String codeValue ,String noImgUrl, String ImgUrl, List<File> files, Context context) {
+        PostFormBuilder postFormBuilder = OkHttpUtils.post();
+
+        for (int i = 0; i < files.size(); i++) {
+            postFormBuilder.addFile("fileImg", "file" + i + ".jpg", files.get(i));
+            // Log.d(TAG, "submit: " + files.get(i).getPath());
+        }
+
+        postFormBuilder.addParams(paramsKey, paramsValues);
+        postFormBuilder.addParams(code, codeValue);
+        Log.d(TAG, "submit: "+codeValue);
+        if (files.size() > 0) {
+            postFormBuilder.url(ImgUrl);
+        } else {
+            postFormBuilder.url(noImgUrl);
+        }
+        return postFormBuilder.build();
+    }
+
+
 
     /**
      * 使用okHttp框架post请求网络

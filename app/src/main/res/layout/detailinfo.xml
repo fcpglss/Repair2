@@ -539,7 +539,7 @@
                             android:id="@+id/tv_paigong"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginRight="16dp"
                             android:gravity="right"
                             android:text="未派工"
                             android:textSize="@dimen/text_button_text"

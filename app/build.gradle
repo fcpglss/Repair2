@@ -59,4 +59,6 @@ dependencies {
 //    compile 'com.github.zcweng:switch-button:0.0.3@aar'
     //RxBinding
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    compile 'com.github.yongming9011:VerificationCodeView:v1.0'
+
 }

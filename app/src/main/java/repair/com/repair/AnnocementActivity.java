@@ -270,7 +270,7 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     @Override
     public void onRefresh() {
         isRefrush = true;
-        //queryFromServer(ANNCOUCEMENT);
+
         String id = "";
         if (annoucementList != null && annoucementList.size() > 0) {
 
