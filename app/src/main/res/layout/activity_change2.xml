@@ -545,26 +545,43 @@
                 </LinearLayout>
 
 
-                <RelativeLayout
-                    android:layout_margin="8dp"
-                    android:gravity="center"
+
+                <!--验证码-->
+
+                <LinearLayout
+                    android:layout_marginRight="8dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="0dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="验证码"
+                        android:textColor="@color/ColorPrimaryText"
+                        android:textSize="@dimen/text_subtitle" />
 
                     <EditText
                         android:id="@+id/et_code"
-                        android:layout_marginLeft="8dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginTop="14dp"
+                        android:layout_weight="1"
+                        android:background="@null"
                         android:hint="请输入验证码"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                        android:maxLength="30"
+                        android:textSize="@dimen/text_subtitle" />
 
                     <com.zhangym.customview.VerificationCodeView
                         android:id="@+id/verificationCodeView"
-                        android:layout_toRightOf="@id/et_code"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
-                        android:layout_marginRight="8dp"
                         android:layout_centerInParent="true"
+                        android:layout_marginRight="8dp"
+                        android:layout_toRightOf="@id/et_code"
                         android:padding="20dp"
                         zhangym:interferenceCirclesCount="20"
                         zhangym:interferenceCirclesRadius="5"
@@ -576,14 +593,14 @@
                         zhangym:textSkewX="0"
                         zhangym:verificationText="9D27" />
 
-                </RelativeLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:background="#ffffff"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 

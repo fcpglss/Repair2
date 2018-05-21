@@ -411,7 +411,7 @@ public class Util {
      * @param files        文件集合
      * @return 用于回调onResponse和onError方法
      */
-    public static RequestCall submit(String paramsKey, String paramsValues, String code,String codeValue ,String noImgUrl, String ImgUrl, List<File> files, Context context) {
+    public static RequestCall submit(String paramsKey, String paramsValues, String code, String codeValue, String noImgUrl, String ImgUrl, List<File> files, Context context) {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
 
         for (int i = 0; i < files.size(); i++) {
@@ -421,7 +421,7 @@ public class Util {
 
         postFormBuilder.addParams(paramsKey, paramsValues);
         postFormBuilder.addParams(code, codeValue);
-        Log.d(TAG, "submit: "+codeValue);
+        Log.d(TAG, "submit: " + codeValue);
         if (files.size() > 0) {
             postFormBuilder.url(ImgUrl);
         } else {
@@ -429,7 +429,6 @@ public class Util {
         }
         return postFormBuilder.build();
     }
-
 
 
     /**
@@ -520,13 +519,14 @@ public class Util {
         return path;
     }
 
-    public static boolean getPhotoUrl(int position, ResultBean rs) {
+    //判断报修记录中是否有图片
+    public static boolean getPhotoUrl(int position, List<Apply> applyList) {
         List<String> photoList = new ArrayList<>();
-        if (rs == null || rs.getApplys() == null || rs.getApplys().get(position).getA_imaes() == null) {
+        if (applyList == null || applyList.get(position).getA_imaes() == null) {
             return false;
         }
 
-        photoList = rs.getApplys().get(position).getA_imaes();
+        photoList = applyList.get(position).getA_imaes();
         if (photoList.size() > 0) {
             return true;
         } else {

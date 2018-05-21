@@ -171,52 +171,13 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 2:
 
-                    break;
-                case 3:
-                    break;
                 case 4:
 
                     String addressJson = Util.loadAddressFromLocal(MyApplication.getContext());
                     addressRes = JsonUtil.jsonToBean(addressJson);
                     break;
-                case 5:
-                    Toast.makeText(getActivity(), "请填写报修地址", Toast.LENGTH_SHORT).show();
-                    break;
-                case 6:
-                    //申请成功提示
-                    sweetAlertDialog.setConfirmText("确定")
-                            .setTitleText("报修成功")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    clearAll();
-                                    sweetAlertDialog.dismiss();
-                                }
-                            }).changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    break;
-                case 7:
-                    sweetAlertDialog.setTitleText("网络异常")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.dismiss();
-                                }
-                            })
-                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
-                    break;
-                case 8:
 
-                    sweetAlertDialog.setTitleText("提交失败")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.dismiss();
-                                }
-                            })
-                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
-                    break;
             }
         }
     };
@@ -253,22 +214,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         Api.changeCode(verificationCodeView);
     }
 
-
-//    public void changeCode(){
-//        Api.checkCode().execute(new StringCallback() {
-//            @Override
-//            public void onError(Call call, Exception e, int id) {
-//                Log.d(TAG, "onError: 验证码"+e.getMessage());
-//            }
-//            @Override
-//            public void onResponse(String response, int id) {
-//                Log.d(TAG, "onResponse验证码: ");
-//                verificationCodeView.setVerificationText(response);
-//            }
-//        });
-//    }
-
-
     protected void initViews(View view) {
 
         etEmail = (EditText) view.findViewById(R.id.et_email);
@@ -280,7 +225,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         et_name = (EditText) view.findViewById(R.id.et_name);
         etAddressDetail = (EditText) view.findViewById(R.id.et_apply_address_details);
         verificationCodeView = (VerificationCodeView) view.findViewById(R.id.verificationCodeView);
-//        verificationCodeView.setVerificationCodeBackground(Color.BLUE);
+        verificationCodeView.setVerificationCodeBackground(Color.rgb(18, 150, 219));
         verificationCodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1045,27 +990,30 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     }
 
+    int photoWidth =360 ;
+    int photoHeight = 360 ;
+
     private void switchImage() {
 
         switch (list_uri.size() - 1) {
             case 0:
                 rl1.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), photoWidth, photoHeight));
                 break;
             case 1:
                 rl1.setVisibility(View.VISIBLE);
                 rl2.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), photoHeight, photoHeight));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), photoHeight, photoHeight));
                 break;
             case 2:
 
                 rl1.setVisibility(View.VISIBLE);
                 rl2.setVisibility(View.VISIBLE);
                 rl3.setVisibility(View.VISIBLE);
-                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), 180, 180));
-                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), 180, 180));
-                img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(2)), 180, 180));
+                img_1.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(0)), photoHeight, photoHeight));
+                img_2.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(1)), photoHeight, photoHeight));
+                img_3.setImageBitmap(getSmallBitmap(getRealPathFromURI(list_uri.get(2)), photoHeight, photoHeight));
                 break;
 
 
@@ -1193,9 +1141,7 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
         List<File> files = getFiles(list_uri);
 
-        Log.d(TAG, "upApply:  上传前" + json);
-
-        Util.submit("apply", json, "code", etCode.getText().toString(), ApplyNoImgInsert, ApplyInsert, files, getContext())
+        Api.submit(json, etCode.getText().toString(), files)
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
@@ -1203,7 +1149,15 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.d(TAG, "onError: " + e.getMessage().toString());
-                        mhandler.sendEmptyMessage(7);
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        sweetAlertDialog.setTitleText("网络异常")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismiss();
+                                    }
+                                })
+                                .changeAlertType(SweetAlertDialog.ERROR_TYPE);
                     }
 
                     @Override

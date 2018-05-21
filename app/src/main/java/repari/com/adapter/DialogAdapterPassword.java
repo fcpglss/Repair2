@@ -14,15 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bigkoo.svprogresshud.SVProgressHUD;
+
 import com.jakewharton.rxbinding2.view.RxView;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.concurrent.TimeUnit;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import constant.RequestUrl;
 import io.reactivex.functions.Consumer;
 import model.Apply;
+import network.Api;
 import okhttp3.Call;
 import repair.com.repair.AppraiseActivity;
 import repair.com.repair.R;
@@ -40,32 +42,7 @@ public class DialogAdapterPassword extends BaseAdapter {
     Apply apply;
     Context context;
     int layout;
-    SVProgressHUD svProgressHUD;
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    closeDiag();
-                    //跳转
-                    Intent intent = new Intent(context, AppraiseActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("apply", apply);
-                    intent.putExtras(bundle);
-                    context.startActivity(intent);
-                    break;
-                case 2:
-                    Toast.makeText(context, "密码不正确", Toast.LENGTH_SHORT).show();
-                    closeDiag();
-                    break;
-                case 3:
-                    Toast.makeText(context, "网络异常", Toast.LENGTH_SHORT).show();
-                    closeDiag();
-                    break;
-            }
-        }
-    };
+    SweetAlertDialog svProgressHUD;
 
 
     public DialogAdapterPassword(Context context, int layout, Apply apply) {
@@ -119,22 +96,30 @@ public class DialogAdapterPassword extends BaseAdapter {
                             Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show();
                         } else {
                             //请求网络判断对错
-                            svProgressHUD = new SVProgressHUD(context);
-                            svProgressHUD.showWithStatus("验证中");
+                            svProgressHUD = new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE);
+                            svProgressHUD.setTitleText("验证中");
                             svProgressHUD.show();
                             String MD5 = Util.getMD5(viewHolder.editText.getText().toString());
-                            Util.submit("password", MD5, "ID", apply.getId(), RequestUrl.ApplyPassword).execute(new StringCallback() {
+                            Api.checkPassword(MD5, apply.getId()).execute(new StringCallback() {
                                 @Override
                                 public void onError(Call call, Exception e, int id) {
-                                    mhandler.sendEmptyMessage(3);
+                                    Toast.makeText(context, "网络异常", Toast.LENGTH_SHORT).show();
+                                    closeDiag();
                                 }
 
                                 @Override
                                 public void onResponse(String response, int id) {
                                     if ("OK".equals(response)) {
-                                        mhandler.sendEmptyMessage(1);
+                                        closeDiag();
+                                        //跳转
+                                        Intent intent = new Intent(context, AppraiseActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("apply", apply);
+                                        intent.putExtras(bundle);
+                                        context.startActivity(intent);
                                     } else {
-                                        mhandler.sendEmptyMessage(2);
+                                        Toast.makeText(context, "密码不正确", Toast.LENGTH_SHORT).show();
+                                        closeDiag();
                                     }
                                 }
                             });
@@ -155,9 +140,8 @@ public class DialogAdapterPassword extends BaseAdapter {
     }
 
     private void closeDiag() {
-        if (svProgressHUD.isShowing()) {
+        if (svProgressHUD != null && svProgressHUD.isShowing()) {
             svProgressHUD.dismiss();
-
         }
         if (dialogPlus != null) {
             if (dialogPlus.isShowing()) {

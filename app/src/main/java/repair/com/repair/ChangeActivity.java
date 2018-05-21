@@ -25,7 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.bigkoo.svprogresshud.SVProgressHUD;
+
 import com.jakewharton.rxbinding2.view.RxView;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
@@ -98,7 +98,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private static boolean startCamarea = false;
     private EditText et_name, et_tel, et_describe, et_details;
     //后面添加的电子邮箱，报修密码，报修区域，楼号，报修类型，类型详情
-    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails,etCode;
+    private EditText etEmail, etApplyPassword, etArea, etDetailArea, etApplyType, etApplyTypeDetails, etCode;
     //包含editText 的 LinearLayout
     private LinearLayout llDetailType, llContain, llFloor, llRoom, llDetailArea;
 
@@ -112,7 +112,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     SweetAlertDialog sweetAlertDialog;
 
     private Button btn_apply;
-    private ImageView  img_add, img_1, img_2, img_3;
+    private ImageView img_add, img_1, img_2, img_3;
 
     private RelativeLayout rl1, rl2, rl3;
     //打叉图片
@@ -122,14 +122,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private ImageView ivBigImg;
 
 
-
     private List<ImageView> imageViewList = new ArrayList<>();
 
     private Apply apply = new Apply();
 
     public static ResultBean addressRes = null;
 
-    private SVProgressHUD svProgressHUD;
+    private SweetAlertDialog svProgressHUD;
 
 
     private int areaId = 0;
@@ -175,7 +174,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                     sweetAlertDialog.setTitleText("修改成功")
                             .setConfirmText(null)
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    Observable.timer(1,TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                    Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
                         public void accept(Long aLong) throws Exception {
                             Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
@@ -214,7 +213,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     DialogPlus dialogGetImage;
 
-    VerificationCodeView verificationCodeView ;
+    VerificationCodeView verificationCodeView;
 
     //获取点击修改获得的apply
     Apply changeApply;
@@ -237,9 +236,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_change2);
         changeApply = (Apply) getIntent().getSerializableExtra("apply");
         addressRes = (ResultBean) getIntent().getSerializableExtra("address");
-        svProgressHUD = new SVProgressHUD(this);
-        svProgressHUD.showWithStatus("正在加载");
-
+        svProgressHUD = new SweetAlertDialog(this,SweetAlertDialog.PROGRESS_TYPE);
+        svProgressHUD.setTitleText("加载中...");
+        svProgressHUD.show();
         queryFromServerFirst("changeId", changeApply.getId(), ApplyChange);
 
     }
@@ -272,7 +271,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void closeDiag() {
-        if (svProgressHUD.isShowing()) {
+        if (svProgressHUD!=null && svProgressHUD.isShowing()) {
             svProgressHUD.dismiss();
         }
     }
@@ -293,7 +292,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         etApplyType = (EditText) findViewById(R.id.et_change_apply_type);
         etApplyTypeDetails = (EditText) findViewById(R.id.et_change_apply_detail_type);
         et_name = (EditText) findViewById(R.id.et_change_name);
-        etCode= (EditText) findViewById(R.id.et_code);
+        etCode = (EditText) findViewById(R.id.et_code);
         verificationCodeView = (VerificationCodeView) findViewById(R.id.verificationCodeView);
 
         Api.changeCode(verificationCodeView);
@@ -373,7 +372,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 if (check()) {
-                                    if(checkValidate()) {
+                                    if (checkValidate()) {
 
                                         if (Util.isPhoneNumberValid(et_tel.getText().toString())) {
                                             bindView();
@@ -391,7 +390,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                                                         }
                                                     });
                                         }
-                                    } else{
+                                    } else {
                                         sweetAlertDialog.setTitleText("不能输入特殊字符")
                                                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                                     @Override
@@ -418,7 +417,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         });
-
 
 
         /**
@@ -521,10 +519,9 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         et_details.setText(changeApply.getAddressDetail());
 
 
-
-        if(changeApply.getA_imaes()!=null){
+        if (changeApply.getA_imaes() != null) {
             for (String s : changeApply.getA_imaes()) {
-                Log.d(TAG, "changApply ImgList  :" +s);
+                Log.d(TAG, "changApply ImgList  :" + s);
             }
         }
         changeImgUrl = changeApply.getA_imaes();
@@ -597,10 +594,10 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private void bindView() {
 
 
-            apply.setRepair(AESUtil.encode(et_name.getText().toString()));
-            apply.setTel(AESUtil.encode(et_tel.getText().toString()));
-            apply.setEmail(AESUtil.encode(etEmail.getText().toString()));
-            apply.setPassword("");
+        apply.setRepair(AESUtil.encode(et_name.getText().toString()));
+        apply.setTel(AESUtil.encode(et_tel.getText().toString()));
+        apply.setEmail(AESUtil.encode(etEmail.getText().toString()));
+        apply.setPassword("");
 
 
         setApply();
@@ -873,7 +870,6 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         });
 
 
-
     }
 
     private void setNextVisible(View view, MotionEvent event) {
@@ -1074,7 +1070,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onDestroy() {
-        if(sweetAlertDialog!=null){
+        if (sweetAlertDialog != null) {
             sweetAlertDialog.dismiss();
         }
         changeUriList.clear();
@@ -1200,13 +1196,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
     private void startCamera() {
 
 
-        int currentVersion =android.os.Build.VERSION.SDK_INT;
+        int currentVersion = android.os.Build.VERSION.SDK_INT;
 
         cameraFile = FIleUtils.createImageFile();
 
 
         //低于24为6.0以下
-        if(currentVersion<24){
+        if (currentVersion < 24) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
@@ -1224,7 +1220,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
             Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             //  takePhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-          this .startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
+            this.startActivityForResult(takePhotoIntent, TAKE_PHOTO_RAW);
         }
 
 //        startCamarea = true;
@@ -1276,52 +1272,57 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         List<File> files = getFiles(changeUriList);
 
-        Util.submit("update", json,"code",etCode.getText().toString(), ApplyNoImgUpdate, ApplyUpdate, files,this)
+        Api.submit(json, etCode.getText().toString(), files)
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)
                 .execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e, int id) {
-                mhandler.sendEmptyMessage(8);
-            }
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.d(TAG, "onError: " + e.getMessage());
+                        //直接错误了
+                        sweetAlertDialog.setTitleText("网络异常")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismiss();
+                                    }
+                                })
+                                .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                    }
 
-            @Override
-            public void onResponse(String response, int id) {
-                clearAll();
-                Log.d(TAG, "onResponse: " + response);
-                if ("UpdateOK".equals(response)) {
-                    //修改成功
-                    sweetAlertDialog.setTitleText("修改成功")
-                            .setConfirmText(null)
-                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    Observable.timer(1,TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
-                        @Override
-                        public void accept(Long aLong) throws Exception {
-                            Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
-                            intent.putExtra("repairId", apply.getId());
-                            startActivity(intent);
-                        }
-                    });
-                } else {
-                    //服务器有返回 但是不成功
-                    sweetAlertDialog.setTitleText(response)
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onResponse(String response, int id) {
+                        clearAll();
+                        Log.d(TAG, "onResponse: " + response);
+                        if ("UpdateOK".equals(response)) {
+                            //修改成功
+                            sweetAlertDialog.setTitleText("修改成功")
+                                    .setConfirmText(null)
+                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                            Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                                 @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.dismiss();
+                                public void accept(Long aLong) throws Exception {
+                                    Intent intent = new Intent(ChangeActivity.this, DetailsActivity.class);
+                                    intent.putExtra("repairId", apply.getId());
+                                    startActivity(intent);
                                 }
-                            })
-                            .changeAlertType(SweetAlertDialog.ERROR_TYPE);
-                }
-//                if ("UpdateOK".equals(response)) {
-//                    mhandler.sendEmptyMessage(6);
-//                } else {
-//                    mhandler.sendEmptyMessage(7);
-//                }
+                            });
+                        } else {
+                            //服务器有返回 但是不成功
+                            sweetAlertDialog.setTitleText(response)
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            sweetAlertDialog.dismiss();
+                                        }
+                                    })
+                                    .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                        }
 
-            }
-        });
+
+                    }
+                });
     }
 
     private void setApply() {
@@ -1460,7 +1461,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-            if(sweetAlertDialog!=null){
+            if (sweetAlertDialog != null) {
                 sweetAlertDialog.dismiss();
             }
 
@@ -1514,15 +1515,13 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
         return getContent(et_tel)
                 && getContent(et_name)
                 && getContent(etArea)
-                && getContent(etApplyType)&&getContent(etCode);
+                && getContent(etApplyType) && getContent(etCode);
     }
 
 
-
-
-    private boolean checkValidate(){
-        boolean ok=Util.validateString(et_name.getText().toString())&&
-                Util.validateString(et_details.getText().toString())&&
+    private boolean checkValidate() {
+        boolean ok = Util.validateString(et_name.getText().toString()) &&
+                Util.validateString(et_details.getText().toString()) &&
                 Util.validateString(et_describe.getText().toString());
         return ok;
     }

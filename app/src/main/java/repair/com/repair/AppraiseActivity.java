@@ -24,6 +24,7 @@ import java.util.List;
 
 import application.MyApplication;
 import model.Apply;
+import network.Api;
 import okhttp3.Call;
 import util.AESUtil;
 import util.JsonUtil;
@@ -41,33 +42,33 @@ public class AppraiseActivity extends AppCompatActivity {
 
 
     //报修人姓名，电话，报修地址（从区域到房间），其他信息，维修人员
-    TextView tvAppraiseName,tvAppraisePhone,tvAppraiseAddress,tvAppraiseOther,tvAppraiseServerName;
+    TextView tvAppraiseName, tvAppraisePhone, tvAppraiseAddress, tvAppraiseOther, tvAppraiseServerName;
     //星星
-    ImageView star1,star2,star3,star4,star5;
-    ImageView speedstar1,speedstar2,speedstar3,speedstar4,speedstar5;
-    ImageView qualitystar1,qualitystar2,qualitystar3,qualitystar4,qualitystar5;
-    ImageView attutideystar1,attutideystar2,attutideystar3,attutideystar4,attutideystar5;
+    ImageView star1, star2, star3, star4, star5;
+    ImageView speedstar1, speedstar2, speedstar3, speedstar4, speedstar5;
+    ImageView qualitystar1, qualitystar2, qualitystar3, qualitystar4, qualitystar5;
+    ImageView attutideystar1, attutideystar2, attutideystar3, attutideystar4, attutideystar5;
 
     StarCount all = new StarCount();
     StarCount speed = new StarCount();
     StarCount quality = new StarCount();
     StarCount attitude = new StarCount();
     //维修质量
-    int qualitCount=5;
+    int qualitCount = 5;
     //维修速度
-    int speedCount=5;
+    int speedCount = 5;
     //维修态度
-    int attitudeCount=5;
+    int attitudeCount = 5;
     //总 默认好评
-    public int starCount=5;
+    public int starCount = 5;
 
 
-    String accpetServer="";
+    String accpetServer = "";
     //评价内容
     EditText etAppraiseContent;
     //提交
     Button btnSubmit;
-    Apply apply=null;
+    Apply apply = null;
 
     private Handler mhandler = new Handler() {
         @Override
@@ -75,15 +76,15 @@ public class AppraiseActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 2:
-                    Toast.makeText(AppraiseActivity.this,accpetServer, Toast.LENGTH_SHORT).show();
-                    Intent intent=new Intent();
+                    Toast.makeText(AppraiseActivity.this, accpetServer, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
 
                     break;
                 case 3:
-                    Toast.makeText(AppraiseActivity.this,accpetServer, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AppraiseActivity.this, accpetServer, Toast.LENGTH_SHORT).show();
                     break;
 
-        }
+            }
         }
     };
 
@@ -178,11 +179,11 @@ public class AppraiseActivity extends AppCompatActivity {
         btnSubmit.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
-                    Log.d(TAG, "onTouch: "+event.getAction());
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
                     btnSubmit.setBackgroundColor(Color.parseColor("#65B5FF"));
-                }else if (event.getAction() ==MotionEvent.ACTION_UP){
-                    Log.d(TAG, "onTouch: "+event.getAction());
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d(TAG, "onTouch: " + event.getAction());
                     btnSubmit.setBackgroundColor(Color.parseColor("#6699ff"));
                 }
                 return false;
@@ -192,7 +193,7 @@ public class AppraiseActivity extends AppCompatActivity {
     }
 
     //星星的点击事件实现
-    private void starOnClick(){
+    private void starOnClick() {
         final List<ImageView> list = new ArrayList<>();
         list.add(star1);
         list.add(star2);
@@ -225,14 +226,14 @@ public class AppraiseActivity extends AppCompatActivity {
         speed.setCount(speedCount);
         attitude.setCount(attitudeCount);
 
-        changeStarCount(list,all);
-        changeStarCount(qualityList,quality);
-        changeStarCount(speedList,speed);
-        changeStarCount(attitudeList,attitude);
+        changeStarCount(list, all);
+        changeStarCount(qualityList, quality);
+        changeStarCount(speedList, speed);
+        changeStarCount(attitudeList, attitude);
 
     }
 
-    private void changeStarCount(final List<ImageView> list , final StarCount count ) {
+    private void changeStarCount(final List<ImageView> list, final StarCount count) {
         for (int i = 0; i < list.size(); i++) {
             final int finalI = i;
             list.get(i).setOnClickListener(new View.OnClickListener() {
@@ -240,11 +241,11 @@ public class AppraiseActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     //点击了 说明要改默认好评
                     count.setCount(0);
-                    count.setCount(finalI+1);
-                    for (int j= 0; j<5;j++){
+                    count.setCount(finalI + 1);
+                    for (int j = 0; j < 5; j++) {
                         list.get(j).setImageResource(R.drawable.star_white);
                     }
-                    for (int i =0;i<count.getCount();i++){
+                    for (int i = 0; i < count.getCount(); i++) {
                         list.get(i).setImageResource(R.drawable.star_red);
                     }
                 }
@@ -255,30 +256,29 @@ public class AppraiseActivity extends AppCompatActivity {
     //提交 并且成功 则跳转详情页面
     private void upApply(String json) {
 
-                Util.submit("appraise",json,ApplyAppraise).execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.d(TAG, "onError: 错误返回"+e.toString());
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        Log.d(TAG, "onResponse: 成功返回"+response.toString());
-                        Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
-                        Intent intent= new Intent(AppraiseActivity.this,DetailsActivity.class);
-                        intent.putExtra("repairId",apply.getId());
-                        intent.putExtra("appraiseIntent",true);
-                        startActivity(intent);
-
-                    }
-                });
-
+        Api.appraise(json).execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Log.d(TAG, "onError: 错误返回" + e.toString());
             }
 
+            @Override
+            public void onResponse(String response, int id) {
+                Log.d(TAG, "onResponse: 成功返回" + response.toString());
+                Toast.makeText(MyApplication.getContext(), response.toString(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(AppraiseActivity.this, DetailsActivity.class);
+                intent.putExtra("repairId", apply.getId());
+                intent.putExtra("appraiseIntent", true);
+                startActivity(intent);
+
+            }
+        });
+
+    }
 
 
     //提交按钮 点击绑定数据
-    private void btnSubmitOnClick(){
+    private void btnSubmitOnClick() {
 
 
         //获取数据，也就是星星数量starCount和评价文字tvAppriseContent，还有id作为插入数据库的条件
@@ -287,14 +287,14 @@ public class AppraiseActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Apply appraisApply=new Apply();
+                Apply appraisApply = new Apply();
                 appraisApply.setId(apply.getId());
                 appraisApply.setEvaluate(String.valueOf(all.getCount()));
                 appraisApply.setSpeedEval(String.valueOf(speed.getCount()));
                 appraisApply.setQualityEval(String.valueOf(quality.getCount()));
                 appraisApply.setAttitudeEval(String.valueOf(attitude.getCount()));
                 appraisApply.setEvalText(etAppraiseContent.getText().toString());
-                String json=JsonUtil.beanToJson(appraisApply);
+                String json = JsonUtil.beanToJson(appraisApply);
                 upApply(json);
             }
         });
@@ -303,7 +303,7 @@ public class AppraiseActivity extends AppCompatActivity {
 
 }
 
-class StarCount{
+class StarCount {
     int count;
 
     public int getCount() {

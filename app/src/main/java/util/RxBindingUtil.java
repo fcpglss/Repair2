@@ -16,23 +16,20 @@ import repair.com.repair.R;
  */
 
 public class RxBindingUtil {
-    public static void setClickThrottleFirst(View view,int time){
+    public static void setClickThrottleFirst(View view, int time) {
         RxView.clicks(view)
                 .throttleFirst(time, TimeUnit.SECONDS)
                 .subscribe();
     }
 
-    public static void changColorAndVisable(final EditText editText , final LinearLayout line , final ImageView imageView){
+    public static void changColorAndVisable(final EditText editText, final LinearLayout line, final ImageView imageView) {
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus)
-                {
+                if (hasFocus) {
                     line.setBackgroundResource(R.color.ColorDarkPrimaryColor);
                     imageView.setVisibility(View.VISIBLE);
-                }
-                else
-                {
+                } else {
                     line.setBackgroundResource(R.color.ColorDividerColor);
                     imageView.setVisibility(View.GONE);
                 }
@@ -41,11 +38,8 @@ public class RxBindingUtil {
     }
 
 
-
-    public static void setClearText(final View view,final EditText editText)
-    {
-        try
-        {
+    public static void setClearText(final View view, final EditText editText) {
+        try {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -53,29 +47,20 @@ public class RxBindingUtil {
                     editText.setText("");
                 }
             });
-        }
-        catch (Exception e)
-        {
-            return ;
+        } catch (Exception e) {
+            return;
         }
     }
 
 
-
-
-
-
-    public static void changColorAndVisable(final EditText editText , final LinearLayout line ){
+    public static void changColorAndVisable(final EditText editText, final LinearLayout line) {
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus)
-                {
+                if (hasFocus) {
                     line.setBackgroundResource(R.color.ColorDarkPrimaryColor);
 
-                }
-                else
-                {
+                } else {
                     line.setBackgroundResource(R.color.ColorDividerColor);
                 }
             }

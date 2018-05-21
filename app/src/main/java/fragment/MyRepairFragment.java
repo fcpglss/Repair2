@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,20 +15,25 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.bigkoo.svprogresshud.SVProgressHUD;
+
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import application.MyApplication;
-import medusa.theone.waterdroplistview.view.WaterDropListView;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import model.Apply;
 import model.Response;
 import model.ResultBean;
+import network.Api;
 import okhttp3.Call;
 import okhttp3.Request;
 import repair.com.repair.DetailsActivity;
@@ -48,103 +54,43 @@ import static constant.RequestUrl.ApplySearchMore;
  * Created by hsp on 2016/11/27.
  */
 
-public class MyRepairFragment extends LazyFragment2 implements WaterDropListView.IWaterDropListViewListener {
+public class MyRepairFragment extends LazyFragment2 {
 
     public static final String TAG = "MyRepairFragment";
 
     private EditText etName, etPhone;
     private Button btnSearch;
 
-    private static boolean isRefrush = false;
 
     String appraise = "false";
 
-    private static boolean moreFlag = false;
 
-    private static boolean isMore = false;
-    private static boolean ishasData = false;
-
+    private static int page = 5;
     private static int start = 0;
-    private static int end = 5;
+    private static int end = page;
+
 
     private String phone = "";
     private String name = "";
 
 
-    public Response moreResponse = null;
+    private ListView listView = null;
 
-    public ResultBean moreRes = null;
+    SmartRefreshLayout smartRefreshLayout;
 
-    private WaterDropListView lvMyList = null;
+    private List<Apply> applyList = new ArrayList<>();
 
     private MyRepairAdapter adapter = null;
 
-    private List<Apply> moreList = new ArrayList<>();
 
-    private Response myRespon;
-
-    ResultBean myRes = new ResultBean();
-    SVProgressHUD svProgressHUD = new SVProgressHUD(getActivity());
-
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 2:
-                    closeReflush();
-                    closeDiag();
-                    break;
-                case 3:
-                    lvMyList.setVisibility(View.VISIBLE);
-                    closeDiag();
-                    closeReflush();
-                    //先清后填
-                    setFirstApply(myRespon.getResultBean());
-                    ishasData = myRespon.isEnd();
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
-                    break;
-
-                case 5:
-                    lvMyList.stopRefresh();
-                    ishasData = myRespon.isEnd();
-                    break;
-                case 6:
-                    lvMyList.stopLoadMore();
-                    break;
-                case 7:
-                    moreList = moreRes.getApplys();
-                    setMoreApply(moreList);
-                    lvMyList.setSelection(start - 1);
-                    moreFlag = moreResponse.isEnd();
-                    closeReflush();
-                    break;
-                case 8:
-                    closeDiag();
-                    break;
-            }
-        }
-    };
+    private Response response;
+    private ResultBean res;
 
 
-    private void setMoreApply(List<Apply> applyList) {
-        for (Apply apply : applyList) {
-            myRes.getApplys().add(apply);
-        }
-    }
+    SweetAlertDialog svProgressHUD;
 
-    private void closeReflush() {
-        if (isRefrush) {
-            lvMyList.stopRefresh();
-            isRefrush = false;
-        }
-        if (isMore) {
-            lvMyList.stopLoadMore();
-            isMore = false;
-        }
-    }
+
+    private boolean isHasData;
 
 
     @Nullable
@@ -161,10 +107,6 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         return R.layout.frg_fragment_myrepair;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     @Override
     protected void onFragmentVisibleChange(boolean isVisible) {
@@ -175,24 +117,34 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
     }
 
     private void loadData() {
-        adapter = new MyRepairAdapter(myRes, getActivity());
-        lvMyList.setAdapter(adapter);
+        adapter = new MyRepairAdapter(applyList, getActivity());
+        listView.setAdapter(adapter);
 
     }
 
 
     protected void initViews(View view) {
 
-        myRes.setApplys(new ArrayList<Apply>());
-        svProgressHUD = new SVProgressHUD(getActivity());
-        lvMyList = (WaterDropListView) view.findViewById(R.id.lv_my_lv);
-        lvMyList.setWaterDropListViewListener(MyRepairFragment.this);
-        lvMyList.setPullLoadEnable(true);
-        lvMyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        svProgressHUD = new SweetAlertDialog(getActivity(),SweetAlertDialog.PROGRESS_TYPE);
+        smartRefreshLayout = (SmartRefreshLayout) view.findViewById(R.id.refreshLayout);
+        smartRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                loadMore();
+            }
+
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                smartRefreshLayout.finishRefresh();
+            }
+        });
+        listView = (ListView) view.findViewById(R.id.listView);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), DetailsActivity.class);
-                intent.putExtra("repairId", myRes.getApplys().get(position - 1).getId());
+                intent.putExtra("repairId", applyList.get(position).getId());
                 startActivity(intent);
             }
         });
@@ -204,102 +156,68 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moreFlag = false;
-                start = 0;
-                end = 5;
 
+                start = 0;
+                end = page;
                 if (svProgressHUD == null) {
-                    svProgressHUD = new SVProgressHUD(getActivity());
-                    svProgressHUD.showWithStatus("搜索中");
+                    svProgressHUD = new SweetAlertDialog(getActivity(),SweetAlertDialog.PROGRESS_TYPE);
+                    svProgressHUD.setTitleText("搜索中");
                 } else {
-                    svProgressHUD.showWithStatus("搜索中");
+                    svProgressHUD.setTitleText("搜索中");
                 }
+                svProgressHUD.show();
                 phone = etPhone.getText().toString();
                 name = etName.getText().toString();
-                queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
+                search(AESUtil.encode(phone), AESUtil.encode(name));
 
             }
         });
 
     }
 
-    private void queryFromServer(String parms, String Vules, String params2, String Vules2, String url) {
+    //搜索记录
+    private void search(String phone, String name) {
+        Api.search(phone, name).execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Log.d(TAG, "onError: " + e.getMessage());
+                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                closeDiag();
+            }
 
-        Util.submit(parms, Vules, params2, Vules2, url)
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Response rp = new Response();
-                        rp.setErrorType(-1);
-                        rp.setError(true);
-                        rp.setErrorMessage("无法连接服务器");
-                        myRespon = rp;
-                        mhandler.sendEmptyMessage(8);
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        //请求成功后获取到json
-                        final String responseJson = response.toString();
-                        myRespon = JsonUtil.jsonToResponse(responseJson);
-                        if (myRespon.getErrorType() == -1) {
-                            myRespon.setErrorMessage("没有找到该报修记录");
-                            mhandler.sendEmptyMessage(2);
-                            return;
-                        }
-                        if (myRespon.getResultBean().getApplys() == null || myRespon.getResultBean().getApplys().size() < 0) {
-                            myRespon.setErrorMessage("没有找到该报修记录");
-                            mhandler.sendEmptyMessage(2);
-                            return;
+            @Override
+            public void onResponse(String resStr, int id) {
+                response = JsonUtil.jsonToResponse(resStr);
+                closeDiag();
+                if (response != null) {
+                    res = response.getResultBean();
+                    isHasData = response.isEnd();
+                    if (res != null) {
+                        if (res.getApplys() != null) {
+                            applyList.removeAll(applyList);
+                            applyList.addAll(res.getApplys());
+                            adapter.notifyDataSetChanged();
                         } else {
-                            mhandler.sendEmptyMessage(3);
+                            Toast.makeText(getActivity(), "没找到报修记录", Toast.LENGTH_SHORT).show();
                         }
-
                     }
-                });
+                }
+            }
+        });
     }
 
 
     private void closeDiag() {
-        if (svProgressHUD.isShowing()) {
+        if (svProgressHUD != null && svProgressHUD.isShowing()) {
             svProgressHUD.dismiss();
         }
-    }
-
-
-    private void setFirstApply(ResultBean resultBean) {
-
-        if (myRes != null && myRes.getApplys().size() > 0) {
-            myRes.getApplys().clear();
-        }
-        for (int i = 0; i < resultBean.getApplys().size(); i++) {
-            myRes.getApplys().add(resultBean.getApplys().get(i));
-        }
-
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
     public void onDestroy() {
         start = 0;
-        end = 5;
-        moreFlag = false;
-        ishasData = false;
+        end = page;
+        isHasData = false;
         super.onDestroy();
     }
 
@@ -310,86 +228,49 @@ public class MyRepairFragment extends LazyFragment2 implements WaterDropListView
         String appraise2 = getActivity().getIntent().getStringExtra("appraise");
         if (appraise2 != null && appraise2.equals("ok")) {
             appraise2 = "false";
-            queryFromServer("phone", AESUtil.encode(phone), "name", AESUtil.encode(name), ApplySearch);
+            //重新显示
+            search(AESUtil.encode(phone), AESUtil.encode(name));
         }
         super.onResume();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
+    public void loadMore() {
 
-    @Override
-    public void onRefresh() {
-        isRefrush = true;
-        moreFlag = false;
-        start = 0;
-        end = 5;
-        phone = etPhone.getText().toString();
-        name = etName.getText().toString();
-        phone=AESUtil.encode(phone);
-        name=AESUtil.encode(name);
-        queryFromServer("phone", phone, "name", name, ApplySearch);
-    }
-
-
-    @Override
-    public void onLoadMore() {
-        isMore = true;
-        if (moreFlag || ishasData) {
-            mhandler.sendEmptyMessage(6);
+        if (isHasData) {
+            smartRefreshLayout.finishLoadMore();
             return;
         } else {
-            start = start + 5;
-            end = end + 5;
-        }
+            start = end;
+            end = end + page;
+            String phoneNumber = AESUtil.encode(etPhone.getText().toString());
+            String name = AESUtil.encode(etName.getText().toString());
+            Api.loadMore(phoneNumber, name, start, end, getActivity()).execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+                    Log.d(TAG, "onError: " + e.getMessage());
+                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    smartRefreshLayout.finishLoadMore();
+                }
 
-        String request = ApplySearchMore;
-
-        String phoneNumber = AESUtil.encode(etPhone.getText().toString());
-        String name = AESUtil.encode(etName.getText().toString());
-
-        OkHttpUtils.get().
-                url(request).
-                addParams("start", String.valueOf(start)).
-                addParams("end", String.valueOf(end)).
-                addParams("phone", phoneNumber).
-                addParams("name", name)
-                .tag(this)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Response rp = new Response();
-                        rp.setErrorType(-1);
-                        rp.setError(true);
-                        rp.setErrorMessage("无法连接服务器");
-                        myRespon = rp;
-                        mhandler.sendEmptyMessage(2);
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        final String responseJson = response.toString();
-                        //解析json获取到Response;
-                        moreResponse = JsonUtil.jsonToResponse(responseJson);
-                        moreRes = moreResponse.getResultBean();
-                        if (moreRes != null && moreRes.getApplys() != null && moreRes.getApplys().size() > 0) {
-                            mhandler.sendEmptyMessage(7);
-//
-                        } else {
-                            myRespon.setErrorType(-2);
-                            myRespon.setError(false);
-                            myRespon.setErrorMessage("没有数据");
-
-                            mhandler.sendEmptyMessage(2);
+                @Override
+                public void onResponse(String resStr, int id) {
+                    response = JsonUtil.jsonToResponse(resStr);
+                    if (response != null) {
+                        res = response.getResultBean();
+                        isHasData = response.isEnd();
+                        if (res != null) {
+                            if (res.getApplys() != null) {
+                                applyList.addAll(res.getApplys());
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     }
-                });
+                    smartRefreshLayout.finishLoadMore();
+                }
+            });
+        }
+
 
     }
-
-
 }

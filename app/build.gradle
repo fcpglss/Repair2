@@ -38,27 +38,25 @@ dependencies {
 
     //Gson
     compile 'com.google.code.gson:gson:2.2.4'
-//    testCompile 'junit:junit:4.12'
-    compile project(':wraplistview')
+
     compile 'com.zhy:okhttputils:2.6.2'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okio:okio:1.5.0'
-    //    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+
     //对话框依赖
     compile 'com.orhanobut:dialogplus:1.11@aar'
     //图片下载缓存
     compile 'com.squareup.picasso:picasso:2.5.2'
-    //SVProgressHUD For Android 精仿iOS的提示库
-    compile 'com.bigkoo:svprogresshud:1.0.6'
-    //依赖注入
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+
     //对话框
     compile 'cn.pedant.sweetalert:library:1.3'
-//    //滑动按钮
-//    compile 'com.github.zcweng:switch-button:0.0.3@aar'
+
     //RxBinding
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     compile 'com.github.yongming9011:VerificationCodeView:v1.0'
+
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-2'
+    compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-2'//没有使用特殊Header，可以不加这行
 
 }

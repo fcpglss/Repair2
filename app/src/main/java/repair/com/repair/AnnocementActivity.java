@@ -8,21 +8,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.bigkoo.svprogresshud.SVProgressHUD;
+
+import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import medusa.theone.waterdroplistview.view.WaterDropListView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import model.Announcement;
 import model.Response;
 import model.ResultBean;
+import network.Api;
 import okhttp3.Call;
-import repari.com.adapter.AnnocmentListAdapter;
+import repari.com.adapter.AnnocmentAdapter;
+
 
 import util.HttpCallbackListener;
 import util.HttpUtil;
@@ -39,86 +44,36 @@ import static constant.RequestUrl.AnnouceRefresh;
  * Created by Administrator on 2016-11-29.
  */
 
-public class AnnocementActivity extends AppCompatActivity implements WaterDropListView.IWaterDropListViewListener {
+public class AnnocementActivity extends AppCompatActivity {
 //
 
 
-    private static boolean moreFlag = false;
+    private static boolean isHasData = false;
 
-    private static boolean ishasData = false;
 
-    private static boolean isDelete = false;
+    private ResultBean res;
 
-    private static boolean isRefrush = false;
-    private static boolean isMore = false;
+    private Response response;
 
-    private ResultBean moreRes;
-
-    private Response moreResponse;
-
-    private static final int fenye = 10;//一次读取10条和服务端一致
+    private static final int page = 10;//一次读取10条和服务端一致
     private static int start = 0;
-    private static int end = fenye;
+    private static int end = page;
 
-    private List<Announcement> moreList = new ArrayList<>();
+    private List<Announcement> list = new ArrayList<>();
 
     private static final String TAG = "AnnocementActivity";
-    Response annoceResponse;
-    WaterDropListView lvAnnocment;
-    List<Announcement> annoucementList;
-    AnnocmentListAdapter adapter;
+
+    ListView listView;
+
+    AnnocmentAdapter adapter;
 
     private boolean isFirst = true;
 
-    private SVProgressHUD svProgressHUD;
 
-    ResultBean refrushRes;
-
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 2:
-                    closeDiag();
-                    closeReflush();
-                    Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
-//                    queryFromServer(AnnouceList);
-
-                    break;
-                case 3:
-                    closeDiag();
-                    closeReflush();
-                    setFirstApply(refrushRes);
-                    adapter.notifyDataSetChanged();
-                    break;
-                case 4:
-                    closeReflush();
-                    Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    break;
-                case 5:
-                    moreList = moreRes.getAnnouncements();
-                    setMoreApply(moreList);
+    SmartRefreshLayout smartRefreshLayout;
 
 
-                    moreFlag = moreResponse.isEnd();
-
-                    closeReflush();
-                    break;
-                case 6:
-                    Toast.makeText(AnnocementActivity.this, annoceResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    closeReflush();
-                    break;
-                case 8:
-                    closeReflush();
-                    setFirstApply(refrushRes);
-                    adapter.notifyDataSetChanged();
-                    break;
-
-
-            }
-        }
-    };
+    private SweetAlertDialog svProgressHUD;
 
 
     @Override
@@ -131,25 +86,18 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
 
     protected void initViews() {
         //初始化
-        annoucementList = new ArrayList<>();
 
-        lvAnnocment = (WaterDropListView) findViewById(R.id.lv_annocement_list);
-        lvAnnocment.setWaterDropListViewListener(this);
-        lvAnnocment.setPullLoadEnable(true);
-
-        svProgressHUD = new SVProgressHUD(this);
-        svProgressHUD.showWithStatus("加载中");
-        adapter = new AnnocmentListAdapter(annoucementList, this);
-        lvAnnocment.setAdapter(adapter);
-        lvAnnocment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView = (ListView) findViewById(R.id.listView);
+        smartRefreshLayout = (SmartRefreshLayout) findViewById(R.id.refreshLayout);
+        svProgressHUD = new SweetAlertDialog(this,SweetAlertDialog.PROGRESS_TYPE);
+        svProgressHUD.setTitleText("加载中...");
+        svProgressHUD.show();
+        adapter = new AnnocmentAdapter(list, this);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                Intent intent = new Intent(AnnocementActivity.this,AnnonceDetailActivity.class);
-//                Bundle bundle =new Bundle();
-//                bundle.putSerializable("annoucement",adapter.list.get(position));
-//                intent.putExtras(bundle);
-//                startActivity(intent);
             }
         });
     }
@@ -162,196 +110,78 @@ public class AnnocementActivity extends AppCompatActivity implements WaterDropLi
     }
 
 
-    private void setMoreApply(List<Announcement> annoucement) {
-        for (Announcement annouce : annoucement) {
-            annoucementList.add(annouce);
-        }
-    }
-
-
     protected void loadData() {
         if (isFirst) {
-            queryFromServer(AnnouceList);
-
+            requestServer(true);
             isFirst = false;
         }
-
     }
 
-
-    public void queryFromServer(String url) {
-        Util.submit(url, this).execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e, int id) {
-                Response rp = new Response();
-                rp.setErrorType(-1);
-                rp.setError(true);
-                rp.setErrorMessage("网络异常,尝试重连");
-                annoceResponse = rp;
-                mhandler.sendEmptyMessage(2);
-            }
-
-            @Override
-            public void onResponse(String responses, int id) {
-                final String responseJson = responses.toString();
-                annoceResponse = JsonUtil.jsonToResponse(responseJson);
-                if (annoceResponse == null) {
-                    annoceResponse = new Response();
-                    annoceResponse.setErrorMessage("服务器维护");
-                    moreFlag = moreResponse.isEnd();
-                    mhandler.sendEmptyMessage(4);
-                    return;
-                }
-                ishasData = annoceResponse.isEnd();
-                if (annoceResponse.getResultBean() == null || annoceResponse.getResultBean().getAnnouncements().size() <= 0) {
-                    annoceResponse.setErrorMessage("没有公告");
-                    mhandler.sendEmptyMessage(4);
-                    return;
+    public void requestServer(boolean isRefresh) {
+        if (isRefresh) {
+            start = 0;
+            end = page;
+            Api.announcementHome().execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+                    smartRefreshLayout.finishRefresh();
                 }
 
-                postMessage(annoceResponse);
-            }
-        });
-    }
-
-
-    private void postMessage(Response response) {
-
-        refrushRes = response.getResultBean();
-
-        if (refrushRes != null) {
-            mhandler.sendEmptyMessage(3);
+                @Override
+                public void onResponse(String resStr, int id) {
+                    Gson gson = new Gson();
+                    response = gson.fromJson(resStr, Response.class);
+                    closeDiag();
+                    if (response != null) {
+                        isHasData = response.isEnd();
+                        res = response.getResultBean();
+                        list.removeAll(list);
+                        list.addAll(res.getAnnouncements());
+                        adapter.notifyDataSetChanged();
+                    }
+                    smartRefreshLayout.finishRefresh();
+                }
+            });
         } else {
-            response.setErrorMessage("没有公告了");
-            mhandler.sendEmptyMessage(4);
-        }
-
-    }
-
-
-    private void setFirstApply(ResultBean resultBean) {
-
-        if (annoucementList != null && annoucementList.size() > 0) {
-            if (ishasData || isDelete) {
-                annoucementList.clear();
-                moreFlag = false;
-                start = 0;
-                end = fenye;
-                for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
-                    annoucementList.add(resultBean.getAnnouncements().get(i));
-                }
+            Log.d(TAG, "requestServer: " + isHasData);
+            if (isHasData) {
+                smartRefreshLayout.finishLoadMore();
+                return;
             } else {
-                annoucementList.clear();
-                for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
-                    annoucementList.add(resultBean.getAnnouncements().get(i));
-                }
-            }
-        } else {
-            for (int i = 0; i < resultBean.getAnnouncements().size(); i++) {
-                annoucementList.add(resultBean.getAnnouncements().get(i));
-            }
-        }
-
-    }
-
-
-    private void closeReflush() {
-        if (isRefrush) {
-            lvAnnocment.stopRefresh();
-            isRefrush = false;
-        }
-        if (isMore) {
-            lvAnnocment.stopLoadMore();
-            isMore = false;
-        }
-    }
-
-
-    @Override
-    public void onRefresh() {
-        isRefrush = true;
-
-        String id = "";
-        if (annoucementList != null && annoucementList.size() > 0) {
-
-            id = annoucementList.get(annoucementList.size() - 1).getCreate_at();
-        }
-        Util.submit("annoucement", id, AnnouceRefresh)
-                .execute(new StringCallback() {
+                start = end;
+                end = end + page;
+                Api.announcementLoadMore(start, end).execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Response re = new Response();
-                        re.setErrorMessage("网络异常");
-                        mhandler.sendEmptyMessage(4);
+                        Log.d(TAG, "onError: " + e.getMessage());
+                        smartRefreshLayout.finishLoadMore();
                     }
 
                     @Override
-                    public void onResponse(String response, int id) {
-                        Response responses = JsonUtil.jsonToResponse(response);
-                        isDelete = responses.isEnd();
-                        refrushRes = responses.getResultBean();
-                        mhandler.sendEmptyMessage(8);
+                    public void onResponse(String resStr, int id) {
+                        Log.d(TAG, "onResponse: " + response);
+                        Gson gson = new Gson();
+                        response = gson.fromJson(resStr, Response.class);
+                        if (response != null) {
+                            isHasData = response.isEnd();
+                            res = response.getResultBean();
+                            list.addAll(res.getAnnouncements());
+                            adapter.notifyDataSetChanged();
+                        }
+                        smartRefreshLayout.finishLoadMore();
                     }
                 });
-
-    }
-
-    @Override
-    public void onLoadMore() {
-        isMore = true;
-        if (moreFlag || ishasData) {
-            annoceResponse.setErrorMessage("下边没有数据了");
-            mhandler.sendEmptyMessage(6);
-            return;
-        } else {
-            start = start + fenye;
-            end = end + fenye;
+            }
         }
-
-        String request = AnnouceLoadMore + "?start=" + start + "&&end=" + end;
-
-        HttpUtil.sendHttpRequest(AnnouceLoadMore + "?start=" + start + "&&end=" + end, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String responseString) {
-                final String responseJson = responseString.toString();
-                moreResponse = JsonUtil.jsonToResponse(responseJson);
-                moreRes = moreResponse.getResultBean();
-                if (moreResponse.getErrorType() == -3) {
-                    moreFlag = moreResponse.isEnd();//服务器维护
-                    annoceResponse.setErrorMessage("服务器维护");
-                    mhandler.sendEmptyMessage(4);
-                    return;
-                }
-
-                if (moreRes.getAnnouncements() != null && moreRes.getAnnouncements().size() > 0) {
-                    //有数据
-                    mhandler.sendEmptyMessage(5);
-                } else {
-                    moreResponse.setErrorMessage("已没有更多公告");
-                    annoceResponse.setErrorMessage(moreResponse.getErrorMessage());
-                    moreFlag = moreResponse.isEnd();
-                    mhandler.sendEmptyMessage(6);
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Response rp = new Response();
-                rp.setErrorType(-1);
-                rp.setError(true);
-                rp.setErrorMessage("没有更多数据");
-                annoceResponse = rp;
-                mhandler.sendEmptyMessage(6);
-            }
-        });
     }
+
 
     @Override
     protected void onDestroy() {
         start = 0;
-        end = fenye;
-        moreFlag = false;
-        ishasData = false;
+        end = page;
+
+        isHasData = false;
 
         super.onDestroy();
     }

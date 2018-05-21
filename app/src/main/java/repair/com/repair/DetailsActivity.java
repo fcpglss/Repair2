@@ -37,6 +37,7 @@ import model.Employee;
 import model.Photo;
 import model.Response;
 import model.ResultBean;
+import network.Api;
 import okhttp3.Call;
 import repari.com.adapter.ImgAdapter;
 import util.AESUtil;
@@ -47,7 +48,6 @@ import util.JsonUtil;
 import util.Util;
 
 import static constant.RequestUrl.ApplyDetail;
-
 
 
 /**
@@ -82,16 +82,16 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private AlignTextView tv_describe;
 
-    private TextView tvName, tv_date, tvDealTime, tvCompensation, tvNeed, tvAdmin,tvThirdMan,tvFishTime;
+    private TextView tvName, tv_date, tvDealTime, tvCompensation, tvNeed, tvAdmin, tvThirdMan, tvFishTime;
 
     private TextView tv_details_employee1;
 
     private TextView tv_employee_phone, tv_paigong;
     private ImageView iv_employee_arr;
-    private LinearLayout ll_employee_details, llDetailDeal,llThirdMan,llFinshTime;
+    private LinearLayout ll_employee_details, llDetailDeal, llThirdMan, llFinshTime;
 
 
-    private ImageView  img_status;
+    private ImageView img_status;
 
     private Apply apply = null;
 
@@ -110,42 +110,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private List<String> list_imageView = new ArrayList<>();
     private Response response;
 
-    private GridView gridView ;
-    private ImgAdapter imgAdapter ;
+    private GridView gridView;
+    private ImgAdapter imgAdapter;
 
-    SweetAlertDialog sweetAlertDialog ;
-
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 2:
-                    sweetAlertDialog.changeAlertType(SweetAlertDialog.WARNING_TYPE);
-                    sweetAlertDialog.setTitleText("加载失败");
-                    sweetAlertDialog.setConfirmText("确定");
-                    Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    break;
-                case 3:
-                    if (apply.getLogisticMan() != null) {
-                        iv_employee_arr.setVisibility(View.VISIBLE);
-                    } else {
-                        tv_paigong.setVisibility(View.VISIBLE);
-                    }
-                    llMain.setVisibility(View.VISIBLE);
-                    sweetAlertDialog.dismiss();
-
-                    Log.d(TAG, "handleMessage3 ");
-                    bindItem();
-                    break;
-                case 4:
-                    Toast.makeText(DetailsActivity.this, "连接服务器成功,但是服务器返回数据错误", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "handleMessage4 ");
-                    break;
-
-            }
-        }
-    };
+    SweetAlertDialog sweetAlertDialog;
 
 
     @Override
@@ -153,7 +121,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.detailinfo);
-        sweetAlertDialog = new SweetAlertDialog(this,SweetAlertDialog.PROGRESS_TYPE);
+        sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         sweetAlertDialog.setTitleText("正在加载");
         sweetAlertDialog.setCancelText("取消")
                 .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -161,7 +129,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         OkHttpUtils.getInstance().cancelTag(this);
                         Intent intent = new Intent();
-                        intent.setClass(DetailsActivity.this,MainActivity.class);
+                        intent.setClass(DetailsActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
                 });
@@ -169,7 +137,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
                 Intent intent = new Intent();
-                intent.setClass(DetailsActivity.this,MainActivity.class);
+                intent.setClass(DetailsActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -179,7 +147,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         isAppraisePage = getIntent().getBooleanExtra("appraiseIntent", false);
 
         if (apply == null) {
-            queryFromServer(ApplyDetail, repairId);
+            queryFromServer(repairId);
         } else {
             if (apply.getLogisticMan() != null) {
                 iv_employee_arr.setVisibility(View.VISIBLE);
@@ -191,15 +159,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    public void queryFromServer(String url, String repairId) {
+    public void queryFromServer(String repairId) {
 
-        String jsonurl = url;
         sweetAlertDialog.show();
-        OkHttpUtils.get().
-                url(jsonurl).
-                addParams("detail", repairId)
-                .tag(this)
-                .build()
+        Api.detail(repairId, this)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
@@ -208,7 +171,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         rp.setError(true);
                         rp.setErrorMessage("网络异常，加载失败");
                         response = rp;
-                        mhandler.sendEmptyMessage(2);
+                        sweetAlertDialog.changeAlertType(SweetAlertDialog.WARNING_TYPE);
+                        sweetAlertDialog.setTitleText("加载失败");
+                        sweetAlertDialog.setConfirmText("确定");
+                        Toast.makeText(MyApplication.getContext(), response.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -220,7 +186,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                         response = JsonUtil.jsonToResponse(responseJson);
                         if (response.getErrorType() != 0) {
                             //连接成功，但读取数据失败
-                            mhandler.sendEmptyMessage(4);
+                            Toast.makeText(DetailsActivity.this, "连接服务器成功,但是服务器返回数据错误", Toast.LENGTH_SHORT).show();
                         }
                         //连接成功，抛到主线程更新UI
                         else {
@@ -228,21 +194,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                             apply = detailRes.getApplys().get(0);
                             String phone = apply.getTel();
                             apply.setTel(AESUtil.decode(phone));
-
                             employeeList = detailRes.getEmployee();
-                            mhandler.sendEmptyMessage(3);
+                            if (apply.getLogisticMan() != null) {
+                                iv_employee_arr.setVisibility(View.VISIBLE);
+                            } else {
+                                tv_paigong.setVisibility(View.VISIBLE);
+                            }
+                            llMain.setVisibility(View.VISIBLE);
+                            sweetAlertDialog.dismiss();
+                            bindItem();
                         }
                     }
                 });
-
     }
 
     private void initView() {
         //员工详细信息
         tv_employee_phone = (TextView) findViewById(R.id.tv_details_employee_phone);
-        llFinshTime= (LinearLayout) findViewById(R.id.ll_finish_time);
+        llFinshTime = (LinearLayout) findViewById(R.id.ll_finish_time);
         llThirdMan = (LinearLayout) findViewById(R.id.ll_thirdMan);
-        llMain= (LinearLayout) findViewById(R.id.ll_main);
+        llMain = (LinearLayout) findViewById(R.id.ll_main);
         llMain.setVisibility(View.GONE);
         tvFishTime = (TextView) findViewById(R.id.tv_details_finish_date);
         iv_employee_arr = (ImageView) findViewById(R.id.iv_employee_arr);
@@ -331,10 +302,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         tvArea = (AlignTextView) findViewById(R.id.tv_details_area);
 
 
-
         tv_describe = (AlignTextView) findViewById(R.id.tv_details_describe);
-
-
 
 
         tvNeed = (TextView) findViewById(R.id.tv_details_need);
@@ -353,12 +321,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         if (!tvDealTime.getText().equals("尚未处理")) {
             llDetailDeal.setVisibility(View.VISIBLE);
         }
-        if(!tvFishTime.getText().equals("尚未完成")){
+        if (!tvFishTime.getText().equals("尚未完成")) {
             llFinshTime.setVisibility(View.VISIBLE);
         }
     }
-
-
 
 
     private void bindItem() {
@@ -373,9 +339,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         tvDealTime.setText(Util.getDealTime(apply.getDealTime()));
         tvFishTime.setText(Util.getFinshTime(apply.getFinilTime()));
-        if(TextUtils.isEmpty(apply.getThirdLogisticMan())){
+        if (TextUtils.isEmpty(apply.getThirdLogisticMan())) {
 
-        }else{
+        } else {
             tvThirdMan.setText(apply.getThirdLogisticMan());
             llThirdMan.setVisibility(View.VISIBLE);
         }
@@ -447,8 +413,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-
-
     private int getRightIcon() {
         int image = R.id.iv_icon;
 
@@ -514,7 +478,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         OkHttpUtils.getInstance().cancelTag(this);
-        if(sweetAlertDialog!=null&&sweetAlertDialog.isShowing()){
+        if (sweetAlertDialog != null && sweetAlertDialog.isShowing()) {
             sweetAlertDialog.dismiss();
         }
         super.onDestroy();

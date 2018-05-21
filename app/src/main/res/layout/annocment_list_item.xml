@@ -50,11 +50,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp">
 
-            <TextView
+            <me.codeboy.android.aligntextview.AlignTextView
                 android:id="@+id/tv_annocment_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:minLines="2"
 
                 android:text="公告内容" />

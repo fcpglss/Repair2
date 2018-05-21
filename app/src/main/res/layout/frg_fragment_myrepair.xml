@@ -95,13 +95,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <medusa.theone.waterdroplistview.view.WaterDropListView
-            android:id="@+id/lv_my_lv"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
+
             android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/ll1">
-        </medusa.theone.waterdroplistview.view.WaterDropListView>
+            android:layout_height="match_parent">
+            <ListView
+                android:id="@+id/listView"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                >
+            </ListView>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
     </LinearLayout>
 
 

@@ -46,10 +46,9 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private static final String TAG = "MyRepairAdapter";
 
-    private ResultBean myRes = null;
+    private List<Apply> applyList = null;
 
     private LayoutInflater mInflater;
-
 
 
     private boolean mCanGetBitmapFromNetWork = true;
@@ -57,8 +56,8 @@ public class MyRepairAdapter extends BaseAdapter {
 
     private Context context;
 
-    public MyRepairAdapter(ResultBean res, Context context) {
-        this.myRes = res;
+    public MyRepairAdapter(List<Apply> applyList, Context context) {
+        this.applyList = applyList;
 
         mInflater = LayoutInflater.from(context);
 
@@ -67,12 +66,12 @@ public class MyRepairAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return myRes.getApplys().size();
+        return applyList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return myRes.getApplys().get(position);
+        return applyList.get(position);
     }
 
     @Override
@@ -83,8 +82,7 @@ public class MyRepairAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
-        Apply apply = myRes.getApplys().get(position);
-
+        Apply apply = applyList.get(position);
 
 
         if (convertView == null) {
@@ -111,9 +109,9 @@ public class MyRepairAdapter extends BaseAdapter {
         ImageView imageView = viewHolder.ivPhoto;
         final String tag = (String) imageView.getTag();
         String photoUrl = "";
-        if(Util.getPhotoUrl(position, myRes))
-        {
-            photoUrl=myRes.getApplys().get(position).getA_imaes().get(0);
+        if (Util.getPhotoUrl(position, applyList)) {
+            //只取第一张图
+            photoUrl = applyList.get(position).getA_imaes().get(0);
         }
 
         final String uri = photoUrl;
@@ -122,7 +120,7 @@ public class MyRepairAdapter extends BaseAdapter {
             imageView.setImageResource(R.drawable.loadimg);
         }
 
-        if (mCanGetBitmapFromNetWork&&!photoUrl.equals("")) {
+        if (mCanGetBitmapFromNetWork && !photoUrl.equals("")) {
             imageView.setTag(photoUrl);
             Picasso.with(context)
                     .load(photoUrl)
@@ -133,10 +131,10 @@ public class MyRepairAdapter extends BaseAdapter {
         viewHolder.tvTime.setText(setTime(apply.getRepairTime()));
         viewHolder.tvName.setText(AESUtil.decode(apply.getRepair()));
 
-        int status = myRes.getApplys().get(position).getState();
+        int status = applyList.get(position).getState();
         viewHolder.ivState.setImageResource(UIUtil.getStatusIcon(status));
         viewHolder.tvAddress.setText(Util.setContentTitle(apply));
-        viewHolder.tvType.setText(Util.setClass(apply,18,true));
+        viewHolder.tvType.setText(Util.setClass(apply, 18, true));
 
         //判断是否能修改和评价然后跳转
         JumpApprise(viewHolder.tvAppraise, apply.getState(), position);
@@ -148,9 +146,9 @@ public class MyRepairAdapter extends BaseAdapter {
     private void JumpChange(final TextView tvChange, final int state, final int position) {
 
 
-        if (state ==1){
+        if (state == 1) {
             tvChange.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             tvChange.setVisibility(View.GONE);
         }
 
@@ -162,7 +160,7 @@ public class MyRepairAdapter extends BaseAdapter {
                             // 放入被点击的item的Id ,跳转修改Activity
                             Intent intent = new Intent(context, ChangeActivity.class);
                             Bundle bundle = new Bundle();
-                            bundle.putSerializable("apply", myRes.getApplys().get(position));
+                            bundle.putSerializable("apply", applyList.get(position));
                             bundle.putSerializable("address", getAddressRes());
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtras(bundle);
@@ -175,9 +173,9 @@ public class MyRepairAdapter extends BaseAdapter {
         tvChange.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     tvChange.setBackgroundResource(R.drawable.button_submit2);
-                }else {
+                } else {
                     tvChange.setBackgroundResource(R.drawable.button_submit);
                 }
                 return false;
@@ -191,10 +189,9 @@ public class MyRepairAdapter extends BaseAdapter {
     private void JumpApprise(final TextView tvAppraise, final int state, final int position) {
 
 
-
-        if (state == 4 &&  TextUtils.isEmpty( myRes.getApplys().get(position).getEvalText())){
+        if (state == 4 && TextUtils.isEmpty(applyList.get(position).getEvalText())) {
             tvAppraise.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             tvAppraise.setVisibility(View.GONE);
         }
 
@@ -204,13 +201,13 @@ public class MyRepairAdapter extends BaseAdapter {
                 Log.d(TAG, "onClick: " + state);
                 if (state == 4) {
 
-                    DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context, R.layout.dialog_input_password,myRes.getApplys().get(position));
+                    DialogAdapterPassword dialogAdapterPassword = new DialogAdapterPassword(context, R.layout.dialog_input_password, applyList.get(position));
                     //点击弹出对话框输入密码
                     dialogPlus = DialogPlus.newDialog(context)
                             .setAdapter(dialogAdapterPassword)
                             .setGravity(Gravity.CENTER)
-                            .setContentWidth((int) (windowWitch/1.5))
-                            .setContentHeight(windowHeigth/3)
+                            .setContentWidth((int) (windowWitch / 1.5))
+                            .setContentHeight(windowHeigth / 3)
                             .setHeader(R.layout.dialog_head5)
                             .create();
                     dialogPlus.show();
@@ -224,9 +221,9 @@ public class MyRepairAdapter extends BaseAdapter {
         tvAppraise.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     tvAppraise.setBackgroundResource(R.drawable.button_submit2);
-                }else {
+                } else {
                     tvAppraise.setBackgroundResource(R.drawable.button_submit);
                 }
                 return false;

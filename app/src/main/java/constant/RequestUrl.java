@@ -7,10 +7,10 @@ package constant;
 public class RequestUrl {
 
 
-//    private static final String IP = "http://116.13.193.8";
-//    private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
 
-    private static final String project = "http://192.168.31.199:8080/repairSystem/";
+    private static final String project="http://hqbx.qzhu.edu.cn/repairSystem/";
+
+//    private static final String project = "http://192.168.31.199:8080/repairSystem/";
 
 
     public static final String updateApp = project + "UpdateVersion";

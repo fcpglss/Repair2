@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.codeboy.android.aligntextview.AlignTextView;
 import model.Announcement;
 import repair.com.repair.R;
 import util.Util;
@@ -20,14 +21,14 @@ import util.Util;
  * Created by hsp on 2017/3/27.
  */
 
-public class AnnocmentListAdapter extends BaseAdapter {
+public class AnnocmentAdapter extends BaseAdapter {
     private static final String TAG = "AnnocmentListAdapter";
 
     LayoutInflater layoutInflater;
     ViewHolder viewHolder = null;
     public List<Announcement> list = new ArrayList<>();
 
-    public AnnocmentListAdapter(List<Announcement> list, Context context) {
+    public AnnocmentAdapter(List<Announcement> list, Context context) {
         this.list = list;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -57,7 +58,9 @@ public class AnnocmentListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tv_annocment_title);
             viewHolder.tvTime = (TextView) convertView.findViewById(R.id.tv_annocment_time);
-            viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_annocment_content);
+
+            viewHolder.tvContent = (AlignTextView) convertView.findViewById(R.id.tv_annocment_content);
+
             viewHolder.llTitle = (LinearLayout) convertView.findViewById(R.id.ll_annocement_title);
             viewHolder.llContent = (LinearLayout) convertView.findViewById(R.id.ll_annocement_content);
             viewHolder.tvAdmin = (TextView) convertView.findViewById(R.id.tv_annocment_admin);
@@ -81,7 +84,8 @@ public class AnnocmentListAdapter extends BaseAdapter {
 
 
     private static class ViewHolder {
-        TextView tvTitle, tvTime, tvContent, tvAdmin;
+        TextView tvTitle, tvTime, tvAdmin;
+        AlignTextView tvContent;
         LinearLayout llTitle, llContent;
     }
 

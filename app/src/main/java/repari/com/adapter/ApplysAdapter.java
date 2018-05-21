@@ -23,15 +23,15 @@ import util.Util;
  */
 
 public class ApplysAdapter extends BaseAdapter {
-    private static final String TAG = "ApplysAdapter";
-    private ResultBean res = null;
+
+    private List<Apply> list;
     private LayoutInflater mInflater;
 
 
     Context context;
 
-    public ApplysAdapter(ResultBean res, Context context) {
-        this.res = res;
+    public ApplysAdapter(List<Apply> list, Context context) {
+        this.list = list;
         mInflater = LayoutInflater.from(context);
 
         this.context = context;
@@ -39,12 +39,12 @@ public class ApplysAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return res.getApplys().size();
+        return list.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return res.getApplys().get(position);
+        return list.get(position);
     }
 
     @Override
@@ -63,38 +63,32 @@ public class ApplysAdapter extends BaseAdapter {
             viewHolder.tvContent = (TextView) convertView.findViewById(R.id.tv_content);
             viewHolder.tvTime = (TextView) convertView.findViewById(R.id.tv_time);
             viewHolder.ivRightDownIcon = (ImageView) convertView.findViewById(R.id.iv_right_down_icon);
-            viewHolder.img_emergent = (ImageView) convertView.findViewById(R.id.img_emergent);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
 
-        Apply apply = res.getApplys().get(position);
-
+        Apply apply = list.get(position);
 
         viewHolder.tvTitle.setText(Util.setContentTitle(apply));
-        viewHolder.tvContent.setText(Util.setClass(apply,22,true));
+        viewHolder.tvContent.setText(Util.setClass(apply, 22, true));
 
-        String temp = res.getApplys().get(position).getRepairTime();
+        String temp = list.get(position).getRepairTime();
         viewHolder.tvTime.setText(temp.split(":")[0] + ":" + temp.split(":")[1]);
 
-        int state = res.getApplys().get(position).getState();
+        int state = list.get(position).getState();
 
         viewHolder.ivRightDownIcon.setImageResource(UIUtil.getStatusIcon(state));
 
-        viewHolder.ivIcon.setImageResource(UIUtil.getCategoryIcon(res.getApplys().get(position).getClasss()));
+        viewHolder.ivIcon.setImageResource(UIUtil.getCategoryIcon(list.get(position).getClasss()));
 
         return convertView;
     }
 
 
-    public void setList_Applys(List<Apply> apply) {
-        res.setApplys(apply);
-    }
-
     class ViewHolder {
         TextView tvTitle, tvContent, tvTime;
-        ImageView ivIcon, ivRightDownIcon, img_emergent;
+        ImageView ivIcon, ivRightDownIcon;
     }
 }

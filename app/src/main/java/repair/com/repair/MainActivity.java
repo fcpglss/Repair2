@@ -20,10 +20,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import fragment.ApplyFragment;
-import fragment.MainFragment;
+import fragment.HomeFragment;
 import fragment.MyRepairFragment;
 import repari.com.adapter.FragmentAdapter;
 
@@ -44,11 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static List<Uri> list_uri = new ArrayList<>();
 
-    @BindView(R.id.iv_home)
+
     ImageView ivHome;
-    @BindView(R.id.iv_repair)
+
     ImageView ivRepair;
-    @BindView(R.id.iv_my)
+
     ImageView ivMy;
 
     private ViewPager mviewPager;
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mcontact;
 
     private ApplyFragment applyFragment;
-    private MainFragment mainFragment;
+    private HomeFragment mainFragment;
 
     private MyRepairFragment myRepairFragment;
 
@@ -79,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        ButterKnife.bind(this);
-
         //获取屏幕宽高
         setWitchAndHeigth();
 
@@ -99,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         miImageView = (ImageView) findViewById(R.id.iv_tableline);
-
-
+        ivHome = (ImageView) findViewById(R.id.iv_home);
+        ivRepair = (ImageView) findViewById(R.id.iv_repair);
+        ivMy = (ImageView) findViewById(R.id.iv_my);
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         mList = new ArrayList<Fragment>();
 
-        mainFragment = new MainFragment();
+        mainFragment = new HomeFragment();
         applyFragment = new ApplyFragment();
 
         myRepairFragment = new MyRepairFragment();

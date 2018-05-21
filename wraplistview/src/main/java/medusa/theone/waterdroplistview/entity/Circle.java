@@ -1,9 +1,6 @@
 package medusa.theone.waterdroplistview.entity;
 
-/**
- * Created by xiayong on 2015/6/25.
- * 实b心圆;
- */
+
 public class Circle {
     private float x;//圆x坐标
     private float y;//圆y坐标
