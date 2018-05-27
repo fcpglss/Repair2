@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +60,7 @@ import repair.com.repair.R;
 import static android.content.Context.MODE_PRIVATE;
 import static constant.RequestUrl.REQUEST_CODE_CAMERA;
 import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
+import static constant.RequestUrl.REQUEST_CODE_SD_READ;
 
 
 public class Util {
@@ -276,33 +278,6 @@ public class Util {
     }
 
 
-    //将服务器第一次获取到的数据，写到文件json_data中，key为json
-    public static void writeJsonToLocal(final ResultBean resultBean, final Context mContext) {
-
-        String json = JsonUtil.beanToResultBean(resultBean);
-        SharedPreferences.Editor editor = mContext.getSharedPreferences("json_data", mContext.MODE_PRIVATE).edit();
-        editor.putString("json", json);
-        editor.apply();
-        Log.d(TAG, "writeJsonToLocal: 成功将FirstRequest的Json写入本地json_data文件中，key:json");
-
-
-    }
-
-
-    //将从服务器获取到的数据写入address_data文件中，key为address
-    public static void writeAddressToLocal(final ResultBean resultBean, final Context mContext) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String json = JsonUtil.beanToResultBean(resultBean);
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("address_data", mContext.MODE_PRIVATE).edit();
-                editor.putString("address", json);
-                editor.apply();
-                Log.d(TAG, "writeAddressToLocal: 成功将address的Json写入本地address_data文件中，key:address");
-            }
-        }).start();
-    }
-
     //将手机号写到phoneData中去
     public static void writePhoneToLocal(Apply apply, Context mcontext) {
         String phone = apply.getTel();
@@ -318,15 +293,6 @@ public class Util {
         String json = preferences.getString("address", "");
 
         Log.d(TAG, "loadAddressFromLocal:从本地address_data文件中读出json: " + json);
-        return json;
-    }
-
-
-    public static String loadFirstFromLocal(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("json_data", context.MODE_PRIVATE);
-        String json = preferences.getString("json", "");
-
-        Log.d(TAG, "loadFirstFromLocal: 从本地文件json_data中读出json:" + json);
         return json;
     }
 
@@ -373,63 +339,6 @@ public class Util {
 
     }
 
-    /**
-     * 使用okHttp框架post请求网络,若有图片文件则使用requestImgURL,
-     * 若没有图片则使用requestURL
-     *
-     * @param paramsKey    参数名
-     * @param paramsValues 参数值
-     * @param noImgUrl     api地址
-     * @param files        文件集合
-     * @return 用于回调onResponse和onError方法
-     */
-    public static RequestCall submit(String paramsKey, String paramsValues, String noImgUrl, String ImgUrl, List<File> files, Context context) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-
-        for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("fileImg", "file" + i + ".jpg", files.get(i));
-            // Log.d(TAG, "submit: " + files.get(i).getPath());
-        }
-
-        postFormBuilder.addParams(paramsKey, paramsValues);
-
-        if (files.size() > 0) {
-            postFormBuilder.url(ImgUrl);
-        } else {
-            postFormBuilder.url(noImgUrl);
-        }
-        return postFormBuilder.build();
-    }
-
-    /**
-     * 使用okHttp框架post请求网络,若有图片文件则使用requestImgURL,
-     * 若没有图片则使用requestURL
-     *
-     * @param paramsKey    参数名
-     * @param paramsValues 参数值
-     * @param noImgUrl     api地址
-     * @param files        文件集合
-     * @return 用于回调onResponse和onError方法
-     */
-    public static RequestCall submit(String paramsKey, String paramsValues, String code, String codeValue, String noImgUrl, String ImgUrl, List<File> files, Context context) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-
-        for (int i = 0; i < files.size(); i++) {
-            postFormBuilder.addFile("fileImg", "file" + i + ".jpg", files.get(i));
-            // Log.d(TAG, "submit: " + files.get(i).getPath());
-        }
-
-        postFormBuilder.addParams(paramsKey, paramsValues);
-        postFormBuilder.addParams(code, codeValue);
-        Log.d(TAG, "submit: " + codeValue);
-        if (files.size() > 0) {
-            postFormBuilder.url(ImgUrl);
-        } else {
-            postFormBuilder.url(noImgUrl);
-        }
-        return postFormBuilder.build();
-    }
-
 
     /**
      * 使用okHttp框架post请求网络
@@ -450,23 +359,11 @@ public class Util {
     public static void getPermission(Activity activity) {
         PermissionUtil.justGetpermission(activity, Manifest.permission.CAMERA, REQUEST_CODE_CAMERA);
         PermissionUtil.justGetpermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_CODE_SD_CARD);
+        PermissionUtil.justGetpermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_CODE_SD_READ);
     }
-
-
-    public static RequestCall submit(String requestURL, Context context) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        postFormBuilder.url(requestURL);
-
-        return postFormBuilder.build();
-    }
-
-
-    public static RequestCall submit(String paramsKey, String paramsValues, String paramsKey2, String paramsValues2, String requestURL) {
-        PostFormBuilder postFormBuilder = OkHttpUtils.post();
-        postFormBuilder.addParams(paramsKey, paramsValues);
-        postFormBuilder.addParams(paramsKey2, paramsValues2);
-        postFormBuilder.url(requestURL);
-        return postFormBuilder.build();
+    public static void getPermission2(Activity activity) {
+        PermissionUtil.justGetpermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_CODE_SD_CARD);
+        PermissionUtil.justGetpermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_CODE_SD_READ);
     }
 
     /**
@@ -610,6 +507,31 @@ public class Util {
         return isValid;
 
 
+    }
+
+
+    /**
+     * 保存输入过的数据
+     *
+     * @param mContext 上下文
+     * @param fileName 私有文件名，每次都会覆盖掉
+     * @param map      数据以键值对的方式保存
+     */
+    public static void saveInputedData(Context mContext, String fileName, Map<String, String> map) {
+        SharedPreferences spf = mContext.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = spf.edit();
+        if (editor != null) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                editor.putString(entry.getKey(), entry.getValue());
+            }
+            editor.commit();
+        }
+    }
+
+
+    public static String getSharedPData(Context mContext, String fileName, String key) {
+        SharedPreferences spf = mContext.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        return spf.getString(key, "");
     }
 
 

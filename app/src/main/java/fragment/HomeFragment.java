@@ -1,6 +1,7 @@
 package fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
-
 
 
 import com.google.gson.Gson;
@@ -40,7 +40,9 @@ import repair.com.repair.AnnocementActivity;
 import repair.com.repair.DetailsActivity;
 import repair.com.repair.R;
 import repari.com.adapter.ApplysAdapter;
+import util.APKUtils;
 import util.JsonUtil;
+import util.Util;
 
 
 /**
@@ -61,6 +63,8 @@ public class HomeFragment extends LazyFragment2 {
     //是否是第一次进入
     private static boolean isFirst = true;
 
+    int verisonCode;
+
     public ResultBean res = null;
 
 
@@ -75,7 +79,7 @@ public class HomeFragment extends LazyFragment2 {
 
     private SweetAlertDialog svProgressHUD;
 
-
+    private SweetAlertDialog updateDialog;
 
     private LinearLayout llArrIn;
 
@@ -119,10 +123,53 @@ public class HomeFragment extends LazyFragment2 {
         if (isFirst) {
             isFirst = false;
 
-            svProgressHUD = new SweetAlertDialog(getActivity(),SweetAlertDialog.PROGRESS_TYPE);
+            svProgressHUD = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
             svProgressHUD.setTitleText("加载中...");
             svProgressHUD.show();
-            requestServer(true);
+            updateDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE);
+            verisonCode = APKUtils.getVersionCode(getActivity());
+            Api.version(verisonCode).execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+                    Log.d(TAG, "onError: " + e.getMessage());
+                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onResponse(String response, int id) {
+                    closeDiag();
+                    Util.getPermission2(getActivity());
+                    Log.d(TAG, "onResponse: " + response);
+                    final String fileName = response;
+                    if (!"ok".equals(fileName)) {
+                        updateDialog.setTitleText("更新版本")
+                                .setContentText("为了不影响你的使用")
+                                .setConfirmText("更新")
+                                .setCancelText("取消")
+                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        Toast.makeText(getActivity(), "取消更新无法使用", Toast.LENGTH_SHORT).show();
+                                        getActivity().finish();
+                                    }
+                                })
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+
+                                        Api.download(fileName, getActivity());
+                                    }
+                                });
+                        updateDialog.show();
+
+                    } else {
+                        svProgressHUD.show();
+                        requestServer(true);
+                    }
+                }
+            });
+
+
         }
 
     }
@@ -169,7 +216,6 @@ public class HomeFragment extends LazyFragment2 {
         });
 
 
-
     }
 
     /**
@@ -187,7 +233,7 @@ public class HomeFragment extends LazyFragment2 {
 
                 @Override
                 public void onResponse(String resStr, int id) {
-                  response = JsonUtil.jsonToResponse(resStr);
+                    response = JsonUtil.jsonToResponse(resStr);
                     closeDiag();
                     if (response != null) {
                         isHasData = response.isEnd();
@@ -234,6 +280,9 @@ public class HomeFragment extends LazyFragment2 {
 
 
     private void closeDiag() {
+        if(updateDialog!=null&&updateDialog.isShowing()){
+            updateDialog.dismiss();;
+        }
         if (svProgressHUD != null && svProgressHUD.isShowing()) {
             svProgressHUD.dismiss();
         }
@@ -258,6 +307,7 @@ public class HomeFragment extends LazyFragment2 {
     @Override
     public void onStop() {
         isFirst = false;
+//        closeDiag();
         super.onStop();
     }
 

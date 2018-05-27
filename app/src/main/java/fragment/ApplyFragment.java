@@ -39,7 +39,9 @@ import com.zhy.http.okhttp.callback.StringCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import application.MyApplication;
@@ -76,11 +78,7 @@ import static constant.RequestUrl.AdressPlaceList;
 import static constant.RequestUrl.AdressroomList;
 
 
-import static constant.RequestUrl.ApplyInsert;
-import static constant.RequestUrl.ApplyNoImgInsert;
-import static constant.RequestUrl.Code;
-import static constant.RequestUrl.REQUEST_CODE_CAMERA;
-import static constant.RequestUrl.REQUEST_CODE_SD_CARD;
+
 import static constant.RequestUrl.TypeCategoryList;
 import static constant.RequestUrl.TypeDetailClassList;
 
@@ -215,14 +213,21 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
     }
 
     protected void initViews(View view) {
-
+        et_name = (EditText) view.findViewById(R.id.et_name);
+        et_tel = (EditText) view.findViewById(R.id.et_tel);
         etEmail = (EditText) view.findViewById(R.id.et_email);
+
+        et_name.setText(Util.getSharedPData(getActivity(), "apply", "name"));
+        et_tel.setText(Util.getSharedPData(getActivity(), "apply", "phone"));
+        etEmail.setText(Util.getSharedPData(getActivity(), "apply", "email"));
+
         etApplyPassword = (EditText) view.findViewById(R.id.et_apply_password);
         etArea = (EditText) view.findViewById(R.id.et_area);
         etDetailArea = (EditText) view.findViewById(R.id.et_detail_area);
         etApplyType = (EditText) view.findViewById(R.id.et_apply_type);
         etApplyTypeDetails = (EditText) view.findViewById(R.id.et_apply_detail_type);
-        et_name = (EditText) view.findViewById(R.id.et_name);
+
+
         etAddressDetail = (EditText) view.findViewById(R.id.et_apply_address_details);
         verificationCodeView = (VerificationCodeView) view.findViewById(R.id.verificationCodeView);
         verificationCodeView.setVerificationCodeBackground(Color.rgb(18, 150, 219));
@@ -235,7 +240,6 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
         etFloor = (EditText) view.findViewById(R.id.et_floor);
         etRoom = (EditText) view.findViewById(R.id.et_room);
 
-        et_tel = (EditText) view.findViewById(R.id.et_tel);
 
         et_describe = (EditText) view.findViewById(R.id.et_apply_describe);
         etCode = (EditText) view.findViewById(R.id.et_code);
@@ -288,6 +292,11 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
             @Override
             public void accept(Object o) throws Exception {
                 Log.d(TAG, "accept: 提交了");
+                Map<String, String> map = new HashMap<>();
+                map.put("name", et_name.getText().toString());
+                map.put("phone", et_tel.getText().toString());
+                map.put("email", etEmail.getText().toString());
+                Util.saveInputedData(getActivity(), "apply", map);
                 //禁止返回键
                 sweetAlertDialog.setCancelable(false);
                 sweetAlertDialog
@@ -990,8 +999,8 @@ public class ApplyFragment extends LazyFragment2 implements View.OnClickListener
 
     }
 
-    int photoWidth =360 ;
-    int photoHeight = 360 ;
+    int photoWidth = 240;
+    int photoHeight = 240;
 
     private void switchImage() {
 

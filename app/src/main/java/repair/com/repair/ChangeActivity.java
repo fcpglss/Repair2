@@ -1272,7 +1272,7 @@ public class ChangeActivity extends AppCompatActivity implements View.OnClickLis
 
         List<File> files = getFiles(changeUriList);
 
-        Api.submit(json, etCode.getText().toString(), files)
+        Api.change(json, etCode.getText().toString(), files)
                 .connTimeOut(60000)
                 .readTimeOut(60000)
                 .writeTimeOut(60000)

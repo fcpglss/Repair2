@@ -1,12 +1,16 @@
 package network;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 
 import com.zhangym.customview.VerificationCodeView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
+import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.RequestCall;
 
@@ -14,8 +18,11 @@ import java.io.File;
 import java.util.List;
 
 
+import camera.FIleUtils;
 import okhttp3.Call;
+import okhttp3.Request;
 import util.AESUtil;
+import util.APKUtils;
 
 import static constant.RequestUrl.AnnouceList;
 import static constant.RequestUrl.AnnouceLoadMore;
@@ -32,6 +39,8 @@ import static constant.RequestUrl.ApplySearch;
 import static constant.RequestUrl.ApplySearchMore;
 import static constant.RequestUrl.ApplyUpdate;
 import static constant.RequestUrl.Code;
+import static constant.RequestUrl.VersionApk;
+import static constant.RequestUrl.VersionURL;
 
 /**
  * Created by 14221 on 2018/5/21.
@@ -220,5 +229,64 @@ public class Api {
                 .url(ApplyPassword)
                 .build();
     }
+
+    public static void download(final String fileName, final Activity context) {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setTitle("正在下载");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        String url = VersionApk + fileName;
+        Log.d(TAG, "download: " + url);
+        Log.d(TAG, "download Path: " + FIleUtils.createDownLoadFilePath());
+        OkHttpUtils.get()
+                .url(url)
+                .build().connTimeOut(60000)
+                .readTimeOut(60000)
+                .writeTimeOut(60000).execute(new FileCallBack(FIleUtils.createDownLoadFilePath(), fileName) {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Log.d(TAG, "onError: " + e.getMessage());
+            }
+
+            @Override
+            public void onBefore(Request request, int id) {
+                super.onBefore(request, id);
+                dialog.show();
+            }
+
+            @Override
+            public void onAfter(int id) {
+                super.onAfter(id);
+                if (dialog != null & dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+
+            }
+
+            @Override
+            public void inProgress(float progress, long total, int id) {
+                super.inProgress(progress, total, id);
+                Log.d(TAG, "inProgress: " + progress);
+
+                dialog.setProgress((int) (progress * 100));
+            }
+
+            @Override
+            public void onResponse(File response, int id) {
+                Log.d(TAG, "onResponse: " + response.getName());
+                APKUtils.installApk(context, fileName);
+                context.finish();
+            }
+        });
+
+    }
+
+    public static RequestCall version(int versionCode) {
+        return OkHttpUtils.get()
+                .addParams("versionCode", String.valueOf(versionCode))
+                .url(VersionURL)
+                .build();
+    }
+
 
 }

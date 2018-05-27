@@ -45,7 +45,7 @@ public class RequestUrl {
 
     //版本
     public static final String VersionURL = project + "version/code";
-    public static final String VersionApk = project + "apks/";
+    public static final String VersionApk = project + "static/";
 
     //公告
     public static final String AnnouceList = project + "annouceList/annouce";
@@ -54,6 +54,6 @@ public class RequestUrl {
     //权限请求回调
     final public static int REQUEST_CODE_CAMERA = 1;
     final public static int REQUEST_CODE_SD_CARD = 2;
-
+    final public static int REQUEST_CODE_SD_READ = 3;
 
 }

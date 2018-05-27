@@ -26,7 +26,9 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -125,7 +127,7 @@ public class MyRepairFragment extends LazyFragment2 {
 
     protected void initViews(View view) {
 
-        svProgressHUD = new SweetAlertDialog(getActivity(),SweetAlertDialog.PROGRESS_TYPE);
+        svProgressHUD = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
         smartRefreshLayout = (SmartRefreshLayout) view.findViewById(R.id.refreshLayout);
         smartRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
@@ -151,6 +153,10 @@ public class MyRepairFragment extends LazyFragment2 {
 
         etName = (EditText) view.findViewById(R.id.et_my_name);
         etPhone = (EditText) view.findViewById(R.id.et_my_phone);
+
+        etPhone.setText(Util.getSharedPData(getActivity(), "my", "phone"));
+        etName.setText(Util.getSharedPData(getActivity(), "my", "name"));
+
         btnSearch = (Button) view.findViewById(R.id.btn_my_search);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +166,7 @@ public class MyRepairFragment extends LazyFragment2 {
                 start = 0;
                 end = page;
                 if (svProgressHUD == null) {
-                    svProgressHUD = new SweetAlertDialog(getActivity(),SweetAlertDialog.PROGRESS_TYPE);
+                    svProgressHUD = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
                     svProgressHUD.setTitleText("搜索中");
                 } else {
                     svProgressHUD.setTitleText("搜索中");
@@ -168,6 +174,10 @@ public class MyRepairFragment extends LazyFragment2 {
                 svProgressHUD.show();
                 phone = etPhone.getText().toString();
                 name = etName.getText().toString();
+                Map<String,String> map = new HashMap<>();
+                map.put("phone",phone);
+                map.put("name",name);
+                Util.saveInputedData(getActivity(),"my",map);
                 search(AESUtil.encode(phone), AESUtil.encode(name));
 
             }
@@ -188,17 +198,19 @@ public class MyRepairFragment extends LazyFragment2 {
             @Override
             public void onResponse(String resStr, int id) {
                 response = JsonUtil.jsonToResponse(resStr);
+                Log.d(TAG, "onResponse: " + response);
                 closeDiag();
                 if (response != null) {
                     res = response.getResultBean();
                     isHasData = response.isEnd();
                     if (res != null) {
                         if (res.getApplys() != null) {
+                            if (res.getApplys().size() <=0) {
+                                Toast.makeText(getActivity(), "没找到报修记录", Toast.LENGTH_SHORT).show();
+                            }
                             applyList.removeAll(applyList);
                             applyList.addAll(res.getApplys());
                             adapter.notifyDataSetChanged();
-                        } else {
-                            Toast.makeText(getActivity(), "没找到报修记录", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

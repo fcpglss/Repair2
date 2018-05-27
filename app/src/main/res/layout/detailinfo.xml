@@ -732,7 +732,7 @@
                                 android:id="@+id/tv_details_admin"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginRight="16dp"
+                                android:layout_marginRight="13dp"
                                 android:gravity="right"
                                 android:textSize="@dimen/text_button_text" />
 
